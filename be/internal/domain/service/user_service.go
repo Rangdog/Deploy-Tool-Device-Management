@@ -77,19 +77,22 @@ func (service *UserService) FindUserByEmail(email string) (*entity.Users, error)
 	return user, err
 }
 
-func (service *UserService) ResetPassword(userId int64, newPassword, oldPassword string) error {
+func (service *UserService) ResetPassword(user *entity.Users, newPassword, oldPassword string) error {
 	if newPassword == oldPassword {
 		return errors.New("new password equal old password")
 	}
-	user, err := service.repo.FindByUserId(userId)
-	if err != nil {
-		return err
-	}
+
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
 	user.Password = string(hashedPassword)
 	err = service.repo.UpdatePassword(user)
+	return err
+}
+
+func (service *UserService) CheckPasswordReset(email string, redirectUrl string) error {
+	body := "Click link to reset password account: <a href= '" + redirectUrl + "'> reset </a>"
+	err := service.emailService.SendEmail(email, "Reset Password", body)
 	return err
 }

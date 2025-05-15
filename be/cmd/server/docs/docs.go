@@ -15,6 +15,33 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/email/password-reset": {
+            "patch": {
+                "description": "Đặt lại mật khẩu",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Reset Password",
+                "parameters": [
+                    {
+                        "description": "Data",
+                        "name": "Reset_Password",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserRequestResetPassword"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/api/login": {
             "post": {
                 "description": "Đăng nhập",
@@ -30,12 +57,39 @@ const docTemplate = `{
                 "summary": "Login",
                 "parameters": [
                     {
-                        "description": "User Data",
+                        "description": "Data",
                         "name": "user",
                         "in": "body",
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/dto.UserLoginRequest"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/password-reset": {
+            "post": {
+                "description": "Email reset password",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Email reset password",
+                "parameters": [
+                    {
+                        "description": "Data",
+                        "name": "Email_Reset_Password",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CheckPasswordReset"
                         }
                     }
                 ],
@@ -73,7 +127,7 @@ const docTemplate = `{
                 "summary": "Register user",
                 "parameters": [
                     {
-                        "description": "User Data",
+                        "description": "Data",
                         "name": "user",
                         "in": "body",
                         "required": true,
@@ -100,36 +154,24 @@ const docTemplate = `{
                 "summary": "Get session",
                 "responses": {}
             }
-        },
-        "/api/user/password-reset": {
-            "post": {
-                "description": "Đặt lại mật khẩu",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Reset Password",
-                "parameters": [
-                    {
-                        "description": "User Data",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.UserRequestResetPassword"
-                        }
-                    }
-                ],
-                "responses": {}
-            }
         }
     },
     "definitions": {
+        "dto.CheckPasswordReset": {
+            "type": "object",
+            "required": [
+                "email",
+                "redirectUrl"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "redirectUrl": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.UserLoginRequest": {
             "type": "object",
             "required": [
@@ -175,10 +217,14 @@ const docTemplate = `{
         "dto.UserRequestResetPassword": {
             "type": "object",
             "required": [
+                "email",
                 "new_password",
                 "old_password"
             ],
             "properties": {
+                "email": {
+                    "type": "string"
+                },
                 "new_password": {
                     "type": "string"
                 },

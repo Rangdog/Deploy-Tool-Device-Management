@@ -6,7 +6,6 @@ import (
 	"BE_Manage_device/internal/domain/dto"
 	"BE_Manage_device/internal/domain/service"
 	"BE_Manage_device/pkg"
-	"BE_Manage_device/pkg/utils"
 	"net/http"
 	"time"
 
@@ -30,7 +29,7 @@ func NewUserHandler(service *service.UserService) *UserHandler {
 // @Tags         users
 // @Accept       json
 // @Produce      json
-// @Param        user   body    dto.UserRegisterRequest   true  "User Data"
+// @Param        user   body    dto.UserRegisterRequest   true  "Data"
 // @Router       /api/register [post]
 func (h *UserHandler) Register(c *gin.Context) {
 	defer pkg.PanicHandler(c)
@@ -53,7 +52,7 @@ func (h *UserHandler) Register(c *gin.Context) {
 // @Tags         users
 // @Accept       json
 // @Produce      json
-// @Param        user   body    dto.UserLoginRequest   true  "User Data"
+// @Param        user   body    dto.UserLoginRequest   true  "Data"
 // @Router       /api/login [post]
 func (h *UserHandler) Login(c *gin.Context) {
 	defer pkg.PanicHandler(c)
@@ -181,17 +180,21 @@ func (h *UserHandler) Refresh(c *gin.Context) {
 // @Tags         users
 // @Accept       json
 // @Produce      json
-// @Param        user   body    dto.UserRequestResetPassword   true  "User Data"
-// @Router       /api/user/password-reset [post]
+// @Param        Reset_Password   body    dto.UserRequestResetPassword   true  "Data"
+// @Router       /api/email/password-reset [PATCH]
 func (h *UserHandler) ResetPassword(c *gin.Context) {
 	defer pkg.PanicHandler(c)
-	userId := utils.GetUserIdFromContext(c)
 	var request dto.UserRequestResetPassword
 	if err := c.ShouldBindJSON(&request); err != nil {
 		log.Error("Happened error when mapping request from FE. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest)
 	}
-	err := h.service.ResetPassword(userId, request.NewPassword, request.OldPassword)
+	user, err := h.service.FindUserByEmail(request.Email)
+	if err != nil {
+		log.Error("Happened error when email don't exist. Error", err)
+		pkg.PanicExeption(constant.UnknownError, err.Error())
+	}
+	err = h.service.ResetPassword(user, request.NewPassword, request.OldPassword)
 	if err != nil {
 		log.Error("Happened error when resert password. Error", err)
 		pkg.PanicExeption(constant.UnknownError, err.Error())
@@ -246,4 +249,27 @@ func (h *UserHandler) Session(c *gin.Context) {
 	} else {
 		pkg.PanicExeption(constant.Unauthorized, "invalid refresh token")
 	}
+}
+
+// User godoc
+// @Summary      Email reset password
+// @Description   Email reset password
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        Email_Reset_Password   body    dto.CheckPasswordReset   true  "Data"
+// @Router       /api/password-reset [POST]
+func (h *UserHandler) CheckPasswordReset(c *gin.Context) {
+	defer pkg.PanicHandler(c)
+	var request dto.CheckPasswordReset
+	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Error("Happened error when mapping request from FE. Error", err)
+		pkg.PanicExeption(constant.InvalidRequest)
+	}
+	err := h.service.CheckPasswordReset(request.Email, request.RedirectUrl)
+	if err != nil {
+		log.Error("Happened error when resert password. Error", err)
+		pkg.PanicExeption(constant.UnknownError, err.Error())
+	}
+	c.JSON(http.StatusOK, pkg.BuildReponse(constant.Success, ""))
 }

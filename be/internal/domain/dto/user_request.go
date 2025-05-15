@@ -24,4 +24,10 @@ type UserLoginResponse struct {
 type UserRequestResetPassword struct {
 	NewPassword string `json:"new_password"  binding:"required"`
 	OldPassword string `json:"old_password"  binding:"required"`
+	Email       string `json:"email" binding:"required"`
+}
+
+type CheckPasswordReset struct {
+	Email       string `json:"email" binding:"required"`
+	RedirectUrl string `json:"redirectUrl" binding:"required"`
 }
