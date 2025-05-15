@@ -88,6 +88,17 @@ paths:
       summary: Register user
       tags:
       - users
+  /api/session:
+    get:
+      consumes:
+      - application/json
+      description: Get session
+      produces:
+      - application/json
+      responses: {}
+      summary: Get session
+      tags:
+      - users
   /api/user/password-reset:
     post:
       consumes:

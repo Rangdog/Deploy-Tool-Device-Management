@@ -155,18 +155,15 @@ func (h *UserHandler) Refresh(c *gin.Context) {
 
 		if err != nil {
 			pkg.PanicExeption(constant.UnknownError)
-			return
 		}
 
 		newAccessTokenString, err := newAccessToken.SignedString([]byte(config.AccessSecret))
 		if err != nil {
 			pkg.PanicExeption(constant.UnknownError)
-			return
 		}
 		newRefeshtokenString, err := newRefeshToken.SignedString([]byte(config.RefreshSecret))
 		if err != nil {
 			pkg.PanicExeption(constant.UnknownError)
-			return
 		}
 		c.SetCookie("access_token", newAccessTokenString, 60*15, "/", config.BASE_URL_BACKEND, false, true)
 		c.SetCookie("refresh_token", newRefeshtokenString, 60*60*24, "/", config.BASE_URL_BACKEND, false, true)
@@ -199,4 +196,53 @@ func (h *UserHandler) ResetPassword(c *gin.Context) {
 		pkg.PanicExeption(constant.UnknownError, err.Error())
 	}
 	c.JSON(http.StatusOK, pkg.BuildReponse(constant.Success, ""))
+}
+
+// User godoc
+// @Summary      Get session
+// @Description  Get session
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Router       /api/session [GET]
+func (h *UserHandler) Session(c *gin.Context) {
+	defer pkg.PanicHandler(c)
+	refreshTokenString, err := c.Cookie("refresh_token")
+	if err != nil {
+		log.Error("Happened error when refresh token. Error", err)
+		pkg.PanicExeption(constant.Unauthorized)
+	}
+	refreshToken, err := jwt.Parse(refreshTokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, http.ErrAbortHandler
+		}
+		return []byte(config.RefreshSecret), nil
+	})
+	if err != nil || !refreshToken.Valid {
+		pkg.PanicExeption(constant.Unauthorized)
+	}
+
+	if claims, ok := refreshToken.Claims.(jwt.MapClaims); ok && refreshToken.Valid {
+		if !ok {
+			pkg.PanicExeption(constant.Unauthorized)
+		}
+		exp, ok := claims["exp"].(float64)
+		if !ok {
+			pkg.PanicExeption(constant.Unauthorized)
+		}
+		if int64(exp) < time.Now().Unix() {
+			pkg.PanicExeption(constant.Unauthorized, "refresh token was expired")
+		}
+		email, ok := claims["email"].(string)
+		if !ok {
+			pkg.PanicExeption(constant.Unauthorized)
+		}
+		user, err := h.service.FindUserByEmail(email)
+		if err != nil {
+			pkg.PanicExeption(constant.Unauthorized, "invalid refresh tokenid")
+		}
+		c.JSON(http.StatusOK, pkg.BuildReponse(constant.Success, user))
+	} else {
+		pkg.PanicExeption(constant.Unauthorized, "invalid refresh token")
+	}
 }

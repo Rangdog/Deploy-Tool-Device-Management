@@ -85,6 +85,22 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/api/session": {
+            "get": {
+                "description": "Get session",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get session",
+                "responses": {}
+            }
+        },
         "/api/user/password-reset": {
             "post": {
                 "description": "Đặt lại mật khẩu",
