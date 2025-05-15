@@ -1,6 +1,6 @@
 {
     "build": {
-      "builder": "go",
+      "builder": "golang",
       "buildCommand": "go build -o server ./cmd/server"
     },
     "start": {
