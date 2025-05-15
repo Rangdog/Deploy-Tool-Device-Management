@@ -68,9 +68,11 @@ func (h *UserHandler) Login(c *gin.Context) {
 		log.Error("Happened error when login. Error", err)
 		pkg.PanicExeption(constant.Invalidemailorpassword)
 	}
-
-	data := map[string]interface{}{
-		"user": userLogged,
+	var data = dto.UserLoginResponse{
+		FirstName: userLogged.FirstName,
+		LastName:  userLogged.LastName,
+		Email:     userLogged.Email,
+		IsActive:  userLogged.IsActive,
 	}
 	c.SetCookie("access_token", accessToken, 60*15, "/", config.BASE_URL_BACKEND, false, true)
 	c.SetCookie("refresh_token", refreshToken, 60*60*24, "/", config.BASE_URL_BACKEND, false, true)
