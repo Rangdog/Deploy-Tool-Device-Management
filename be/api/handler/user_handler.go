@@ -177,6 +177,14 @@ func (h *UserHandler) Refresh(c *gin.Context) {
 	}
 }
 
+// User godoc
+// @Summary      Reset Password
+// @Description  Đặt lại mật khẩu
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        user   body    dto.UserRequestResetPassword   true  "User Data"
+// @Router       /api/user/password-reset [post]
 func (h *UserHandler) ResetPassword(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)
