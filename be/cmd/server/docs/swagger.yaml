@@ -1,0 +1,78 @@
+definitions:
+  dto.UserLoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dto.UserRegisterRequest:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - first_name
+    - last_name
+    - password
+    type: object
+info:
+  contact: {}
+paths:
+  /api/login:
+    post:
+      consumes:
+      - application/json
+      description: Đăng nhập
+      parameters:
+      - description: User Data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserLoginRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: Login
+      tags:
+      - users
+  /api/refresh:
+    get:
+      consumes:
+      - application/json
+      description: Refresh Token
+      produces:
+      - application/json
+      responses: {}
+      summary: Refresh Token
+      tags:
+      - users
+  /api/register:
+    post:
+      consumes:
+      - application/json
+      description: Đăng ký user
+      parameters:
+      - description: User Data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserRegisterRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: Register user
+      tags:
+      - users
+swagger: "2.0"

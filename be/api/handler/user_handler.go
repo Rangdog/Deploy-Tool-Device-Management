@@ -30,8 +30,6 @@ func NewUserHandler(service *service.UserService) *UserHandler {
 // @Accept       json
 // @Produce      json
 // @Param        user   body    dto.UserRegisterRequest   true  "User Data"
-// @Success      200  {object}  map[string][]string
-// @Failure		 400  {object}  map[string][]string
 // @Router       /api/register [post]
 func (h *UserHandler) Register(c *gin.Context) {
 	defer pkg.PanicHandler(c)
@@ -56,8 +54,6 @@ func (h *UserHandler) Register(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        user   body    dto.UserLoginRequest   true  "User Data"
-// @Success      200  {object}  map[string][]string
-// @Failure		 400  {object}  map[string][]string
 // @Router       /api/login [post]
 func (h *UserHandler) Login(c *gin.Context) {
 	defer pkg.PanicHandler(c)
@@ -97,6 +93,13 @@ func (h *UserHandler) Activate(c *gin.Context) {
 	c.Redirect(http.StatusFound, config.BASE_URL_FRONTEND+"login")
 }
 
+// User godoc
+// @Summary      Refresh Token
+// @Description  Refresh Token
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Router       /api/refresh [GET]
 func (h *UserHandler) Refresh(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	refreshTokenString, err := c.Cookie("refresh_token")
