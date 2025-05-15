@@ -69,13 +69,14 @@ func (h *UserHandler) Login(c *gin.Context) {
 		pkg.PanicExeption(constant.Invalidemailorpassword)
 	}
 	var data = dto.UserLoginResponse{
+		Id:        userLogged.Id,
 		FirstName: userLogged.FirstName,
 		LastName:  userLogged.LastName,
 		Email:     userLogged.Email,
 		IsActive:  userLogged.IsActive,
 	}
-	c.SetCookie("access_token", accessToken, 60*15, "/", config.BASE_URL_BACKEND, false, true)
-	c.SetCookie("refresh_token", refreshToken, 60*60*24, "/", config.BASE_URL_BACKEND, false, true)
+	c.SetCookie("access_token", accessToken, 60*1, "/", config.BASE_URL_BACKEND, false, true)
+	c.SetCookie("refresh_token", refreshToken, 60*5, "/", config.BASE_URL_BACKEND, false, true)
 
 	c.JSON(http.StatusOK, pkg.BuildReponse(constant.Success, data))
 }
