@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/sirupsen/logrus"
 )
 
 func AuthMiddleware(secretKey string) gin.HandlerFunc {
@@ -34,7 +35,9 @@ func AuthMiddleware(secretKey string) gin.HandlerFunc {
 					return
 				}
 			}
-			c.Set("userID", claims["id"])
+			a := claims["userId"]
+			logrus.Info(a)
+			c.Set("userID", claims["userId"])
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()

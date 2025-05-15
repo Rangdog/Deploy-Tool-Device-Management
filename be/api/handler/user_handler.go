@@ -6,6 +6,7 @@ import (
 	"BE_Manage_device/internal/domain/dto"
 	"BE_Manage_device/internal/domain/service"
 	"BE_Manage_device/pkg"
+	"BE_Manage_device/pkg/utils"
 	"net/http"
 	"time"
 
@@ -38,8 +39,7 @@ func (h *UserHandler) Register(c *gin.Context) {
 		log.Error("Happened error when mapping request from FE. Error", err)
 		pkg.PanicExeption(constant.UnknownError)
 	}
-
-	_, err := h.service.Register(user.FirstName, user.LastName, user.Password, user.Email)
+	_, err := h.service.Register(user.FirstName, user.LastName, user.Password, user.Email, user.RedirectUrl)
 	if err != nil {
 		log.Error("Happened error when saving data to database. Error", err)
 		pkg.PanicExeption(constant.UnknownError, err.Error())
@@ -87,12 +87,17 @@ func (h *UserHandler) Activate(c *gin.Context) {
 		log.Error("Happened error when mapping request from FE. Error: Dont see token in url")
 		pkg.PanicExeption(constant.InvalidRequest)
 	}
+	redirectUrl, exist := c.GetQuery("redirectUrl")
+	if !exist {
+		log.Error("Happened error when mapping request from FE. Error: Dont see token in url")
+		pkg.PanicExeption(constant.InvalidRequest)
+	}
 	err := h.service.Activate(token)
 	if err != nil {
 		log.Error("Happened error when activate. Error", err)
 		pkg.PanicExeption(constant.UnknownError)
 	}
-	c.Redirect(http.StatusFound, config.BASE_URL_FRONTEND+"login")
+	c.Redirect(http.StatusFound, redirectUrl)
 }
 
 // User godoc
@@ -168,6 +173,22 @@ func (h *UserHandler) Refresh(c *gin.Context) {
 
 		c.JSON(http.StatusOK, pkg.BuildReponse(constant.Success, "Success"))
 	} else {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
+		pkg.PanicExeption(constant.Unauthorized, "invalid refresh token")
 	}
+}
+
+func (h *UserHandler) ResetPassword(c *gin.Context) {
+	defer pkg.PanicHandler(c)
+	userId := utils.GetUserIdFromContext(c)
+	var request dto.UserRequestResetPassword
+	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Error("Happened error when mapping request from FE. Error", err)
+		pkg.PanicExeption(constant.InvalidRequest)
+	}
+	err := h.service.ResetPassword(userId, request.NewPassword, request.OldPassword)
+	if err != nil {
+		log.Error("Happened error when resert password. Error", err)
+		pkg.PanicExeption(constant.UnknownError, err.Error())
+	}
+	c.JSON(http.StatusOK, pkg.BuildReponse(constant.Success, ""))
 }

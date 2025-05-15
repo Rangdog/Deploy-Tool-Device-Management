@@ -19,7 +19,7 @@ func NewUserService(repo repository.UserRepository, emailService *EmailService) 
 	return &UserService{repo: repo, emailService: emailService}
 }
 
-func (service *UserService) Register(firstName, lastName, password, email string) (*entity.Users, error) {
+func (service *UserService) Register(firstName, lastName, password, email, redirectUrl string) (*entity.Users, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
@@ -38,7 +38,7 @@ func (service *UserService) Register(firstName, lastName, password, email string
 	if err != nil {
 		return nil, err
 	}
-	go service.emailService.SendActivationEmail(email, token)
+	go service.emailService.SendActivationEmail(email, token, redirectUrl)
 	return users, nil
 }
 
@@ -75,4 +75,21 @@ func (service *UserService) FindUserByEmail(email string) (*entity.Users, error)
 		return nil, err
 	}
 	return user, err
+}
+
+func (service *UserService) ResetPassword(userId int64, newPassword, oldPassword string) error {
+	if newPassword == oldPassword {
+		return errors.New("new password equal old password")
+	}
+	user, err := service.repo.FindByUserId(userId)
+	if err != nil {
+		return err
+	}
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	user.Password = string(hashedPassword)
+	err = service.repo.UpdatePassword(user)
+	return err
 }

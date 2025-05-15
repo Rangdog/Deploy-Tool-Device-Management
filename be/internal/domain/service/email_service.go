@@ -3,6 +3,7 @@ package service
 import (
 	"BE_Manage_device/config"
 	"BE_Manage_device/pkg/utils"
+	"net/url"
 	"strings"
 	"sync"
 
@@ -21,14 +22,16 @@ func NewEmailService(pw string) *EmailService {
 	}
 }
 
-func (service *EmailService) SendActivationEmail(email string, token string) error {
+func (service *EmailService) SendActivationEmail(email string, token string, redirectUrl string) error {
 	service.Mutex.Lock()
 	defer service.Mutex.Unlock()
 	m := gomail.NewMessage()
 	m.SetHeader("From", "thanhhaxuan02@gmail.com")
 	m.SetHeader("To", email)
 	m.SetHeader("Subject", "Verify Account")
-	actLink := config.BASE_URL_BACKEND + "api/activate?token=" + token
+	safeToken := url.QueryEscape(token)
+	safeRedirect := url.QueryEscape(redirectUrl)
+	actLink := config.BASE_URL_BACKEND + "api/activate?token=" + safeToken + "&redirectUrl=" + safeRedirect
 	m.SetBody("text/html", "Click link to activate account: <a href= '"+actLink+"'> Activate </a>")
 	for {
 		sender, err := service.Dialer.Dial()

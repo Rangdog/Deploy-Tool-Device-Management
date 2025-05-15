@@ -3,6 +3,7 @@ package api
 import (
 	"BE_Manage_device/api/handler"
 	"BE_Manage_device/api/middleware"
+	"BE_Manage_device/config"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,4 +16,7 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler) {
 	api.POST("/login", userHandler.Login)
 	api.GET("/activate", userHandler.Activate)
 	api.POST("/refresh", userHandler.Refresh)
+
+	api.Use(middleware.AuthMiddleware(config.AccessSecret))
+	api.PATCH("/user/password-reset", userHandler.ResetPassword)
 }
