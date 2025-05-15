@@ -39,12 +39,12 @@ func (h *UserHandler) Register(c *gin.Context) {
 		pkg.PanicExeption(constant.UnknownError)
 	}
 
-	savedUser, err := h.service.Register(user.FirstName, user.LastName, user.Password, user.Email)
+	_, err := h.service.Register(user.FirstName, user.LastName, user.Password, user.Email)
 	if err != nil {
 		log.Error("Happened error when saving data to database. Error", err)
 		pkg.PanicExeption(constant.UnknownError, err.Error())
 	}
-	c.JSON(http.StatusCreated, pkg.BuildReponse(constant.Success, savedUser))
+	c.JSON(http.StatusCreated, pkg.BuildReponse(constant.Success, ""))
 }
 
 // User godoc
