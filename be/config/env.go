@@ -20,7 +20,7 @@ var (
 func LoadEnv() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("failed to load env:", err)
+		log.Println("No .env file found, continuing with environment variables")
 	}
 	Port = ":" + os.Getenv("PORT")
 	AccessSecret = os.Getenv("AccessSecret")
