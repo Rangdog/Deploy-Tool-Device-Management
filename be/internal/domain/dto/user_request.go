@@ -31,3 +31,7 @@ type CheckPasswordReset struct {
 	Email       string `json:"email" binding:"required"`
 	RedirectUrl string `json:"redirectUrl" binding:"required"`
 }
+
+type DeleteUserRequest struct {
+	Email string `json:"email" binding:"required"`
+}

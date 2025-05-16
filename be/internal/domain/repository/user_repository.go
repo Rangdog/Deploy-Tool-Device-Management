@@ -11,4 +11,5 @@ type UserRepository interface {
 	UpdatePassword(user *entity.Users) error
 	FindByEmail(email string) (*entity.Users, error)
 	FindByUserId(userId int64) (*entity.Users, error)
+	DeleteUser(email string) error
 }

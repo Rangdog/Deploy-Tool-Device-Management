@@ -268,8 +268,44 @@ func (h *UserHandler) CheckPasswordReset(c *gin.Context) {
 	}
 	err := h.service.CheckPasswordReset(request.Email, request.RedirectUrl)
 	if err != nil {
-		log.Error("Happened error when resert password. Error", err)
+		log.Error("Happened error when reset password. Error", err)
 		pkg.PanicExeption(constant.UnknownError, err.Error())
 	}
+	c.JSON(http.StatusOK, pkg.BuildReponse(constant.Success, ""))
+}
+
+// User godoc
+// @Summary      Delete user
+// @Description   Delete user via emal
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param		email	path		string				true	"email"
+// @Router       /api/user/{email} [DELETE]
+func (h *UserHandler) DeleteUser(c *gin.Context) {
+	defer pkg.PanicHandler(c)
+	email := c.Param("email")
+	err := h.service.DeleteUser(email)
+	if err != nil {
+		log.Error("Happened error when delete user. Error", err)
+		pkg.PanicExeption(constant.UnknownError, err.Error())
+	}
+	c.JSON(http.StatusOK, pkg.BuildReponse(constant.Success, ""))
+}
+
+// User godoc
+// @Summary      Logout
+// @Description   Logout
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Router       /api/user/{email} [POST]
+func (h *UserHandler) Logout(c *gin.Context) {
+	defer pkg.PanicHandler(c)
+	// Xóa cookie access_token
+	c.SetCookie("access_token", "", -1, "/", config.BASE_URL_BACKEND, false, true)
+
+	// Xóa cookie refresh_token
+	c.SetCookie("refresh_token", "", -1, "/", config.BASE_URL_BACKEND, false, true)
 	c.JSON(http.StatusOK, pkg.BuildReponse(constant.Success, ""))
 }

@@ -68,3 +68,8 @@ func (r *PostgreSQLUserRepository) FindByUserId(userId int64) (*entity.Users, er
 	}
 	return users, nil
 }
+
+func (r *PostgreSQLUserRepository) DeleteUser(email string) error {
+	result := r.db.Where("email = ?", email).Delete(&entity.Users{})
+	return result.Error
+}

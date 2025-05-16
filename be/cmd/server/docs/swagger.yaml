@@ -148,4 +148,31 @@ paths:
       summary: Get session
       tags:
       - users
+  /api/user/{email}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user via emal
+      parameters:
+      - description: email
+        in: path
+        name: email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Delete user
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Logout
+      produces:
+      - application/json
+      responses: {}
+      summary: Logout
+      tags:
+      - users
 swagger: "2.0"

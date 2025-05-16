@@ -96,3 +96,8 @@ func (service *UserService) CheckPasswordReset(email string, redirectUrl string)
 	err := service.emailService.SendEmail(email, "Reset Password", body)
 	return err
 }
+
+func (service *UserService) DeleteUser(email string) error {
+	err := service.repo.DeleteUser(email)
+	return err
+}

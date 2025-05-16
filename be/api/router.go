@@ -14,10 +14,12 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler) {
 	api := r.Group("/api")
 	api.POST("/register", userHandler.Register)
 	api.POST("/login", userHandler.Login)
+	api.POST("/logout", userHandler.Logout)
 	api.GET("/activate", userHandler.Activate)
 	api.POST("/refresh", userHandler.Refresh)
 	api.GET("/session", userHandler.Session)
 	api.POST("/password-reset", userHandler.CheckPasswordReset)
 	api.PATCH("/email/password-reset", userHandler.ResetPassword)
+	api.DELETE("/user/:email", userHandler.DeleteUser)
 	api.Use(middleware.AuthMiddleware(config.AccessSecret))
 }
