@@ -35,7 +35,7 @@ func main() {
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
 	r := gin.Default()
-	api.SetupRoutes(r, userHandler)
+	api.SetupRoutes(r, userHandler, userSessionRepository)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	if err := r.Run(config.Port); err != nil {

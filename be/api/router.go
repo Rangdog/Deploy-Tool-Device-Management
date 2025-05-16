@@ -4,22 +4,23 @@ import (
 	"BE_Manage_device/api/handler"
 	"BE_Manage_device/api/middleware"
 	"BE_Manage_device/config"
+	"BE_Manage_device/internal/domain/repository"
 
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler) {
+func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, session repository.UsersSessionRepository) {
 	//users
 	r.Use(middleware.CORSMiddleware())
 	api := r.Group("/api")
-	api.POST("/register", userHandler.Register)
-	api.POST("/login", userHandler.Login)
-	api.POST("/logout", userHandler.Logout)
-	api.GET("/activate", userHandler.Activate)
+	api.POST("/auth/register", userHandler.Register)
+	api.POST("/auth/login", userHandler.Login)
 	api.POST("/refresh", userHandler.Refresh)
+	api.GET("/activate", userHandler.Activate)
 	api.POST("/password-reset", userHandler.CheckPasswordReset)
 	api.PATCH("/email/password-reset", userHandler.ResetPassword)
 	api.DELETE("/user/:email", userHandler.DeleteUser)
-	api.Use(middleware.AuthMiddleware(config.AccessSecret))
+	api.Use(middleware.AuthMiddleware(config.AccessSecret, session))
 	api.GET("/session", userHandler.Session)
+	api.POST("/auth/logout", userHandler.Logout)
 }

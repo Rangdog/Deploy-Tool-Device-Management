@@ -67,7 +67,7 @@ func (service *UserService) Login(email string, password string) (*entity.Users,
 			return nil, "", "", err
 		}
 	}
-	userSession := entity.UsersSesions{
+	userSession := entity.UsersSessions{
 		UserId:       user.Id,
 		CreatedAt:    time.Now(),
 		RefreshToken: refreshToken,
@@ -135,4 +135,25 @@ func (service *UserService) CheckRefreshToken(token string) bool {
 		return false
 	}
 	return true
+}
+
+func (service *UserService) FindByUserId(userId int64) (*entity.Users, error) {
+	user, err := service.repo.FindByUserId(userId)
+	if err != nil {
+		return nil, err
+	}
+	return user, err
+}
+
+func (service *UserService) FindSessionById(userId int64) (*entity.UsersSessions, error) {
+	session, err := service.userSessionRepo.FindByUserIdInSession(userId)
+	if err != nil {
+		return nil, err
+	}
+	return session, nil
+}
+
+func (service *UserService) UpdateInvoked(userSession entity.UsersSessions) error {
+	err := service.userSessionRepo.UpdateIsRevoked(&userSession)
+	return err
 }

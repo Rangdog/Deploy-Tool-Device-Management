@@ -6,6 +6,7 @@ import (
 	"BE_Manage_device/internal/domain/dto"
 	"BE_Manage_device/internal/domain/service"
 	"BE_Manage_device/pkg"
+	"BE_Manage_device/pkg/utils"
 	"net/http"
 	"time"
 
@@ -26,7 +27,7 @@ func NewUserHandler(service *service.UserService) *UserHandler {
 // User godoc
 // @Summary      Register user
 // @Description  Đăng ký user
-// @Tags         users
+// @Tags         auth
 // @Accept       json
 // @Produce      json
 // @Param        user   body    dto.UserRegisterRequest   true  "Data"
@@ -49,7 +50,7 @@ func (h *UserHandler) Register(c *gin.Context) {
 // User godoc
 // @Summary      Login
 // @Description  Đăng nhập
-// @Tags         users
+// @Tags         auth
 // @Accept       json
 // @Produce      json
 // @Param        user   body    dto.UserLoginRequest   true  "Data"
@@ -62,22 +63,16 @@ func (h *UserHandler) Login(c *gin.Context) {
 		pkg.PanicExeption(constant.InvalidRequest)
 	}
 
-	userLogged, accessToken, refreshToken, err := h.service.Login(user.Email, user.Password)
+	_, accessToken, refreshToken, err := h.service.Login(user.Email, user.Password)
 	if err != nil {
 		log.Error("Happened error when login. Error", err)
 		pkg.PanicExeption(constant.Invalidemailorpassword)
 	}
-	var data = dto.UserLoginResponse{
-		Id:        userLogged.Id,
-		FirstName: userLogged.FirstName,
-		LastName:  userLogged.LastName,
-		Email:     userLogged.Email,
-		IsActive:  userLogged.IsActive,
+	dataResponese := map[string]interface{}{
+		"access_token":  accessToken,
+		"refresh_token": refreshToken,
 	}
-	c.SetCookie("access_token", accessToken, 60*1, "/", config.BASE_URL_BACKEND, false, true)
-	c.SetCookie("refresh_token", refreshToken, 60*5, "/", config.BASE_URL_BACKEND, false, true)
-
-	c.JSON(http.StatusOK, pkg.BuildReponse(constant.Success, data))
+	c.JSON(http.StatusOK, pkg.BuildReponse(constant.Success, dataResponese))
 }
 
 func (h *UserHandler) Activate(c *gin.Context) {
@@ -103,23 +98,24 @@ func (h *UserHandler) Activate(c *gin.Context) {
 // User godoc
 // @Summary      Refresh Token
 // @Description  Refresh Token
-// @Tags         users
+// @Tags         auth
 // @Accept       json
 // @Produce      json
 // @Router       /api/refresh [POST]
 func (h *UserHandler) Refresh(c *gin.Context) {
 	defer pkg.PanicHandler(c)
-	refreshTokenString, err := c.Cookie("refresh_token")
-	if err != nil {
-		log.Error("Happened error when refresh token. Error", err)
-		pkg.PanicExeption(constant.StatusForbidden, "Refresh token was expired")
+	var rq dto.RefreshRequest
+	if err := c.ShouldBindJSON(&rq); err != nil {
+		log.Error("Happened error when mapping request from FE. Error", err)
+		pkg.PanicExeption(constant.InvalidRequest)
 	}
-	ok := h.service.CheckRefreshToken(refreshTokenString)
+
+	ok := h.service.CheckRefreshToken(rq.RefreshToken)
 	if !ok {
-		log.Error("Happened error refresh token was invoked. Error", err)
+		log.Error("Happened error refresh token was invoked")
 		pkg.PanicExeption(constant.Unauthorized, "Refresh token was invoked")
 	}
-	refreshToken, err := jwt.Parse(refreshTokenString, func(token *jwt.Token) (interface{}, error) {
+	refreshToken, err := jwt.Parse(rq.RefreshToken, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, http.ErrAbortHandler
 		}
@@ -170,10 +166,11 @@ func (h *UserHandler) Refresh(c *gin.Context) {
 		if err != nil {
 			pkg.PanicExeption(constant.UnknownError)
 		}
-		c.SetCookie("access_token", newAccessTokenString, 60*15, "/", config.BASE_URL_BACKEND, false, true)
-		c.SetCookie("refresh_token", newRefeshtokenString, 60*60*24, "/", config.BASE_URL_BACKEND, false, true)
-
-		c.JSON(http.StatusOK, pkg.BuildReponse(constant.Success, "Success"))
+		data := map[string]interface{}{
+			"access_token":  newAccessTokenString,
+			"refresh_token": newRefeshtokenString,
+		}
+		c.JSON(http.StatusOK, pkg.BuildReponse(constant.Success, data))
 	} else {
 		pkg.PanicExeption(constant.Unauthorized, "invalid refresh token")
 	}
@@ -216,49 +213,13 @@ func (h *UserHandler) ResetPassword(c *gin.Context) {
 // @Router       /api/session [GET]
 func (h *UserHandler) Session(c *gin.Context) {
 	defer pkg.PanicHandler(c)
-	refreshTokenString, err := c.Cookie("refresh_token")
+	userId := utils.GetUserIdFromContext(c)
+	user, err := h.service.FindByUserId(userId)
 	if err != nil {
-		log.Error("Happened error when refresh token. Error", err)
-		pkg.PanicExeption(constant.Unauthorized)
+		log.Error("Happened error when reset password. Error", err)
+		pkg.PanicExeption(constant.Unauthorized, err.Error())
 	}
-	ok := h.service.CheckRefreshToken(refreshTokenString)
-	if !ok {
-		log.Error("Happened error refresh token was invoked. Error", err)
-		pkg.PanicExeption(constant.Unauthorized, "Refresh token was invoked")
-	}
-	refreshToken, err := jwt.Parse(refreshTokenString, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, http.ErrAbortHandler
-		}
-		return []byte(config.RefreshSecret), nil
-	})
-	if err != nil || !refreshToken.Valid {
-		pkg.PanicExeption(constant.Unauthorized)
-	}
-
-	if claims, ok := refreshToken.Claims.(jwt.MapClaims); ok && refreshToken.Valid {
-		if !ok {
-			pkg.PanicExeption(constant.Unauthorized)
-		}
-		exp, ok := claims["exp"].(float64)
-		if !ok {
-			pkg.PanicExeption(constant.Unauthorized)
-		}
-		if int64(exp) < time.Now().Unix() {
-			pkg.PanicExeption(constant.Unauthorized, "refresh token was expired")
-		}
-		email, ok := claims["email"].(string)
-		if !ok {
-			pkg.PanicExeption(constant.Unauthorized)
-		}
-		user, err := h.service.FindUserByEmail(email)
-		if err != nil {
-			pkg.PanicExeption(constant.Unauthorized, "invalid refresh tokenid")
-		}
-		c.JSON(http.StatusOK, pkg.BuildReponse(constant.Success, user))
-	} else {
-		pkg.PanicExeption(constant.Unauthorized, "invalid refresh token")
-	}
+	c.JSON(http.StatusOK, pkg.BuildReponse(constant.Success, user))
 }
 
 // User godoc
@@ -309,13 +270,19 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 // @Tags         users
 // @Accept       json
 // @Produce      json
-// @Router       /api/user/{email} [POST]
+// @Router       /api/user [POST]
 func (h *UserHandler) Logout(c *gin.Context) {
 	defer pkg.PanicHandler(c)
-	// Xóa cookie access_token
-	c.SetCookie("access_token", "", -1, "/", config.BASE_URL_BACKEND, false, true)
-
-	// Xóa cookie refresh_token
-	c.SetCookie("refresh_token", "", -1, "/", config.BASE_URL_BACKEND, false, true)
+	userId := utils.GetUserIdFromContext(c)
+	userSession, err := h.service.FindSessionById(userId)
+	if err != nil {
+		log.Error("Happened error when logout user. Error", err)
+		pkg.PanicExeption(constant.UnknownError, err.Error())
+	}
+	err = h.service.UpdateInvoked(*userSession)
+	if err != nil {
+		log.Error("Happened error when logout user. Error", err)
+		pkg.PanicExeption(constant.UnknownError, err.Error())
+	}
 	c.JSON(http.StatusOK, pkg.BuildReponse(constant.Success, ""))
 }

@@ -1,10 +1,13 @@
 package middleware
 
 import (
-	"BE_Manage_device/config"
 	"BE_Manage_device/constant"
+	"BE_Manage_device/internal/domain/repository"
 	"BE_Manage_device/pkg"
+	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -12,14 +15,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func AuthMiddleware(secretKey string) gin.HandlerFunc {
+func AuthMiddleware(secretKey string, session repository.UsersSessionRepository) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tokenString, err := c.Cookie("access_token")
-		if err != nil {
-			c.JSON(http.StatusForbidden, pkg.BuildReponse(constant.Unauthorized, "Access Token expired"))
-			c.Abort()
-			return
-		}
+		authHeader := c.GetHeader("Authorization")
+		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, http.ErrAbortHandler
@@ -27,7 +26,7 @@ func AuthMiddleware(secretKey string) gin.HandlerFunc {
 			return []byte(secretKey), nil
 		})
 		if err != nil || !token.Valid {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			c.JSON(http.StatusUnauthorized, pkg.BuildReponse(constant.Unauthorized, "Access Token expired"))
 			c.Abort()
 			return
 		}
@@ -42,6 +41,19 @@ func AuthMiddleware(secretKey string) gin.HandlerFunc {
 			a := claims["userId"]
 			logrus.Info(a)
 			c.Set("userID", claims["userId"])
+			userID, exists := c.Get("userID")
+			if !exists {
+				pkg.PanicExeption(constant.UnknownError)
+			}
+			str := fmt.Sprint(userID)
+
+			userIdConvert, _ := strconv.ParseInt(str, 10, 64)
+
+			if !session.CheckUserInSession(userIdConvert) {
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+				c.Abort()
+				return
+			}
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()
@@ -54,14 +66,8 @@ func AuthMiddleware(secretKey string) gin.HandlerFunc {
 
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		origin := c.Request.Header.Get("Origin")
-
-		// Chỉ cho phép origin hợp lệ (bạn có thể kiểm tra whitelist nếu cần)
-		if origin == config.BASE_URL_FRONTEND {
-			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
-			c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-		}
-
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PATCH, PUT, DELETE")
 

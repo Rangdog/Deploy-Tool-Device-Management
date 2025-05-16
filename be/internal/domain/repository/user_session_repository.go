@@ -7,9 +7,9 @@ import (
 )
 
 type UsersSessionRepository interface {
-	Create(usersSessions *entity.UsersSesions, tx *gorm.DB) error
-	FindByRefreshToken(refreshToken string) (*entity.UsersSesions, error)
-	UpdateIsRevoked(user *entity.UsersSesions) error
+	Create(usersSessions *entity.UsersSessions, tx *gorm.DB) error
+	FindByRefreshToken(refreshToken string) (*entity.UsersSessions, error)
+	UpdateIsRevoked(user *entity.UsersSessions) error
 	CheckUserInSession(userId int64) bool
-	FindByUserIdInSession(UserId int64) (*entity.UsersSesions, error)
+	FindByUserIdInSession(UserId int64) (*entity.UsersSessions, error)
 }
