@@ -18,7 +18,7 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, session reposi
 	api.POST("/auth/refresh", userHandler.Refresh)
 	api.GET("/activate", userHandler.Activate)
 	api.POST("/user/password-reset", userHandler.CheckPasswordReset)
-	api.PATCH("/user/email/password-reset", userHandler.ResetPassword)
+	api.PATCH("/user/forget-password", userHandler.ResetPassword)
 	api.DELETE("/user/:email", userHandler.DeleteUser)
 	api.Use(middleware.AuthMiddleware(config.AccessSecret, session))
 	api.GET("/user/session", userHandler.Session)

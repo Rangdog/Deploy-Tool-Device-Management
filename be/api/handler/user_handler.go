@@ -184,7 +184,7 @@ func (h *UserHandler) Refresh(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        Reset_Password   body    dto.UserRequestResetPassword   true  "Data"
-// @Router       /api/user/email/password-reset [PATCH]
+// @Router       /api/user/forget-password [PATCH]
 func (h *UserHandler) ResetPassword(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	var request dto.UserRequestResetPassword

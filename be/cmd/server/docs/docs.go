@@ -112,7 +112,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/user/email/password-reset": {
+        "/api/user/forget-password": {
             "patch": {
                 "description": "Đặt lại mật khẩu",
                 "consumes": [

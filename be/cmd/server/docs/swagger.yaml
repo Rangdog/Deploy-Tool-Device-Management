@@ -143,7 +143,7 @@ paths:
       summary: Delete user
       tags:
       - users
-  /api/user/email/password-reset:
+  /api/user/forget-password:
     patch:
       consumes:
       - application/json
