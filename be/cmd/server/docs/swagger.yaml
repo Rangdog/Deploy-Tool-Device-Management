@@ -144,24 +144,6 @@ paths:
       tags:
       - users
   /api/user/forget-password:
-    patch:
-      consumes:
-      - application/json
-      description: Đặt lại mật khẩu
-      parameters:
-      - description: Data
-        in: body
-        name: Reset_Password
-        required: true
-        schema:
-          $ref: '#/definitions/dto.UserRequestResetPassword'
-      produces:
-      - application/json
-      responses: {}
-      summary: Reset Password
-      tags:
-      - users
-  /api/user/password-reset:
     post:
       consumes:
       - application/json
@@ -177,6 +159,24 @@ paths:
       - application/json
       responses: {}
       summary: Email reset password
+      tags:
+      - users
+  /api/user/password-reset:
+    patch:
+      consumes:
+      - application/json
+      description: Đặt lại mật khẩu
+      parameters:
+      - description: Data
+        in: body
+        name: Password-reset
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserRequestResetPassword'
+      produces:
+      - application/json
+      responses: {}
+      summary: Password-reset
       tags:
       - users
   /api/user/session:

@@ -113,33 +113,6 @@ const docTemplate = `{
             }
         },
         "/api/user/forget-password": {
-            "patch": {
-                "description": "Đặt lại mật khẩu",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Reset Password",
-                "parameters": [
-                    {
-                        "description": "Data",
-                        "name": "Reset_Password",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.UserRequestResetPassword"
-                        }
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/user/password-reset": {
             "post": {
                 "description": "Email reset password",
                 "consumes": [
@@ -160,6 +133,33 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/dto.CheckPasswordReset"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/user/password-reset": {
+            "patch": {
+                "description": "Đặt lại mật khẩu",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Password-reset",
+                "parameters": [
+                    {
+                        "description": "Data",
+                        "name": "Password-reset",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserRequestResetPassword"
                         }
                     }
                 ],
