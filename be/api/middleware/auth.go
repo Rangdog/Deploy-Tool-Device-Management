@@ -13,7 +13,7 @@ func AuthMiddleware(secretKey string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString, err := c.Cookie("access_token")
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			c.JSON(http.StatusForbidden, gin.H{"error": "Token expired"})
 			c.Abort()
 			return
 		}
