@@ -15,7 +15,104 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/email/password-reset": {
+        "/api/auth/login": {
+            "post": {
+                "description": "Đăng nhập",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Login",
+                "parameters": [
+                    {
+                        "description": "Data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserLoginRequest"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/auth/logout": {
+            "post": {
+                "description": "Logout",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Logout",
+                "responses": {}
+            }
+        },
+        "/api/auth/refresh": {
+            "post": {
+                "description": "Refresh Token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Refresh Token",
+                "parameters": [
+                    {
+                        "description": "Data",
+                        "name": "refresh_token",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RefreshRequest"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/auth/register": {
+            "post": {
+                "description": "Đăng ký user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Register user",
+                "parameters": [
+                    {
+                        "description": "Data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserRegisterRequest"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/user/email/password-reset": {
             "patch": {
                 "description": "Đặt lại mật khẩu",
                 "consumes": [
@@ -42,34 +139,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/login": {
-            "post": {
-                "description": "Đăng nhập",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Login",
-                "parameters": [
-                    {
-                        "description": "Data",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.UserLoginRequest"
-                        }
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/password-reset": {
+        "/api/user/password-reset": {
             "post": {
                 "description": "Email reset password",
                 "consumes": [
@@ -96,50 +166,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/refresh": {
-            "post": {
-                "description": "Refresh Token",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Refresh Token",
-                "responses": {}
-            }
-        },
-        "/api/register": {
-            "post": {
-                "description": "Đăng ký user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Register user",
-                "parameters": [
-                    {
-                        "description": "Data",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.UserRegisterRequest"
-                        }
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/session": {
+        "/api/user/session": {
             "get": {
                 "description": "Get session",
                 "consumes": [
@@ -156,20 +183,6 @@ const docTemplate = `{
             }
         },
         "/api/user/{email}": {
-            "post": {
-                "description": "Logout",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Logout",
-                "responses": {}
-            },
             "delete": {
                 "description": "Delete user via emal",
                 "consumes": [
@@ -207,6 +220,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "redirectUrl": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.RefreshRequest": {
+            "type": "object",
+            "required": [
+                "refresh_token"
+            ],
+            "properties": {
+                "refresh_token": {
                     "type": "string"
                 }
             }

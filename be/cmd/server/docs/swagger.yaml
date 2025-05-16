@@ -9,6 +9,13 @@ definitions:
     - email
     - redirectUrl
     type: object
+  dto.RefreshRequest:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
   dto.UserLoginRequest:
     properties:
       email:
@@ -54,25 +61,7 @@ definitions:
 info:
   contact: {}
 paths:
-  /api/email/password-reset:
-    patch:
-      consumes:
-      - application/json
-      description: Đặt lại mật khẩu
-      parameters:
-      - description: Data
-        in: body
-        name: Reset_Password
-        required: true
-        schema:
-          $ref: '#/definitions/dto.UserRequestResetPassword'
-      produces:
-      - application/json
-      responses: {}
-      summary: Reset Password
-      tags:
-      - users
-  /api/login:
+  /api/auth/login:
     post:
       consumes:
       - application/json
@@ -89,37 +78,37 @@ paths:
       responses: {}
       summary: Login
       tags:
-      - users
-  /api/password-reset:
+      - auth
+  /api/auth/logout:
     post:
       consumes:
       - application/json
-      description: Email reset password
-      parameters:
-      - description: Data
-        in: body
-        name: Email_Reset_Password
-        required: true
-        schema:
-          $ref: '#/definitions/dto.CheckPasswordReset'
+      description: Logout
       produces:
       - application/json
       responses: {}
-      summary: Email reset password
+      summary: Logout
       tags:
-      - users
-  /api/refresh:
+      - auth
+  /api/auth/refresh:
     post:
       consumes:
       - application/json
       description: Refresh Token
+      parameters:
+      - description: Data
+        in: body
+        name: refresh_token
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RefreshRequest'
       produces:
       - application/json
       responses: {}
       summary: Refresh Token
       tags:
-      - users
-  /api/register:
+      - auth
+  /api/auth/register:
     post:
       consumes:
       - application/json
@@ -136,18 +125,7 @@ paths:
       responses: {}
       summary: Register user
       tags:
-      - users
-  /api/session:
-    get:
-      consumes:
-      - application/json
-      description: Get session
-      produces:
-      - application/json
-      responses: {}
-      summary: Get session
-      tags:
-      - users
+      - auth
   /api/user/{email}:
     delete:
       consumes:
@@ -165,14 +143,51 @@ paths:
       summary: Delete user
       tags:
       - users
-    post:
+  /api/user/email/password-reset:
+    patch:
       consumes:
       - application/json
-      description: Logout
+      description: Đặt lại mật khẩu
+      parameters:
+      - description: Data
+        in: body
+        name: Reset_Password
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserRequestResetPassword'
       produces:
       - application/json
       responses: {}
-      summary: Logout
+      summary: Reset Password
+      tags:
+      - users
+  /api/user/password-reset:
+    post:
+      consumes:
+      - application/json
+      description: Email reset password
+      parameters:
+      - description: Data
+        in: body
+        name: Email_Reset_Password
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CheckPasswordReset'
+      produces:
+      - application/json
+      responses: {}
+      summary: Email reset password
+      tags:
+      - users
+  /api/user/session:
+    get:
+      consumes:
+      - application/json
+      description: Get session
+      produces:
+      - application/json
+      responses: {}
+      summary: Get session
       tags:
       - users
 swagger: "2.0"

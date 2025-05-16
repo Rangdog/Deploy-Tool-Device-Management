@@ -31,7 +31,7 @@ func NewUserHandler(service *service.UserService) *UserHandler {
 // @Accept       json
 // @Produce      json
 // @Param        user   body    dto.UserRegisterRequest   true  "Data"
-// @Router       /api/register [post]
+// @Router       /api/auth/register [post]
 func (h *UserHandler) Register(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	var user dto.UserRegisterRequest
@@ -54,7 +54,7 @@ func (h *UserHandler) Register(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        user   body    dto.UserLoginRequest   true  "Data"
-// @Router       /api/login [post]
+// @Router       /api/auth/login [post]
 func (h *UserHandler) Login(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	var user dto.UserLoginRequest
@@ -101,7 +101,8 @@ func (h *UserHandler) Activate(c *gin.Context) {
 // @Tags         auth
 // @Accept       json
 // @Produce      json
-// @Router       /api/refresh [POST]
+// @Param        refresh_token   body    dto.RefreshRequest   true  "Data"
+// @Router       /api/auth/refresh [POST]
 func (h *UserHandler) Refresh(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	var rq dto.RefreshRequest
@@ -183,7 +184,7 @@ func (h *UserHandler) Refresh(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        Reset_Password   body    dto.UserRequestResetPassword   true  "Data"
-// @Router       /api/email/password-reset [PATCH]
+// @Router       /api/user/email/password-reset [PATCH]
 func (h *UserHandler) ResetPassword(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	var request dto.UserRequestResetPassword
@@ -210,7 +211,7 @@ func (h *UserHandler) ResetPassword(c *gin.Context) {
 // @Tags         users
 // @Accept       json
 // @Produce      json
-// @Router       /api/session [GET]
+// @Router       /api/user/session [GET]
 func (h *UserHandler) Session(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)
@@ -229,7 +230,7 @@ func (h *UserHandler) Session(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        Email_Reset_Password   body    dto.CheckPasswordReset   true  "Data"
-// @Router       /api/password-reset [POST]
+// @Router       /api/user/password-reset [POST]
 func (h *UserHandler) CheckPasswordReset(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	var request dto.CheckPasswordReset
@@ -267,10 +268,10 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 // User godoc
 // @Summary      Logout
 // @Description   Logout
-// @Tags         users
+// @Tags         auth
 // @Accept       json
 // @Produce      json
-// @Router       /api/user [POST]
+// @Router       /api/auth/logout [POST]
 func (h *UserHandler) Logout(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)
