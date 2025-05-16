@@ -149,12 +149,6 @@ func (h *UserHandler) Refresh(c *gin.Context) {
 			"exp":    time.Now().Add(time.Minute * 1).Unix(),
 		})
 
-		newRefeshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"userId": user.Id,
-			"email":  email,
-			"exp":    time.Now().Add(time.Minute * 5).Unix(),
-		})
-
 		if err != nil {
 			pkg.PanicExeption(constant.UnknownError)
 		}
@@ -163,13 +157,8 @@ func (h *UserHandler) Refresh(c *gin.Context) {
 		if err != nil {
 			pkg.PanicExeption(constant.UnknownError)
 		}
-		newRefeshtokenString, err := newRefeshToken.SignedString([]byte(config.RefreshSecret))
-		if err != nil {
-			pkg.PanicExeption(constant.UnknownError)
-		}
 		data := map[string]interface{}{
-			"access_token":  newAccessTokenString,
-			"refresh_token": newRefeshtokenString,
+			"access_token": newAccessTokenString,
 		}
 		c.JSON(http.StatusOK, pkg.BuildReponse(constant.Success, data))
 	} else {
