@@ -178,13 +178,13 @@ func (h *UserHandler) Refresh(c *gin.Context) {
 }
 
 // User godoc
-// @Summary      Reset Password
+// @Summary      Password-reset
 // @Description  Đặt lại mật khẩu
 // @Tags         users
 // @Accept       json
 // @Produce      json
-// @Param        Reset_Password   body    dto.UserRequestResetPassword   true  "Data"
-// @Router       /api/user/forget-password [PATCH]
+// @Param        Password-reset   body    dto.UserRequestResetPassword   true  "Data"
+// @Router       /api/user/password-reset [PATCH]
 func (h *UserHandler) ResetPassword(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	var request dto.UserRequestResetPassword
@@ -230,7 +230,7 @@ func (h *UserHandler) Session(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        Email_Reset_Password   body    dto.CheckPasswordReset   true  "Data"
-// @Router       /api/user/password-reset [POST]
+// @Router       /api/user/forget-password [POST]
 func (h *UserHandler) CheckPasswordReset(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	var request dto.CheckPasswordReset
