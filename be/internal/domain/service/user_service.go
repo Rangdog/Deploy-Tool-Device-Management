@@ -32,7 +32,7 @@ func (service *UserService) Register(firstName, lastName, password, email, redir
 		LastName:  lastName,
 		Password:  string(hashedPassword),
 		Email:     email,
-		RoleId:    0,
+		RoleId:    1,
 		IsActive:  false,
 		Token:     token,
 	}
