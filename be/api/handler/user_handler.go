@@ -112,7 +112,7 @@ func (h *UserHandler) Refresh(c *gin.Context) {
 	refreshTokenString, err := c.Cookie("refresh_token")
 	if err != nil {
 		log.Error("Happened error when refresh token. Error", err)
-		pkg.PanicExeption(constant.Unauthorized, "Refresh token was expired")
+		pkg.PanicExeption(constant.StatusForbidden, "Refresh token was expired")
 	}
 	refreshToken, err := jwt.Parse(refreshTokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -136,7 +136,7 @@ func (h *UserHandler) Refresh(c *gin.Context) {
 			return
 		}
 		if int64(exp) < time.Now().Unix() {
-			pkg.PanicExeption(constant.Unauthorized, "Refresh token was expired")
+			pkg.PanicExeption(constant.StatusForbidden, "Refresh token was expired")
 			return
 		}
 		email := claims["email"].(string)

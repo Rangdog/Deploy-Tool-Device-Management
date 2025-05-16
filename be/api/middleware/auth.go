@@ -15,7 +15,7 @@ func AuthMiddleware(secretKey string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString, err := c.Cookie("access_token")
 		if err != nil {
-			c.JSON(http.StatusForbidden, pkg.BuildReponse(constant.StatusForbidden, "Access Token expired"))
+			c.JSON(http.StatusForbidden, pkg.BuildReponse(constant.Unauthorized, "Access Token expired"))
 			c.Abort()
 			return
 		}
@@ -33,7 +33,7 @@ func AuthMiddleware(secretKey string) gin.HandlerFunc {
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			if exp, ok := claims["exp"].(float64); ok {
 				if int64(exp) < time.Now().Unix() {
-					c.JSON(http.StatusForbidden, pkg.BuildReponse(constant.StatusForbidden, "Access Token expired"))
+					c.JSON(http.StatusForbidden, pkg.BuildReponse(constant.Unauthorized, "Access Token expired"))
 					c.Abort()
 					return
 				}
