@@ -58,13 +58,20 @@ func (service *UserService) Login(email string, password string) (*entity.Users,
 		return nil, "", "", err
 	}
 	if service.userSessionRepo.CheckUserInSession(user.Id) {
-		// userSession, err := service.userSessionRepo.FindByUserIdInSession(user.Id)
-
+		userSession, err := service.userSessionRepo.FindByUserIdInSession(user.Id)
+		if err != nil {
+			return nil, "", "", err
+		}
+		err = service.userSessionRepo.UpdateIsRevoked(userSession)
+		if err != nil {
+			return nil, "", "", err
+		}
 	}
 	userSession := entity.UsersSesions{
 		UserId:       user.Id,
 		CreatedAt:    time.Now(),
 		RefreshToken: refreshToken,
+		AccessToken:  accessToken,
 		ExpiresAt:    time.Now().Add(5 * time.Minute),
 	}
 	tx := service.repo.GetDB().Begin()
@@ -117,4 +124,15 @@ func (service *UserService) CheckPasswordReset(email string, redirectUrl string)
 func (service *UserService) DeleteUser(email string) error {
 	err := service.repo.DeleteUser(email)
 	return err
+}
+
+func (service *UserService) CheckRefreshToken(token string) bool {
+	userSession, err := service.userSessionRepo.FindByRefreshToken(token)
+	if err != nil {
+		return false
+	}
+	if userSession.IsRevoked {
+		return false
+	}
+	return true
 }

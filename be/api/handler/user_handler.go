@@ -114,6 +114,11 @@ func (h *UserHandler) Refresh(c *gin.Context) {
 		log.Error("Happened error when refresh token. Error", err)
 		pkg.PanicExeption(constant.StatusForbidden, "Refresh token was expired")
 	}
+	ok := h.service.CheckRefreshToken(refreshTokenString)
+	if !ok {
+		log.Error("Happened error refresh token was invoked. Error", err)
+		pkg.PanicExeption(constant.Unauthorized, "Refresh token was invoked")
+	}
 	refreshToken, err := jwt.Parse(refreshTokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, http.ErrAbortHandler
@@ -215,6 +220,11 @@ func (h *UserHandler) Session(c *gin.Context) {
 	if err != nil {
 		log.Error("Happened error when refresh token. Error", err)
 		pkg.PanicExeption(constant.Unauthorized)
+	}
+	ok := h.service.CheckRefreshToken(refreshTokenString)
+	if !ok {
+		log.Error("Happened error refresh token was invoked. Error", err)
+		pkg.PanicExeption(constant.Unauthorized, "Refresh token was invoked")
 	}
 	refreshToken, err := jwt.Parse(refreshTokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
