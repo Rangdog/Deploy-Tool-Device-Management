@@ -2,6 +2,8 @@ package repository
 
 import (
 	"BE_Manage_device/internal/domain/entity"
+
+	"gorm.io/gorm"
 )
 
 type UserRepository interface {
@@ -12,4 +14,5 @@ type UserRepository interface {
 	FindByEmail(email string) (*entity.Users, error)
 	FindByUserId(userId int64) (*entity.Users, error)
 	DeleteUser(email string) error
+	GetDB() *gorm.DB
 }

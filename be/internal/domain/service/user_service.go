@@ -5,18 +5,20 @@ import (
 	"BE_Manage_device/internal/domain/repository"
 	"BE_Manage_device/pkg/utils"
 	"errors"
+	"time"
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type UserService struct {
-	repo         repository.UserRepository
-	emailService *EmailService
+	repo            repository.UserRepository
+	emailService    *EmailService
+	userSessionRepo repository.UsersSessionRepository
 }
 
-func NewUserService(repo repository.UserRepository, emailService *EmailService) *UserService {
-	return &UserService{repo: repo, emailService: emailService}
+func NewUserService(repo repository.UserRepository, emailService *EmailService, userSessionRepo repository.UsersSessionRepository) *UserService {
+	return &UserService{repo: repo, emailService: emailService, userSessionRepo: userSessionRepo}
 }
 
 func (service *UserService) Register(firstName, lastName, password, email, redirectUrl string) (*entity.Users, error) {
@@ -52,11 +54,25 @@ func (service *UserService) Login(email string, password string) (*entity.Users,
 	}
 
 	accessToken, refreshToken, err := utils.GenerateTokens(user.Id, email)
-
 	if err != nil {
 		return nil, "", "", err
 	}
+	if service.userSessionRepo.CheckUserInSession(user.Id) {
 
+	}
+	userSession := entity.UsersSesions{
+		UserId:       user.Id,
+		CreatedAt:    time.Now(),
+		RefreshToken: refreshToken,
+		ExpiresAt:    time.Now().Add(5 * time.Minute),
+	}
+	tx := service.repo.GetDB().Begin()
+	err = service.userSessionRepo.Create(&userSession, tx)
+	if err != nil {
+		tx.Rollback()
+		return nil, "", "", err
+	}
+	tx.Commit()
 	return user, accessToken, refreshToken, nil
 }
 

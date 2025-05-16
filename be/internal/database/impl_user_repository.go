@@ -73,3 +73,7 @@ func (r *PostgreSQLUserRepository) DeleteUser(email string) error {
 	result := r.db.Where("email = ?", email).Delete(&entity.Users{})
 	return result.Error
 }
+
+func (r *PostgreSQLUserRepository) GetDB() *gorm.DB {
+	return r.db
+}

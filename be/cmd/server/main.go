@@ -19,11 +19,12 @@ func main() {
 	config.LoadEnv()
 	db := config.ConnectToDB()
 	userRepository := database.NewPostgreSQLUserRepository(db)
+	userSessionRepository := database.NewPostgreSQLUserSessionRepository(db)
 
 	emailService := service.NewEmailService(config.SmtpPasswd)
 
 	//user
-	userService := service.NewUserService(userRepository, emailService)
+	userService := service.NewUserService(userRepository, emailService, userSessionRepository)
 	userHandler := handler.NewUserHandler(userService)
 
 	docs.SwaggerInfo.Title = "API Tool device manage"

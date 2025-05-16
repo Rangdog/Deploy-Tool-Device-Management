@@ -112,7 +112,7 @@ func (h *UserHandler) Refresh(c *gin.Context) {
 	refreshTokenString, err := c.Cookie("refresh_token")
 	if err != nil {
 		log.Error("Happened error when refresh token. Error", err)
-		pkg.PanicExeption(constant.StatusForbidden, "Token was expired")
+		pkg.PanicExeption(constant.Unauthorized, "Refresh token was expired")
 	}
 	refreshToken, err := jwt.Parse(refreshTokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -132,11 +132,11 @@ func (h *UserHandler) Refresh(c *gin.Context) {
 		}
 		exp, ok := claims["exp"].(float64)
 		if !ok {
-			pkg.PanicExeption(constant.StatusForbidden, "Token was expired")
+			pkg.PanicExeption(constant.Unauthorized)
 			return
 		}
 		if int64(exp) < time.Now().Unix() {
-			pkg.PanicExeption(constant.Unauthorized)
+			pkg.PanicExeption(constant.Unauthorized, "Refresh token was expired")
 			return
 		}
 		email := claims["email"].(string)
@@ -144,13 +144,13 @@ func (h *UserHandler) Refresh(c *gin.Context) {
 		newAccessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 			"userId": user.Id,
 			"email":  email,
-			"exp":    time.Now().Add(time.Minute * 15).Unix(),
+			"exp":    time.Now().Add(time.Minute * 1).Unix(),
 		})
 
 		newRefeshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 			"userId": user.Id,
 			"email":  email,
-			"exp":    time.Now().Add(time.Hour * 14).Unix(),
+			"exp":    time.Now().Add(time.Minute * 5).Unix(),
 		})
 
 		if err != nil {

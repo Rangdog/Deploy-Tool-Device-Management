@@ -13,7 +13,7 @@ func ConnectToDB() *gorm.DB {
 	if err != nil {
 		log.Fatal("Error connecting to database. Error:", err)
 	}
-	err = db.AutoMigrate(&entity.Users{})
+	err = db.AutoMigrate(&entity.Users{}, &entity.UsersSesions{})
 	if err != nil {
 		log.Fatal("Error migrate to database. Error:", err)
 	}

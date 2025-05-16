@@ -68,5 +68,6 @@ func GenerateTokens(userId int64, email string) (string, string, error) {
 	if err != nil {
 		return "", "", err
 	}
+
 	return accessString, refreshString, nil
 }
