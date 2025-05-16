@@ -58,7 +58,7 @@ func (service *UserService) Login(email string, password string) (*entity.Users,
 		return nil, "", "", err
 	}
 	if service.userSessionRepo.CheckUserInSession(user.Id) {
-
+		userSession, err := service.userSessionRepo.FindByUserIdInSession(user.Id)
 	}
 	userSession := entity.UsersSesions{
 		UserId:       user.Id,

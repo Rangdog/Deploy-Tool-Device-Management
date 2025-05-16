@@ -40,3 +40,12 @@ func (r *PostgreSQLUserSessionRepository) CheckUserInSession(userId int64) bool 
 	result := r.db.Model(&entity.UsersSesions{}).Where("user_id = ? and is_revoked = ?", userId, false).First(userSessions)
 	return !errors.Is(result.Error, gorm.ErrRecordNotFound)
 }
+
+func (r *PostgreSQLUserSessionRepository) FindByUserIdInSession(userId int64) (*entity.UsersSesions, error) {
+	var userSessions = &entity.UsersSesions{}
+	result := r.db.Model(&entity.UsersSesions{}).Where("user_id = ? and is_revoked = ?", userId, false).First(userSessions)
+	if result != nil {
+		return nil, result.Error
+	}
+	return userSessions, nil
+}

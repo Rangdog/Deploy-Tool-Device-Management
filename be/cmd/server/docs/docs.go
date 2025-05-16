@@ -97,7 +97,7 @@ const docTemplate = `{
             }
         },
         "/api/refresh": {
-            "get": {
+            "post": {
                 "description": "Refresh Token",
                 "consumes": [
                     "application/json"

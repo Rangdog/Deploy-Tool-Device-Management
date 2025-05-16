@@ -106,7 +106,7 @@ func (h *UserHandler) Activate(c *gin.Context) {
 // @Tags         users
 // @Accept       json
 // @Produce      json
-// @Router       /api/refresh [GET]
+// @Router       /api/refresh [POST]
 func (h *UserHandler) Refresh(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	refreshTokenString, err := c.Cookie("refresh_token")

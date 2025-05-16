@@ -11,4 +11,5 @@ type UsersSessionRepository interface {
 	FindByRefreshToken(refreshToken string) (*entity.UsersSesions, error)
 	UpdateIsRevoked(user *entity.UsersSesions) error
 	CheckUserInSession(userId int64) bool
+	FindByUserIdInSession(UserId int64) (*entity.UsersSesions, error)
 }

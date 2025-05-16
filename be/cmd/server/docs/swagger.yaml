@@ -109,7 +109,7 @@ paths:
       tags:
       - users
   /api/refresh:
-    get:
+    post:
       consumes:
       - application/json
       description: Refresh Token
