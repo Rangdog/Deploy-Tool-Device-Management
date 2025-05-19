@@ -13,8 +13,8 @@ type Assets struct {
 	WarrantExpiry       time.Time  `json:"warrant_expiry"`
 	Status              string     `json:"status"`
 	SerialNumber        string     `json:"serial_number"`
-	FileAttachment      string     `json:"file_attachment"`
-	ImageUpload         string     `json:"image_upload"`
+	FileAttachment      *string    `json:"file_attachment"`
+	ImageUpload         *string    `json:"image_upload"`
 	ScheduleMaintenance *time.Time `json:"maintenance"`
 	CategoryId          int64      `json:"category_id"`
 	DepartmentId        *int64     `json:"department_id"`

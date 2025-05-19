@@ -105,6 +105,9 @@ func (service *UserService) FindUserByEmail(email string) (*entity.Users, error)
 }
 
 func (service *UserService) ResetPassword(user *entity.Users, newPassword string) error {
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(newPassword)); err != nil {
+		return errors.New("the new password mush not be the same as the old password")
+	}
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
 	if err != nil {
 		return err
