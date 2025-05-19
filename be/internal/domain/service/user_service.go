@@ -1,12 +1,14 @@
 package service
 
 import (
+	"BE_Manage_device/config"
 	"BE_Manage_device/internal/domain/entity"
 	"BE_Manage_device/internal/domain/repository"
 	"BE_Manage_device/pkg/utils"
 	"errors"
 	"time"
 
+	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -116,8 +118,18 @@ func (service *UserService) ResetPassword(user *entity.Users, newPassword, oldPa
 }
 
 func (service *UserService) CheckPasswordReset(email string, redirectUrl string) error {
-	body := "Click link to reset password account: <a href= '" + redirectUrl + "'> reset </a>"
-	err := service.emailService.SendEmail(email, "Reset Password", body)
+
+	tokenPW := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"email": email,
+		"exp":   time.Now().Add(1 * time.Minute).Unix(),
+	})
+	tokenPWstring, err := tokenPW.SignedString([]byte(config.PasswordSecret))
+	if err != nil {
+		return err
+	}
+
+	body := "Click link to reset password account: <a href='" + redirectUrl + "?token=" + tokenPWstring + "'>reset</a>"
+	err = service.emailService.SendEmail(email, "Reset Password", body)
 	return err
 }
 

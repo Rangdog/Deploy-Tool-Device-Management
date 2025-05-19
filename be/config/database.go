@@ -95,7 +95,7 @@ func ConnectToDB() *gorm.DB {
 	if err != nil {
 		log.Fatal("Error connecting to database. Error:", err)
 	}
-	err = db.AutoMigrate(&entity.Roles{}, &entity.Permission{}, &entity.RolePermission{}, &entity.Users{}, &entity.UsersSessions{}, &entity.UserRbac{})
+	err = db.AutoMigrate(&entity.Roles{}, &entity.Permission{}, &entity.RolePermission{}, &entity.Users{}, &entity.UsersSessions{}, &entity.UserRbac{}, &entity.Locations{}, &entity.Departments{}, &entity.Categories{}, &entity.Assets{})
 	if err != nil {
 		log.Fatal("Error migrate to database. Error:", err)
 	}

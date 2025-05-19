@@ -20,12 +20,20 @@ func main() {
 	db := config.ConnectToDB()
 	userRepository := database.NewPostgreSQLUserRepository(db)
 	userSessionRepository := database.NewPostgreSQLUserSessionRepository(db)
+	locationRepository := database.NewPostgreSQLLocationRepository(db)
+	categoriesRepository := database.NewPostgreSQLCategoriesRepository(db)
 
 	emailService := service.NewEmailService(config.SmtpPasswd)
 
-	//user
+	//User
 	userService := service.NewUserService(userRepository, emailService, userSessionRepository)
 	userHandler := handler.NewUserHandler(userService)
+	//Location
+	locationService := service.NewLocationService(locationRepository)
+	locationHandler := handler.NewLocationHandler(locationService)
+	//Categories
+	categoriesService := service.NewCategoriesService(categoriesRepository)
+	categoriesHandler := handler.NewCategoriesHandler(categoriesService)
 
 	docs.SwaggerInfo.Title = "API Tool device manage"
 	docs.SwaggerInfo.Description = "App Tool device manage"
@@ -35,7 +43,7 @@ func main() {
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
 	r := gin.Default()
-	api.SetupRoutes(r, userHandler, userSessionRepository)
+	api.SetupRoutes(r, userHandler, locationHandler, categoriesHandler, userSessionRepository)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	if err := r.Run(config.Port); err != nil {

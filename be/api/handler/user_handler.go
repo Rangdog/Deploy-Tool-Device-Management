@@ -26,7 +26,7 @@ func NewUserHandler(service *service.UserService) *UserHandler {
 
 // User godoc
 // @Summary      Register user
-// @Description  Đăng ký user
+// @Description  Register user
 // @Tags         auth
 // @Accept       json
 // @Produce      json
@@ -37,19 +37,19 @@ func (h *UserHandler) Register(c *gin.Context) {
 	var user dto.UserRegisterRequest
 	if err := c.ShouldBindJSON(&user); err != nil {
 		log.Error("Happened error when mapping request from FE. Error", err)
-		pkg.PanicExeption(constant.UnknownError, "Happened error when mapping request from FE.")
+		pkg.PanicExeption(constant.InvalidRequest, "Happened error when mapping request from FE.")
 	}
 	_, err := h.service.Register(user.FirstName, user.LastName, user.Password, user.Email, user.RedirectUrl)
 	if err != nil {
 		log.Error("Happened error when saving data to database. Error", err)
-		pkg.PanicExeption(constant.UnknownError, err.Error())
+		pkg.PanicExeption(constant.InvalidRequest, err.Error())
 	}
 	c.JSON(http.StatusCreated, pkg.BuildReponseSuccessNoData(http.StatusCreated, constant.Success))
 }
 
 // User godoc
 // @Summary      Login
-// @Description  Đăng nhập
+// @Description  Login
 // @Tags         auth
 // @Accept       json
 // @Produce      json
@@ -165,7 +165,7 @@ func (h *UserHandler) Refresh(c *gin.Context) {
 
 // User godoc
 // @Summary      Password-reset
-// @Description  Đặt lại mật khẩu
+// @Description  reset password
 // @Tags         users
 // @Accept       json
 // @Produce      json
@@ -178,17 +178,41 @@ func (h *UserHandler) ResetPassword(c *gin.Context) {
 		log.Error("Happened error when mapping request from FE. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when mapping request from FE. Error")
 	}
-	user, err := h.service.FindUserByEmail(request.Email)
-	if err != nil {
-		log.Error("Happened error when email don't exist. Error", err)
-		pkg.PanicExeption(constant.UnknownError, err.Error())
+	token, err := jwt.Parse(request.Token, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, http.ErrAbortHandler
+		}
+		return []byte(config.PasswordSecret), nil
+	})
+	if err != nil || !token.Valid {
+		pkg.PanicExeption(constant.Unauthorized, "Token was expired")
+		c.Abort()
+		return
 	}
-	err = h.service.ResetPassword(user, request.NewPassword, request.OldPassword)
-	if err != nil {
-		log.Error("Happened error when resert password. Error", err)
-		pkg.PanicExeption(constant.UnknownError, err.Error())
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		if exp, ok := claims["exp"].(float64); ok {
+			if int64(exp) < time.Now().Unix() {
+				pkg.PanicExeption(constant.Unauthorized, "Token expired")
+			}
+		}
+		if email, ok := claims["email"].(string); ok {
+			user, err := h.service.FindUserByEmail(email)
+			if err != nil {
+				log.Error("Happened error when email don't exist. Error", err)
+				pkg.PanicExeption(constant.UnknownError, err.Error())
+			}
+			err = h.service.ResetPassword(user, request.NewPassword, request.OldPassword)
+			if err != nil {
+				log.Error("Happened error when resert password. Error", err)
+				pkg.PanicExeption(constant.UnknownError, err.Error())
+			}
+			c.JSON(http.StatusOK, pkg.BuildReponseSuccessNoData(http.StatusOK, constant.Success))
+		} else {
+			pkg.PanicExeption(constant.Unauthorized, "Invalid token")
+		}
+	} else {
+		pkg.PanicExeption(constant.Unauthorized, "Invalid token")
 	}
-	c.JSON(http.StatusOK, pkg.BuildReponseSuccessNoData(http.StatusOK, constant.Success))
 }
 
 // User godoc
@@ -234,7 +258,7 @@ func (h *UserHandler) CheckPasswordReset(c *gin.Context) {
 
 // User godoc
 // @Summary      Delete user
-// @Description   Delete user via emal
+// @Description   Delete user via email
 // @Tags         users
 // @Accept       json
 // @Produce      json

@@ -6,7 +6,7 @@
     "paths": {
         "/api/auth/login": {
             "post": {
-                "description": "Đăng nhập",
+                "description": "Login",
                 "consumes": [
                     "application/json"
                 ],
@@ -76,7 +76,7 @@
         },
         "/api/auth/register": {
             "post": {
-                "description": "Đăng ký user",
+                "description": "Register user",
                 "consumes": [
                     "application/json"
                 ],
@@ -96,6 +96,204 @@
                         "schema": {
                             "$ref": "#/definitions/dto.UserRegisterRequest"
                         }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/categories": {
+            "get": {
+                "description": "Get all categories",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "categories"
+                ],
+                "summary": "Get all categories",
+                "responses": {}
+            },
+            "post": {
+                "description": "Create categories",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "categories"
+                ],
+                "summary": "Create categories",
+                "parameters": [
+                    {
+                        "description": "Data",
+                        "name": "category",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateCategoryRequest"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/categories/{id}": {
+            "delete": {
+                "description": "Delete category via id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "categories"
+                ],
+                "summary": "Delete category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/departments": {
+            "get": {
+                "description": "Get all departments",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "departments"
+                ],
+                "summary": "Get all departments",
+                "responses": {}
+            },
+            "post": {
+                "description": "Create departments",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "departments"
+                ],
+                "summary": "Create departments",
+                "parameters": [
+                    {
+                        "description": "Data",
+                        "name": "department",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateDepartmentRequest"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/departments/{id}": {
+            "delete": {
+                "description": "Delete department via id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "departments"
+                ],
+                "summary": "Delete department",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/locations": {
+            "get": {
+                "description": "Get all location",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "locations"
+                ],
+                "summary": "Get all location",
+                "responses": {}
+            },
+            "post": {
+                "description": "Create location",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "locations"
+                ],
+                "summary": "Create Location",
+                "parameters": [
+                    {
+                        "description": "Data",
+                        "name": "location",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateLocationRequest"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/locations/{id}": {
+            "delete": {
+                "description": "Delete location via id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "locations"
+                ],
+                "summary": "Delete location",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -130,7 +328,7 @@
         },
         "/api/user/password-reset": {
             "patch": {
-                "description": "Đặt lại mật khẩu",
+                "description": "reset password",
                 "consumes": [
                     "application/json"
                 ],
@@ -173,7 +371,7 @@
         },
         "/api/user/{email}": {
             "delete": {
-                "description": "Delete user via emal",
+                "description": "Delete user via email",
                 "consumes": [
                     "application/json"
                 ],
@@ -209,6 +407,33 @@
                     "type": "string"
                 },
                 "redirectUrl": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreateCategoryRequest": {
+            "type": "object",
+            "properties": {
+                "category_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreateDepartmentRequest": {
+            "type": "object",
+            "properties": {
+                "department_name": {
+                    "type": "string"
+                },
+                "location_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.CreateLocationRequest": {
+            "type": "object",
+            "properties": {
+                "location_name": {
                     "type": "string"
                 }
             }

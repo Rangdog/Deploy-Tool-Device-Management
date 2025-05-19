@@ -9,6 +9,23 @@ definitions:
     - email
     - redirectUrl
     type: object
+  dto.CreateCategoryRequest:
+    properties:
+      category_name:
+        type: string
+    type: object
+  dto.CreateDepartmentRequest:
+    properties:
+      department_name:
+        type: string
+      location_id:
+        type: integer
+    type: object
+  dto.CreateLocationRequest:
+    properties:
+      location_name:
+        type: string
+    type: object
   dto.RefreshRequest:
     properties:
       refresh_token:
@@ -65,7 +82,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Đăng nhập
+      description: Login
       parameters:
       - description: Data
         in: body
@@ -112,7 +129,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Đăng ký user
+      description: Register user
       parameters:
       - description: Data
         in: body
@@ -126,11 +143,146 @@ paths:
       summary: Register user
       tags:
       - auth
+  /api/categories:
+    get:
+      consumes:
+      - application/json
+      description: Get all categories
+      produces:
+      - application/json
+      responses: {}
+      summary: Get all categories
+      tags:
+      - categories
+    post:
+      consumes:
+      - application/json
+      description: Create categories
+      parameters:
+      - description: Data
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateCategoryRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create categories
+      tags:
+      - categories
+  /api/categories/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete category via id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Delete category
+      tags:
+      - categories
+  /api/departments:
+    get:
+      consumes:
+      - application/json
+      description: Get all departments
+      produces:
+      - application/json
+      responses: {}
+      summary: Get all departments
+      tags:
+      - departments
+    post:
+      consumes:
+      - application/json
+      description: Create departments
+      parameters:
+      - description: Data
+        in: body
+        name: department
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateDepartmentRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create departments
+      tags:
+      - departments
+  /api/departments/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete department via id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Delete department
+      tags:
+      - departments
+  /api/locations:
+    get:
+      consumes:
+      - application/json
+      description: Get all location
+      produces:
+      - application/json
+      responses: {}
+      summary: Get all location
+      tags:
+      - locations
+    post:
+      consumes:
+      - application/json
+      description: Create location
+      parameters:
+      - description: Data
+        in: body
+        name: location
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateLocationRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create Location
+      tags:
+      - locations
+  /api/locations/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete location via id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Delete location
+      tags:
+      - locations
   /api/user/{email}:
     delete:
       consumes:
       - application/json
-      description: Delete user via emal
+      description: Delete user via email
       parameters:
       - description: email
         in: path
@@ -165,7 +317,7 @@ paths:
     patch:
       consumes:
       - application/json
-      description: Đặt lại mật khẩu
+      description: reset password
       parameters:
       - description: Data
         in: body
