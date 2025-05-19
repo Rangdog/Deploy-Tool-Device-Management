@@ -506,14 +506,10 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "new_password",
-                "old_password",
                 "token"
             ],
             "properties": {
                 "new_password": {
-                    "type": "string"
-                },
-                "old_password": {
                     "type": "string"
                 },
                 "token": {

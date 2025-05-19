@@ -23,7 +23,6 @@ type UserLoginResponse struct {
 
 type UserRequestResetPassword struct {
 	NewPassword string `json:"new_password"  binding:"required"`
-	OldPassword string `json:"old_password"  binding:"required"`
 	Token       string `json:"token" binding:"required"`
 }
 

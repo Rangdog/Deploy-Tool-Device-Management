@@ -201,7 +201,7 @@ func (h *UserHandler) ResetPassword(c *gin.Context) {
 				log.Error("Happened error when email don't exist. Error", err)
 				pkg.PanicExeption(constant.UnknownError, "Email don't exist")
 			}
-			err = h.service.ResetPassword(user, request.NewPassword, request.OldPassword)
+			err = h.service.ResetPassword(user, request.NewPassword)
 			if err != nil {
 				log.Error("Happened error when resert password. Error", err)
 				pkg.PanicExeption(constant.UnknownError, err.Error())

@@ -13,6 +13,6 @@ func NewAssetsService(repo repository.AssetsRepository) *AssetsService {
 	return &AssetsService{repo: repo}
 }
 
-func (service *AssetsService) Create(assetName string, purchaseDate time.Time, cost float64, owner *int64, warrantExpiry time.Time, status string) {
+func (service *AssetsService) Create(assetName string, purchaseDate time.Time, cost float64, owner *int64, warrantExpiry time.Time, status string, serialNumber string) {
 
 }
