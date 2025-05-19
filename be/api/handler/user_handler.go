@@ -44,7 +44,7 @@ func (h *UserHandler) Register(c *gin.Context) {
 		log.Error("Happened error when saving data to database. Error", err)
 		pkg.PanicExeption(constant.UnknownError, err.Error())
 	}
-	c.JSON(http.StatusCreated, pkg.BuildReponse(constant.Success, ""))
+	c.JSON(http.StatusCreated, pkg.BuildReponseSuccessNoData(http.StatusCreated, constant.Success))
 }
 
 // User godoc
@@ -72,7 +72,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 		"access_token":  accessToken,
 		"refresh_token": refreshToken,
 	}
-	c.JSON(http.StatusOK, pkg.BuildReponse(constant.Success, dataResponese))
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, dataResponese))
 }
 
 func (h *UserHandler) Activate(c *gin.Context) {
@@ -129,12 +129,12 @@ func (h *UserHandler) Refresh(c *gin.Context) {
 
 	if claims, ok := refreshToken.Claims.(jwt.MapClaims); ok && refreshToken.Valid {
 		if !ok {
-			pkg.PanicExeption(constant.Unauthorized)
+			pkg.PanicExeption(constant.Unauthorized, "Invalid refresh token")
 			return
 		}
 		exp, ok := claims["exp"].(float64)
 		if !ok {
-			pkg.PanicExeption(constant.Unauthorized)
+			pkg.PanicExeption(constant.Unauthorized, "Invalid refresh token")
 			return
 		}
 		if int64(exp) < time.Now().Unix() {
@@ -160,7 +160,7 @@ func (h *UserHandler) Refresh(c *gin.Context) {
 		data := map[string]interface{}{
 			"access_token": newAccessTokenString,
 		}
-		c.JSON(http.StatusOK, pkg.BuildReponse(constant.Success, data))
+		c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, data))
 	} else {
 		pkg.PanicExeption(constant.Unauthorized, "invalid refresh token")
 	}
@@ -191,7 +191,7 @@ func (h *UserHandler) ResetPassword(c *gin.Context) {
 		log.Error("Happened error when resert password. Error", err)
 		pkg.PanicExeption(constant.UnknownError, err.Error())
 	}
-	c.JSON(http.StatusOK, pkg.BuildReponse(constant.Success, ""))
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccessNoData(http.StatusOK, constant.Success))
 }
 
 // User godoc
@@ -209,7 +209,10 @@ func (h *UserHandler) Session(c *gin.Context) {
 		log.Error("Happened error when reset password. Error", err)
 		pkg.PanicExeption(constant.Unauthorized, err.Error())
 	}
-	c.JSON(http.StatusOK, pkg.BuildReponse(constant.Success, user))
+	data := map[string]interface{}{
+		"user": user,
+	}
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, data))
 }
 
 // User godoc
@@ -232,7 +235,7 @@ func (h *UserHandler) CheckPasswordReset(c *gin.Context) {
 		log.Error("Happened error when reset password. Error", err)
 		pkg.PanicExeption(constant.UnknownError, err.Error())
 	}
-	c.JSON(http.StatusOK, pkg.BuildReponse(constant.Success, ""))
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccessNoData(http.StatusOK, constant.Success))
 }
 
 // User godoc
@@ -251,7 +254,7 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 		log.Error("Happened error when delete user. Error", err)
 		pkg.PanicExeption(constant.UnknownError, err.Error())
 	}
-	c.JSON(http.StatusOK, pkg.BuildReponse(constant.Success, ""))
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccessNoData(http.StatusOK, constant.Success))
 }
 
 // User godoc
@@ -274,5 +277,5 @@ func (h *UserHandler) Logout(c *gin.Context) {
 		log.Error("Happened error when logout user. Error", err)
 		pkg.PanicExeption(constant.UnknownError, err.Error())
 	}
-	c.JSON(http.StatusOK, pkg.BuildReponse(constant.Success, ""))
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccessNoData(http.StatusOK, constant.Success))
 }

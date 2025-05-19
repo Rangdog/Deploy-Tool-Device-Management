@@ -17,6 +17,7 @@ import (
 
 func AuthMiddleware(secretKey string, session repository.UsersSessionRepository) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		defer pkg.PanicHandler(c)
 		authHeader := c.GetHeader("Authorization")
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
@@ -26,14 +27,14 @@ func AuthMiddleware(secretKey string, session repository.UsersSessionRepository)
 			return []byte(secretKey), nil
 		})
 		if err != nil || !token.Valid {
-			c.JSON(http.StatusUnauthorized, pkg.BuildReponse(constant.Unauthorized, "Access Token expired"))
+			pkg.PanicExeption(constant.Unauthorized, "Access Token expired")
 			c.Abort()
 			return
 		}
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			if exp, ok := claims["exp"].(float64); ok {
 				if int64(exp) < time.Now().Unix() {
-					c.JSON(http.StatusForbidden, pkg.BuildReponse(constant.Unauthorized, "Access Token expired"))
+					pkg.PanicExeption(constant.Unauthorized, "Access Token expired")
 					c.Abort()
 					return
 				}
@@ -50,12 +51,12 @@ func AuthMiddleware(secretKey string, session repository.UsersSessionRepository)
 			userIdConvert, _ := strconv.ParseInt(str, 10, 64)
 
 			if !session.CheckUserInSession(userIdConvert) {
-				c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+				pkg.PanicExeption(constant.Unauthorized, "Unauthorized Access Token")
 				c.Abort()
 				return
 			}
 		} else {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			pkg.PanicExeption(constant.Unauthorized, "Unauthorized Access Token")
 			c.Abort()
 			return
 		}
