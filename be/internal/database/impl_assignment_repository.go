@@ -15,6 +15,10 @@ func NewPostgreSQLAssignmentRepository(db *gorm.DB) repository.AssignmentReposit
 	return &PostgreSQLAssignmentRepository{db: db}
 }
 
-func (r *PostgreSQLAssignmentRepository) Create(*entity.Assignments) (*entity.Assignments, error)
+func (r *PostgreSQLAssignmentRepository) Create(*entity.Assignments) (*entity.Assignments, error) {
+	return nil, nil
+}
 
-func (r *PostgreSQLAssignmentRepository) Update(id int64, userId, assetId *int64, assetBy int64) (*entity.Assignments, error)
+func (r *PostgreSQLAssignmentRepository) Update(id int64, userId, assetId *int64, assetBy int64) (*entity.Assignments, error) {
+	return nil, nil
+}

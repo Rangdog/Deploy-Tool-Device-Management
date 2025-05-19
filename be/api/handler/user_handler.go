@@ -199,7 +199,7 @@ func (h *UserHandler) ResetPassword(c *gin.Context) {
 			user, err := h.service.FindUserByEmail(email)
 			if err != nil {
 				log.Error("Happened error when email don't exist. Error", err)
-				pkg.PanicExeption(constant.UnknownError, err.Error())
+				pkg.PanicExeption(constant.UnknownError, "Email don't exist")
 			}
 			err = h.service.ResetPassword(user, request.NewPassword, request.OldPassword)
 			if err != nil {

@@ -49,3 +49,9 @@ func (r *PostgreSQLUserSessionRepository) FindByUserIdInSession(userId int64) (*
 	}
 	return userSessions, nil
 }
+
+func (r *PostgreSQLUserSessionRepository) CheckTokenWasInVoked(accessToken string) bool {
+	var userSessions = &entity.UsersSessions{}
+	r.db.Model(&entity.UsersSessions{}).Where("access_token = ?", accessToken).First(userSessions)
+	return userSessions.IsRevoked
+}

@@ -121,7 +121,7 @@ func (service *UserService) CheckPasswordReset(email string, redirectUrl string)
 
 	tokenPW := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"email": email,
-		"exp":   time.Now().Add(1 * time.Minute).Unix(),
+		"exp":   time.Now().Add(10 * time.Minute).Unix(),
 	})
 	tokenPWstring, err := tokenPW.SignedString([]byte(config.PasswordSecret))
 	if err != nil {
