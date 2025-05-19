@@ -63,7 +63,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when mapping request from FE.")
 	}
 
-	_, accessToken, refreshToken, err := h.service.Login(user.Email, user.Password)
+	userLogin, accessToken, refreshToken, err := h.service.Login(user.Email, user.Password)
 	if err != nil {
 		log.Error("Happened error when login. Error", err)
 		pkg.PanicExeption(constant.Invalidemailorpassword)
@@ -71,6 +71,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 	dataResponese := map[string]interface{}{
 		"access_token":  accessToken,
 		"refresh_token": refreshToken,
+		"is_active":     userLogin.IsActive,
 	}
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, dataResponese))
 }
@@ -209,10 +210,7 @@ func (h *UserHandler) Session(c *gin.Context) {
 		log.Error("Happened error when reset password. Error", err)
 		pkg.PanicExeption(constant.Unauthorized, err.Error())
 	}
-	data := map[string]interface{}{
-		"user": user,
-	}
-	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, data))
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, user))
 }
 
 // User godoc
