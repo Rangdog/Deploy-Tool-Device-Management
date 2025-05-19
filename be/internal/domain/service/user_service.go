@@ -11,6 +11,7 @@ import (
 	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 type UserService struct {
@@ -127,7 +128,13 @@ func (service *UserService) CheckPasswordReset(email string, redirectUrl string)
 	if err != nil {
 		return err
 	}
-
+	_, err = service.repo.FindByEmail(email)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("email don't register")
+		}
+		return err
+	}
 	body := "Click link to reset password account: <a href='" + redirectUrl + "?token=" + tokenPWstring + "'>reset</a>"
 	err = service.emailService.SendEmail(email, "Reset Password", body)
 	return err
