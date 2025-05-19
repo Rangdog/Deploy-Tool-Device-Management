@@ -9,5 +9,5 @@ type UsersSessions struct {
 	AccessToken  string    `gorm:"type:text"`
 	CreatedAt    time.Time `gorm:"not null" json:"created_at"`
 	ExpiresAt    time.Time `gorm:"not null" json:"expires_at"`
-	IsRevoked    bool      `gorm:"default:false" json:"role_id"`
+	IsRevoked    bool      `gorm:"default:false" json:"is_revoked"`
 }

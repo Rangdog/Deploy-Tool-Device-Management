@@ -56,7 +56,7 @@ func AuthMiddleware(secretKey string, session repository.UsersSessionRepository)
 				return
 			}
 			if session.CheckTokenWasInVoked(tokenString) {
-				pkg.PanicExeption(constant.Unauthorized, "Access Token Invoked")
+				pkg.PanicExeption(constant.Unauthorized, "Access Token was revoked")
 				c.Abort()
 				return
 			}

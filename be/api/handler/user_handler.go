@@ -115,7 +115,7 @@ func (h *UserHandler) Refresh(c *gin.Context) {
 	ok := h.service.CheckRefreshToken(rq.RefreshToken)
 	if !ok {
 		log.Error("Happened error refresh token was invoked")
-		pkg.PanicExeption(constant.Unauthorized, "Refresh token was invoked")
+		pkg.PanicExeption(constant.Unauthorized, "Refresh token was revoked")
 	}
 	refreshToken, err := jwt.Parse(rq.RefreshToken, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
