@@ -37,7 +37,7 @@ func (h *UserHandler) Register(c *gin.Context) {
 	var user dto.UserRegisterRequest
 	if err := c.ShouldBindJSON(&user); err != nil {
 		log.Error("Happened error when mapping request from FE. Error", err)
-		pkg.PanicExeption(constant.UnknownError)
+		pkg.PanicExeption(constant.UnknownError, "Happened error when mapping request from FE.")
 	}
 	_, err := h.service.Register(user.FirstName, user.LastName, user.Password, user.Email, user.RedirectUrl)
 	if err != nil {
@@ -60,13 +60,13 @@ func (h *UserHandler) Login(c *gin.Context) {
 	var user dto.UserLoginRequest
 	if err := c.ShouldBindJSON(&user); err != nil {
 		log.Error("Happened error when mapping request from FE. Error", err)
-		pkg.PanicExeption(constant.InvalidRequest)
+		pkg.PanicExeption(constant.InvalidRequest, "Happened error when mapping request from FE.")
 	}
 
 	_, accessToken, refreshToken, err := h.service.Login(user.Email, user.Password)
 	if err != nil {
 		log.Error("Happened error when login. Error", err)
-		pkg.PanicExeption(constant.Invalidemailorpassword)
+		pkg.PanicExeption(constant.Invalidemailorpassword, "Happened error when login")
 	}
 	dataResponese := map[string]interface{}{
 		"access_token":  accessToken,
@@ -79,18 +79,18 @@ func (h *UserHandler) Activate(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	token, exist := c.GetQuery("token")
 	if !exist {
-		log.Error("Happened error when mapping request from FE. Error: Dont see token in url")
-		pkg.PanicExeption(constant.InvalidRequest)
+		log.Error("Happened error when mapping request from FE. Error: Don't see token in url")
+		pkg.PanicExeption(constant.InvalidRequest, "Don't see token in url")
 	}
 	redirectUrl, exist := c.GetQuery("redirectUrl")
 	if !exist {
-		log.Error("Happened error when mapping request from FE. Error: Dont see token in url")
-		pkg.PanicExeption(constant.InvalidRequest)
+		log.Error("Happened error when mapping request from FE. Error: Don't see token in url")
+		pkg.PanicExeption(constant.InvalidRequest, "Error: Don't see token in url")
 	}
 	err := h.service.Activate(token)
 	if err != nil {
 		log.Error("Happened error when activate. Error", err)
-		pkg.PanicExeption(constant.UnknownError)
+		pkg.PanicExeption(constant.UnknownError, "Happened error when activate")
 	}
 	c.Redirect(http.StatusFound, redirectUrl)
 }
@@ -108,7 +108,7 @@ func (h *UserHandler) Refresh(c *gin.Context) {
 	var rq dto.RefreshRequest
 	if err := c.ShouldBindJSON(&rq); err != nil {
 		log.Error("Happened error when mapping request from FE. Error", err)
-		pkg.PanicExeption(constant.InvalidRequest)
+		pkg.PanicExeption(constant.InvalidRequest, "Happened error when mapping request from FE")
 	}
 
 	ok := h.service.CheckRefreshToken(rq.RefreshToken)
@@ -123,7 +123,7 @@ func (h *UserHandler) Refresh(c *gin.Context) {
 		return []byte(config.RefreshSecret), nil
 	})
 	if err != nil || !refreshToken.Valid {
-		pkg.PanicExeption(constant.Unauthorized)
+		pkg.PanicExeption(constant.Unauthorized, "Invalid refresh token")
 		return
 	}
 
@@ -150,12 +150,12 @@ func (h *UserHandler) Refresh(c *gin.Context) {
 		})
 
 		if err != nil {
-			pkg.PanicExeption(constant.UnknownError)
+			pkg.PanicExeption(constant.UnknownError, "Happened error when create access token")
 		}
 
 		newAccessTokenString, err := newAccessToken.SignedString([]byte(config.AccessSecret))
 		if err != nil {
-			pkg.PanicExeption(constant.UnknownError)
+			pkg.PanicExeption(constant.UnknownError, "Happened error when create access token")
 		}
 		data := map[string]interface{}{
 			"access_token": newAccessTokenString,
@@ -179,7 +179,7 @@ func (h *UserHandler) ResetPassword(c *gin.Context) {
 	var request dto.UserRequestResetPassword
 	if err := c.ShouldBindJSON(&request); err != nil {
 		log.Error("Happened error when mapping request from FE. Error", err)
-		pkg.PanicExeption(constant.InvalidRequest)
+		pkg.PanicExeption(constant.InvalidRequest, "Happened error when mapping request from FE. Error")
 	}
 	user, err := h.service.FindUserByEmail(request.Email)
 	if err != nil {

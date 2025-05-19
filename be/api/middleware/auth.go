@@ -44,7 +44,7 @@ func AuthMiddleware(secretKey string, session repository.UsersSessionRepository)
 			c.Set("userID", claims["userId"])
 			userID, exists := c.Get("userID")
 			if !exists {
-				pkg.PanicExeption(constant.UnknownError)
+				pkg.PanicExeption(constant.UnknownError, "Happened error add auth")
 			}
 			str := fmt.Sprint(userID)
 
