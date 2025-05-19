@@ -66,7 +66,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 	_, accessToken, refreshToken, err := h.service.Login(user.Email, user.Password)
 	if err != nil {
 		log.Error("Happened error when login. Error", err)
-		pkg.PanicExeption(constant.Invalidemailorpassword, "Happened error when login")
+		pkg.PanicExeption(constant.Invalidemailorpassword)
 	}
 	dataResponese := map[string]interface{}{
 		"access_token":  accessToken,
