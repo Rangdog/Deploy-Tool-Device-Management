@@ -132,7 +132,7 @@ func (service *UserService) CheckPasswordReset(email string, redirectUrl string)
 		return err
 	}
 	body := "Click link to reset password account: <a href='" + redirectUrl + "?token=" + tokenPWstring + "'>reset</a>"
-	err = service.emailService.SendEmail(email, "Reset Password", body)
+	go service.emailService.SendEmail(email, "Reset Password", body)
 	return err
 }
 
