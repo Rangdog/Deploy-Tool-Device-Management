@@ -505,18 +505,18 @@ const docTemplate = `{
         "dto.UserRequestResetPassword": {
             "type": "object",
             "required": [
-                "email",
                 "new_password",
-                "old_password"
+                "old_password",
+                "token"
             ],
             "properties": {
-                "email": {
-                    "type": "string"
-                },
                 "new_password": {
                     "type": "string"
                 },
                 "old_password": {
+                    "type": "string"
+                },
+                "token": {
                     "type": "string"
                 }
             }

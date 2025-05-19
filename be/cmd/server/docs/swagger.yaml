@@ -64,16 +64,16 @@ definitions:
     type: object
   dto.UserRequestResetPassword:
     properties:
-      email:
-        type: string
       new_password:
         type: string
       old_password:
         type: string
+      token:
+        type: string
     required:
-    - email
     - new_password
     - old_password
+    - token
     type: object
 info:
   contact: {}
