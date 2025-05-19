@@ -124,15 +124,11 @@ func (h *UserHandler) Refresh(c *gin.Context) {
 		return []byte(config.RefreshSecret), nil
 	})
 	if err != nil || !refreshToken.Valid {
-		pkg.PanicExeption(constant.Unauthorized, "Invalid refresh token")
+		pkg.PanicExeption(constant.Unauthorized, "Refresh token was expired")
 		return
 	}
 
 	if claims, ok := refreshToken.Claims.(jwt.MapClaims); ok && refreshToken.Valid {
-		if !ok {
-			pkg.PanicExeption(constant.Unauthorized, "Invalid refresh token")
-			return
-		}
 		exp, ok := claims["exp"].(float64)
 		if !ok {
 			pkg.PanicExeption(constant.Unauthorized, "Invalid refresh token")
