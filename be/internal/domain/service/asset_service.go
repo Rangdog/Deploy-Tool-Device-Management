@@ -19,7 +19,7 @@ func NewAssetsService(repo repository.AssetsRepository, assertLogRepository repo
 	return &AssetsService{repo: repo, assertLogRepository: assertLogRepository, roleRepository: roleRepository}
 }
 
-func (service *AssetsService) Create(userId int64, assetName string, purchaseDate time.Time, cost float64, owner *int64, warrantExpiry time.Time, status string, serialNumber string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, categoryId int64, departmentId *int64) (*entity.Assets, error) {
+func (service *AssetsService) Create(userId int64, assetName string, purchaseDate time.Time, cost float64, owner *int64, warrantExpiry time.Time, serialNumber string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, categoryId int64, departmentId *int64) (*entity.Assets, error) {
 	imgFile, err := image.Open()
 	if err != nil {
 		return nil, fmt.Errorf("cannot open image: %w", err)
@@ -49,7 +49,7 @@ func (service *AssetsService) Create(userId int64, assetName string, purchaseDat
 		Cost:           cost,
 		Owner:          owner,
 		WarrantExpiry:  warrantExpiry,
-		Status:         status,
+		Status:         "New",
 		SerialNumber:   serialNumber,
 		ImageUpload:    &imageUrl,
 		FileAttachment: &fileUrl,

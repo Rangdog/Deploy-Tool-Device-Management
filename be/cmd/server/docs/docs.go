@@ -79,13 +79,6 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Status",
-                        "name": "status",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
                         "description": "Serial Number",
                         "name": "serial_number",
                         "in": "formData",

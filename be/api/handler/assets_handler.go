@@ -32,7 +32,6 @@ func NewAssetsHandler(service *service.AssetsService) *AssetsHandler {
 // @Param cost formData number true "Cost"
 // @Param owner formData int64 false "Owner ID"
 // @Param warrant_expiry formData string true "Warranty Expiry (RFC3339 format, e.g. 2023-12-31T23:59:59Z)"
-// @Param status formData string true "Status"
 // @Param serial_number formData string true "Serial Number"
 // @Param category_id formData int64 true "Category ID"
 // @Param department_id formData int64 false "Department ID"
@@ -49,7 +48,6 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 	costStr := c.PostForm("cost")
 	ownerStr := c.PostForm("owner")
 	warrantExpiryStr := c.PostForm("warrant_expiry")
-	status := c.PostForm("status")
 	serialNumber := c.PostForm("serial_number")
 	categoryIdStr := c.PostForm("category_id")
 	departmentIdStr := c.PostForm("department_id")
@@ -111,7 +109,6 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 		cost,
 		owner,
 		warrantExpiry,
-		status,
 		serialNumber,
 		image,
 		file,

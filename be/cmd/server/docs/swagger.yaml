@@ -122,11 +122,6 @@ paths:
         name: warrant_expiry
         required: true
         type: string
-      - description: Status
-        in: formData
-        name: status
-        required: true
-        type: string
       - description: Serial Number
         in: formData
         name: serial_number
