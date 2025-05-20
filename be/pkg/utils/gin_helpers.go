@@ -51,7 +51,7 @@ func GenerateTokens(userId int64, email string) (string, string, error) {
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userId": userId,
 		"email":  email,
-		"exp":    time.Now().Add(1 * time.Minute).Unix(),
+		"exp":    time.Now().Add(10 * time.Hour).Unix(),
 	})
 	accessString, err := accessToken.SignedString([]byte(config.AccessSecret))
 	if err != nil {
@@ -62,7 +62,7 @@ func GenerateTokens(userId int64, email string) (string, string, error) {
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userId": userId,
 		"email":  email,
-		"exp":    time.Now().Add(5 * time.Minute).Unix(),
+		"exp":    time.Now().Add(50 * time.Hour).Unix(),
 	})
 	refreshString, err := refreshToken.SignedString([]byte(config.RefreshSecret))
 	if err != nil {
