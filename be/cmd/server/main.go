@@ -23,9 +23,10 @@ func main() {
 	locationRepository := database.NewPostgreSQLLocationRepository(db)
 	categoriesRepository := database.NewPostgreSQLCategoriesRepository(db)
 	departmentRepository := database.NewPostgreSQLDepartmentsRepository(db)
-
+	assetsRepository := database.NewPostgreSQLAssetsRepository(db)
+	assetsLogRepository := database.NewPostgreSQLAssetsLogRepository(db)
+	roleRepository := database.NewPostgreSQLRoleRepository(db)
 	emailService := service.NewEmailService(config.SmtpPasswd)
-
 	//User
 	userService := service.NewUserService(userRepository, emailService, userSessionRepository)
 	userHandler := handler.NewUserHandler(userService)
@@ -38,6 +39,9 @@ func main() {
 	//Department
 	departmentService := service.NewDepartmentsService(departmentRepository)
 	departmentHandler := handler.NewDepartmentsHandler(departmentService)
+	//Assets
+	assetsService := service.NewAssetsService(assetsRepository, assetsLogRepository, roleRepository)
+	assetsHandler := handler.NewAssetsHandler(assetsService)
 
 	docs.SwaggerInfo.Title = "API Tool device manage"
 	docs.SwaggerInfo.Description = "App Tool device manage"
@@ -47,7 +51,7 @@ func main() {
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
 	r := gin.Default()
-	api.SetupRoutes(r, userHandler, locationHandler, categoriesHandler, departmentHandler, userSessionRepository)
+	api.SetupRoutes(r, userHandler, locationHandler, categoriesHandler, departmentHandler, assetsHandler, userSessionRepository)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	if err := r.Run(config.Port); err != nil {

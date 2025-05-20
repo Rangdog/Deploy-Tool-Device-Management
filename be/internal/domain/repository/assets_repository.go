@@ -7,4 +7,5 @@ type AssetsRepository interface {
 	GetAssetById(id int64) (*entity.Assets, error)
 	Delete(id int64) error
 	UpdateAssetLifeCycleStage(id int64, status string) (*entity.Assets, error)
+	GetAllAsset() ([]*entity.Assets, error)
 }

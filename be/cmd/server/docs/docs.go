@@ -15,6 +15,138 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/assets": {
+            "get": {
+                "description": "Get all assets",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "assets"
+                ],
+                "summary": "Get all assets",
+                "responses": {}
+            },
+            "post": {
+                "description": "Create assets",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "assets"
+                ],
+                "summary": "Create assets",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Asset Name",
+                        "name": "asset_name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Purchase Date (RFC3339 format, e.g. 2023-04-15T10:00:00Z)",
+                        "name": "purchase_date",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "Cost",
+                        "name": "cost",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Owner ID",
+                        "name": "owner",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Warranty Expiry (RFC3339 format, e.g. 2023-12-31T23:59:59Z)",
+                        "name": "warrant_expiry",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Status",
+                        "name": "status",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Serial Number",
+                        "name": "serial_number",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Category ID",
+                        "name": "category_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Department ID",
+                        "name": "department_id",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "File to upload",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Image to upload",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/assets/{id}": {
+            "get": {
+                "description": "Get  assets",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "assets"
+                ],
+                "summary": "Get  assets",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/api/auth/login": {
             "post": {
                 "description": "Login",
@@ -424,6 +556,9 @@ const docTemplate = `{
         },
         "dto.CreateCategoryRequest": {
             "type": "object",
+            "required": [
+                "category_name"
+            ],
             "properties": {
                 "category_name": {
                     "type": "string"
@@ -432,6 +567,10 @@ const docTemplate = `{
         },
         "dto.CreateDepartmentRequest": {
             "type": "object",
+            "required": [
+                "department_name",
+                "location_id"
+            ],
             "properties": {
                 "department_name": {
                     "type": "string"
@@ -443,6 +582,9 @@ const docTemplate = `{
         },
         "dto.CreateLocationRequest": {
             "type": "object",
+            "required": [
+                "location_name"
+            ],
             "properties": {
                 "location_name": {
                     "type": "string"

@@ -5,17 +5,21 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	storage_go "github.com/supabase-community/storage-go"
 )
 
 var (
-	Port              string
-	AccessSecret      string
-	RefreshSecret     string
-	PasswordSecret    string
-	SmtpPasswd        string
-	BASE_URL_FRONTEND string
-	BASE_URL_BACKEND  string
-	DB_DNS            string
+	Port                 string
+	AccessSecret         string
+	RefreshSecret        string
+	PasswordSecret       string
+	SmtpPasswd           string
+	SupabaseKey          string
+	SUPABASE_PROJECT_REF string
+	BASE_URL_FRONTEND    string
+	BASE_URL_BACKEND     string
+	DB_DNS               string
+	StorageClient        *storage_go.Client
 )
 
 func LoadEnv() {
@@ -28,7 +32,10 @@ func LoadEnv() {
 	RefreshSecret = os.Getenv("refreshSecret")
 	PasswordSecret = os.Getenv("PasswordSecret")
 	SmtpPasswd = os.Getenv("SMTP_PASSWORD")
+	SupabaseKey = os.Getenv("SupabaseKey")
+	SUPABASE_PROJECT_REF = os.Getenv("SUPABASE_PROJECT_REF")
 	BASE_URL_FRONTEND = os.Getenv("BASE_URL_FRONTEND")
 	BASE_URL_BACKEND = os.Getenv("BASE_URL_BACKEND")
 	DB_DNS = os.Getenv("DATABASE_URL")
+	StorageClient = storage_go.NewClient("https://mvfitrngobsxryjosznw.supabase.co/storage/v1", SupabaseKey, nil)
 }

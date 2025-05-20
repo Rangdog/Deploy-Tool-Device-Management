@@ -23,7 +23,7 @@ func (r *PostgreSQLAssetsRepository) Create(assets *entity.Assets) (*entity.Asse
 
 func (r *PostgreSQLAssetsRepository) GetAssetById(id int64) (*entity.Assets, error) {
 	asset := &entity.Assets{}
-	result := r.db.Model(&entity.Assets{}).Where("id = ?", id).First(asset)
+	result := r.db.Model(&entity.Assets{}).Where("id = ?", id).Preload("Category").Preload("Department").First(asset)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, errors.New("can't find record this id")
@@ -50,4 +50,13 @@ func (r *PostgreSQLAssetsRepository) UpdateAssetLifeCycleStage(id int64, status 
 	}
 
 	return &asset, nil
+}
+
+func (r *PostgreSQLAssetsRepository) GetAllAsset() ([]*entity.Assets, error) {
+	assets := []*entity.Assets{}
+	result := r.db.Model(entity.Assets{}).Preload("Category").Preload("Department").Find(&assets)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return assets, nil
 }

@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandler *handler.LocationHandler, CategoriesHandler *handler.CategoriesHandler, DepartmentsHandler *handler.DepartmentsHandler, session repository.UsersSessionRepository) {
+func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandler *handler.LocationHandler, CategoriesHandler *handler.CategoriesHandler, DepartmentsHandler *handler.DepartmentsHandler, AssetsHandler *handler.AssetsHandler, session repository.UsersSessionRepository) {
 	//users
 	r.Use(middleware.CORSMiddleware())
 	api := r.Group("/api")
@@ -39,4 +39,8 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandle
 	api.GET("/departments", DepartmentsHandler.GetAll)
 	api.DELETE("/departments/:id", DepartmentsHandler.Delete)
 
+	//Assets
+	api.POST("/assets", AssetsHandler.Create)
+	api.GET("/assets/:id", AssetsHandler.GetAssetById)
+	api.GET("/assets", AssetsHandler.GetAllAsset)
 }
