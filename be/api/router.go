@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandler *handler.LocationHandler, CategoriesHandler *handler.CategoriesHandler, DepartmentsHandler *handler.DepartmentsHandler, AssetsHandler *handler.AssetsHandler, session repository.UsersSessionRepository) {
+func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandler *handler.LocationHandler, CategoriesHandler *handler.CategoriesHandler, DepartmentsHandler *handler.DepartmentsHandler, AssetsHandler *handler.AssetsHandler, RoleHandler *handler.RoleHandler, session repository.UsersSessionRepository) {
 	//users
 	r.Use(middleware.CORSMiddleware())
 	api := r.Group("/api")
@@ -20,10 +20,14 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandle
 	api.POST("/user/forget-password", userHandler.CheckPasswordReset)
 	api.PATCH("/user/password-reset", userHandler.ResetPassword)
 	api.DELETE("/user/:email", userHandler.DeleteUser)
+
 	api.Use(middleware.AuthMiddleware(config.AccessSecret, session))
+
 	api.GET("/user/session", userHandler.Session)
 	api.POST("/auth/logout", userHandler.Logout)
-
+	api.GET("/users", userHandler.GetAllUser)
+	api.PATCH("users/information", userHandler.UpdateInformationUser)
+	api.PATCH("users/role", userHandler.UpdateRoleUser)
 	//Locations
 	api.POST("/locations", LocationHandler.Create)
 	api.GET("/locations", LocationHandler.GetAll)
@@ -43,4 +47,9 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandle
 	api.POST("/assets", AssetsHandler.Create)
 	api.GET("/assets/:id", AssetsHandler.GetAssetById)
 	api.GET("/assets", AssetsHandler.GetAllAsset)
+	api.PUT("/assets/:id", AssetsHandler.Update)
+	api.DELETE("/assets/:id", AssetsHandler.DeleteAsset)
+
+	//Roles
+	api.GET("/roles", RoleHandler.GetAllRole)
 }

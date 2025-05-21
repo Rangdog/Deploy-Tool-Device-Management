@@ -15,7 +15,7 @@ func NewPostgreSQLAssetsLogRepository(db *gorm.DB) repository.AssetsLogRepositor
 	return &PostgreSQLAssetsLogrepository{db: db}
 }
 
-func (r *PostgreSQLAssetsLogrepository) Create(assetsLog *entity.AssetLog) (*entity.AssetLog, error) {
-	result := r.db.Create(assetsLog)
+func (r *PostgreSQLAssetsLogrepository) Create(assetsLog *entity.AssetLog, tx *gorm.DB) (*entity.AssetLog, error) {
+	result := tx.Create(assetsLog)
 	return assetsLog, result.Error
 }

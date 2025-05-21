@@ -297,3 +297,65 @@ func (h *UserHandler) Logout(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccessNoData(http.StatusOK, constant.Success))
 }
+
+// User godoc
+// @Summary      Get all user
+// @Description   Get all user
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Router       /api/users [GET]
+func (h *UserHandler) GetAllUser(c *gin.Context) {
+	defer pkg.PanicHandler(c)
+	// userId := utils.GetUserIdFromContext(c)
+	users := h.service.GetAllUser()
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, users))
+}
+
+// User godoc
+// @Summary      Update Information
+// @Description   Update Information
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        Information   body    dto.UpdateInformationUserRequest   true  "Data"
+// @Router       /api/user/information [PATCH]
+func (h *UserHandler) UpdateInformationUser(c *gin.Context) {
+	defer pkg.PanicHandler(c)
+	userId := utils.GetUserIdFromContext(c)
+	var request dto.UpdateInformationUserRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Error("Happened error when mapping request from FE. Error", err)
+		pkg.PanicExeption(constant.InvalidRequest)
+	}
+	userUpdated, err := h.service.UpdateInformation(userId, request.FirstName, request.LastName)
+	if err != nil {
+		log.Error("Happened error when update information user. Error", err)
+		pkg.PanicExeption(constant.UnknownError, err.Error())
+	}
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, &userUpdated))
+}
+
+// User godoc
+// @Summary      Update Role
+// @Description   Update Role
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        Role   body    dto.UpdateRoleUserRequest   true  "Data"
+// @Router       /api/user/role [PATCH]
+func (h *UserHandler) UpdateRoleUser(c *gin.Context) {
+	defer pkg.PanicHandler(c)
+	userId := utils.GetUserIdFromContext(c)
+	var request dto.UpdateRoleUserRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Error("Happened error when mapping request from FE. Error", err)
+		pkg.PanicExeption(constant.InvalidRequest)
+	}
+	userUpdated, err := h.service.UpdateRole(userId, request.RoleTitle)
+	if err != nil {
+		log.Error("Happened error when update role user. Error", err)
+		pkg.PanicExeption(constant.UnknownError, err.Error())
+	}
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, &userUpdated))
+}

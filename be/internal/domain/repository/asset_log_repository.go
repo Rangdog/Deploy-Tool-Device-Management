@@ -1,7 +1,11 @@
 package repository
 
-import "BE_Manage_device/internal/domain/entity"
+import (
+	"BE_Manage_device/internal/domain/entity"
+
+	"gorm.io/gorm"
+)
 
 type AssetsLogRepository interface {
-	Create(*entity.AssetLog) (*entity.AssetLog, error)
+	Create(assetsLog *entity.AssetLog, tx *gorm.DB) (*entity.AssetLog, error)
 }

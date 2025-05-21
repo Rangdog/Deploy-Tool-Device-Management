@@ -1,7 +1,11 @@
 package repository
 
-import "BE_Manage_device/internal/domain/entity"
+import (
+	"BE_Manage_device/internal/domain/entity"
 
-type UserRBAC interface {
-	GetAllUserByRoleId(roleId int64) []*entity.Users
+	"gorm.io/gorm"
+)
+
+type UserRBACRepository interface {
+	Create(userRBAC *entity.UserRbac, tx *gorm.DB) error
 }

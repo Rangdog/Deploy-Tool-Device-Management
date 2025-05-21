@@ -77,3 +77,38 @@ func (r *PostgreSQLUserRepository) DeleteUser(email string) error {
 func (r *PostgreSQLUserRepository) GetDB() *gorm.DB {
 	return r.db
 }
+
+func (r *PostgreSQLUserRepository) GetAllUser() []*entity.Users {
+	var users = []*entity.Users{}
+	result := r.db.Model(entity.Users{}).Preload("Role").Find(&users)
+	if result.Error != nil {
+		return nil
+	}
+	return users
+}
+
+func (r *PostgreSQLUserRepository) UpdateUser(user *entity.Users) (*entity.Users, error) {
+	var userUpdate = entity.Users{}
+	updates := map[string]interface{}{}
+	if user.FirstName != "" {
+		updates["first_name"] = user.FirstName
+	}
+	if user.LastName != "" {
+		updates["last_name"] = user.LastName
+	}
+	if user.RoleId != 0 {
+		updates["role_id"] = user.RoleId
+	}
+	err := r.db.Model(&userUpdate).Where("id = ?", user.Id).Updates(updates).Error
+	if err != nil {
+		return nil, err
+	}
+
+	// Trả về bản ghi sau khi cập nhật (tuỳ bạn muốn lấy lại hay không)
+	err = r.db.First(&userUpdate, user.Id).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &userUpdate, nil
+}

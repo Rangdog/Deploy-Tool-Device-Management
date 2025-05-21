@@ -40,6 +40,23 @@ definitions:
     required:
     - refresh_token
     type: object
+  dto.UpdateInformationUserRequest:
+    properties:
+      first_name:
+        type: string
+      last_name:
+        type: string
+    required:
+    - first_name
+    - last_name
+    type: object
+  dto.UpdateRoleUserRequest:
+    properties:
+      role_title:
+        type: string
+    required:
+    - role_title
+    type: object
   dto.UserLoginRequest:
     properties:
       email:
@@ -135,6 +152,7 @@ paths:
       - description: Department ID
         in: formData
         name: department_id
+        required: true
         type: integer
       - description: File to upload
         in: formData
@@ -152,11 +170,81 @@ paths:
       summary: Create assets
       tags:
       - assets
+    put:
+      consumes:
+      - multipart/form-data
+      description: Update assets
+      parameters:
+      - description: Asset Name
+        in: formData
+        name: asset_name
+        required: true
+        type: string
+      - description: Purchase Date (RFC3339 format, e.g. 2023-04-15T10:00:00Z)
+        in: formData
+        name: purchase_date
+        required: true
+        type: string
+      - description: Cost
+        in: formData
+        name: cost
+        required: true
+        type: number
+      - description: Owner ID
+        in: formData
+        name: owner
+        type: integer
+      - description: Warranty Expiry (RFC3339 format, e.g. 2023-12-31T23:59:59Z)
+        in: formData
+        name: warrant_expiry
+        required: true
+        type: string
+      - description: Maintenance (RFC3339 format, e.g. 2023-12-31T23:59:59Z)
+        in: formData
+        name: maintenance
+        required: true
+        type: string
+      - description: Serial Number
+        in: formData
+        name: serial_number
+        required: true
+        type: string
+      - description: Serial Number
+        in: formData
+        name: status
+        required: true
+        type: string
+      - description: Category ID
+        in: formData
+        name: category_id
+        required: true
+        type: integer
+      - description: Department ID
+        in: formData
+        name: department_id
+        required: true
+        type: integer
+      - description: File to upload
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: Image to upload
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses: {}
+      summary: Update assets
+      tags:
+      - assets
   /api/assets/{id}:
-    get:
+    delete:
       consumes:
       - application/json
-      description: Get  assets
+      description: Delete assets
       parameters:
       - description: id
         in: path
@@ -166,7 +254,23 @@ paths:
       produces:
       - application/json
       responses: {}
-      summary: Get  assets
+      summary: Delete assets
+      tags:
+      - assets
+    get:
+      consumes:
+      - application/json
+      description: Get assets
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Get assets
       tags:
       - assets
   /api/auth/login:
@@ -369,6 +473,17 @@ paths:
       summary: Delete location
       tags:
       - locations
+  /api/roles:
+    get:
+      consumes:
+      - application/json
+      description: GetRole
+      produces:
+      - application/json
+      responses: {}
+      summary: GetRole
+      tags:
+      - users
   /api/user/{email}:
     delete:
       consumes:
@@ -404,6 +519,24 @@ paths:
       summary: Email reset password
       tags:
       - users
+  /api/user/information:
+    patch:
+      consumes:
+      - application/json
+      description: Update Information
+      parameters:
+      - description: Data
+        in: body
+        name: Information
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateInformationUserRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: Update Information
+      tags:
+      - users
   /api/user/password-reset:
     patch:
       consumes:
@@ -422,6 +555,24 @@ paths:
       summary: Password-reset
       tags:
       - users
+  /api/user/role:
+    patch:
+      consumes:
+      - application/json
+      description: Update Role
+      parameters:
+      - description: Data
+        in: body
+        name: Role
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateRoleUserRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: Update Role
+      tags:
+      - users
   /api/user/session:
     get:
       consumes:
@@ -431,6 +582,17 @@ paths:
       - application/json
       responses: {}
       summary: Get session
+      tags:
+      - users
+  /api/users:
+    get:
+      consumes:
+      - application/json
+      description: Get all user
+      produces:
+      - application/json
+      responses: {}
+      summary: Get all user
       tags:
       - users
 swagger: "2.0"

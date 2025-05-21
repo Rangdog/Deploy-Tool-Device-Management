@@ -10,4 +10,6 @@ type Users struct {
 	Token     string `json:"-"`
 	IsActive  bool   `json:"is_activate"`
 	CompanyId int64  `json:"-"`
+
+	Role Roles `gorm:"foreignKey:RoleId;references:Id"`
 }

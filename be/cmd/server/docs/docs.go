@@ -30,6 +30,105 @@ const docTemplate = `{
                 "summary": "Get all assets",
                 "responses": {}
             },
+            "put": {
+                "description": "Update assets",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "assets"
+                ],
+                "summary": "Update assets",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Asset Name",
+                        "name": "asset_name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Purchase Date (RFC3339 format, e.g. 2023-04-15T10:00:00Z)",
+                        "name": "purchase_date",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "Cost",
+                        "name": "cost",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Owner ID",
+                        "name": "owner",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Warranty Expiry (RFC3339 format, e.g. 2023-12-31T23:59:59Z)",
+                        "name": "warrant_expiry",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Maintenance (RFC3339 format, e.g. 2023-12-31T23:59:59Z)",
+                        "name": "maintenance",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Serial Number",
+                        "name": "serial_number",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Serial Number",
+                        "name": "status",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Category ID",
+                        "name": "category_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Department ID",
+                        "name": "department_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "File to upload",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Image to upload",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
             "post": {
                 "description": "Create assets",
                 "consumes": [
@@ -95,7 +194,8 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "Department ID",
                         "name": "department_id",
-                        "in": "formData"
+                        "in": "formData",
+                        "required": true
                     },
                     {
                         "type": "file",
@@ -117,7 +217,7 @@ const docTemplate = `{
         },
         "/api/assets/{id}": {
             "get": {
-                "description": "Get  assets",
+                "description": "Get assets",
                 "consumes": [
                     "application/json"
                 ],
@@ -127,7 +227,30 @@ const docTemplate = `{
                 "tags": [
                     "assets"
                 ],
-                "summary": "Get  assets",
+                "summary": "Get assets",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "delete": {
+                "description": "Delete assets",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "assets"
+                ],
+                "summary": "Delete assets",
                 "parameters": [
                     {
                         "type": "string",
@@ -435,6 +558,22 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/api/roles": {
+            "get": {
+                "description": "GetRole",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "GetRole",
+                "responses": {}
+            }
+        },
         "/api/user/forget-password": {
             "post": {
                 "description": "Email reset password",
@@ -462,6 +601,33 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/api/user/information": {
+            "patch": {
+                "description": "Update Information",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Update Information",
+                "parameters": [
+                    {
+                        "description": "Data",
+                        "name": "Information",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateInformationUserRequest"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/api/user/password-reset": {
             "patch": {
                 "description": "reset password",
@@ -483,6 +649,33 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/dto.UserRequestResetPassword"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/user/role": {
+            "patch": {
+                "description": "Update Role",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Update Role",
+                "parameters": [
+                    {
+                        "description": "Data",
+                        "name": "Role",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateRoleUserRequest"
                         }
                     }
                 ],
@@ -527,6 +720,22 @@ const docTemplate = `{
                         "required": true
                     }
                 ],
+                "responses": {}
+            }
+        },
+        "/api/users": {
+            "get": {
+                "description": "Get all user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get all user",
                 "responses": {}
             }
         }
@@ -591,6 +800,32 @@ const docTemplate = `{
             ],
             "properties": {
                 "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateInformationUserRequest": {
+            "type": "object",
+            "required": [
+                "first_name",
+                "last_name"
+            ],
+            "properties": {
+                "first_name": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateRoleUserRequest": {
+            "type": "object",
+            "required": [
+                "role_title"
+            ],
+            "properties": {
+                "role_title": {
                     "type": "string"
                 }
             }

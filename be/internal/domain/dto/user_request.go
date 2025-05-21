@@ -38,3 +38,12 @@ type DeleteUserRequest struct {
 type RefreshRequest struct {
 	RefreshToken string `json:"refresh_token" binding:"required"`
 }
+
+type UpdateInformationUserRequest struct {
+	FirstName string `json:"first_name" binding:"required"`
+	LastName  string `json:"last_name" binding:"required"`
+}
+
+type UpdateRoleUserRequest struct {
+	RoleTitle string `json:"role_title" binding:"required"`
+}

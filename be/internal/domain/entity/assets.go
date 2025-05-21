@@ -9,7 +9,7 @@ type Assets struct {
 	AssetName           string     `json:"asset_name"`
 	PurchaseDate        time.Time  `json:"purchase_date"`
 	Cost                float64    `json:"cost"`
-	Owner               *int64     `json:"Owner"`
+	Owner               *int64     `json:"owner"`
 	WarrantExpiry       time.Time  `json:"warrant_expiry"`
 	Status              string     `json:"status"`
 	SerialNumber        string     `json:"serial_number"`
@@ -17,8 +17,9 @@ type Assets struct {
 	ImageUpload         *string    `json:"image_upload"`
 	ScheduleMaintenance *time.Time `json:"maintenance"`
 	CategoryId          int64      `json:"category_id"`
-	DepartmentId        *int64     `json:"department_id"`
+	DepartmentId        int64      `json:"department_id"`
 
 	Category   Categories  `gorm:"foreignKey:CategoryId;references:Id"`
 	Department Departments `gorm:"foreignKey:DepartmentId;references:Id"`
+	OnwerUser  *Users      `gorm:"foreignKey:Owner;references:Id"`
 }

@@ -15,4 +15,6 @@ type UserRepository interface {
 	FindByUserId(userId int64) (*entity.Users, error)
 	DeleteUser(email string) error
 	GetDB() *gorm.DB
+	GetAllUser() []*entity.Users
+	UpdateUser(user *entity.Users) (*entity.Users, error)
 }

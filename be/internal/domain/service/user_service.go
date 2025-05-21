@@ -18,10 +18,11 @@ type UserService struct {
 	repo            repository.UserRepository
 	emailService    *EmailService
 	userSessionRepo repository.UsersSessionRepository
+	roleRepository  repository.RoleRepository
 }
 
-func NewUserService(repo repository.UserRepository, emailService *EmailService, userSessionRepo repository.UsersSessionRepository) *UserService {
-	return &UserService{repo: repo, emailService: emailService, userSessionRepo: userSessionRepo}
+func NewUserService(repo repository.UserRepository, emailService *EmailService, userSessionRepo repository.UsersSessionRepository, roleRepository repository.RoleRepository) *UserService {
+	return &UserService{repo: repo, emailService: emailService, userSessionRepo: userSessionRepo, roleRepository: roleRepository}
 }
 
 func (service *UserService) Register(firstName, lastName, password, email, redirectUrl string) (*entity.Users, error) {
@@ -174,4 +175,31 @@ func (service *UserService) FindSessionById(userId int64) (*entity.UsersSessions
 func (service *UserService) UpdateInvoked(userSession entity.UsersSessions) error {
 	err := service.userSessionRepo.UpdateIsRevoked(&userSession)
 	return err
+}
+
+func (service *UserService) GetAllUser() []*entity.Users {
+	users := service.repo.GetAllUser()
+	return users
+}
+
+func (service *UserService) UpdateInformation(id int64, firstName, lastName string) (*entity.Users, error) {
+	user := entity.Users{Id: id, FirstName: firstName, LastName: lastName}
+	userUpdated, err := service.repo.UpdateUser(&user)
+	if err != nil {
+		return nil, err
+	}
+	return userUpdated, nil
+}
+
+func (service *UserService) UpdateRole(id int64, roleTitle string) (*entity.Users, error) {
+	roles := service.roleRepository.GetRoleByTile(roleTitle)
+	if roles == nil {
+		return nil, errors.New("someming went  rong ")
+	}
+	user := entity.Users{Id: id, RoleId: roles.Id}
+	userUpdated, err := service.repo.UpdateUser(&user)
+	if err != nil {
+		return nil, err
+	}
+	return userUpdated, nil
 }
