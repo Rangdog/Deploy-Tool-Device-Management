@@ -7,9 +7,9 @@ import (
 )
 
 type AssignmentFilter struct {
-	EmailAssigned *string `form:"email_assigned" json:"email_assigned"`
-	EmailAssign   *string `form:"email_assign" json:"email_assign"`
-	AssetName     *string `form:"status" json:"asset_name"`
+	EmailAssigned *string `form:"emailAssigned" json:"emailAssigned"`
+	EmailAssign   *string `form:"emailAssign" json:"emailAssign"`
+	AssetName     *string `form:"status" json:"status"`
 	Page          int     `form:"page" json:"page"`
 	Limit         int     `form:"limit" json:"limit"`
 }
@@ -33,5 +33,5 @@ func (f *AssignmentFilter) ApplyFilter(db *gorm.DB, userId int64) *gorm.DB {
 		str += "%"
 		db = db.Where("LOWER(name) LIKE LOWER(?)", str)
 	}
-	return db
+	return db.Preload("UserAssigned").Preload("UserAssign").Preload("Asset")
 }

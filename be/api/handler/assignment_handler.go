@@ -3,6 +3,7 @@ package handler
 import (
 	"BE_Manage_device/constant"
 	"BE_Manage_device/internal/domain/dto"
+	"BE_Manage_device/internal/domain/filter"
 	"BE_Manage_device/internal/domain/service"
 	"BE_Manage_device/pkg"
 	"BE_Manage_device/pkg/utils"
@@ -21,10 +22,18 @@ func NewAssignmentHandler(service *service.AssignmentService) *AssignmentHandler
 	return &AssignmentHandler{service: service}
 }
 
+// Assignment godoc
+// @Summary      Create assignment
+// @Description  Create assignment
+// @Tags         Assignments
+// @Accept       json
+// @Produce      json
+// @Param        assignment   body    dto.AssignmentResponse   true  "Data"
+// @Router       /api/assignment [POST]
 func (h *AssignmentHandler) Create(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)
-	var request dto.AssingmentCreateRequest
+	var request dto.AssignmentCreateRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		log.Error("Happened error when mapping request from FE. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when mapping request from FE.")
@@ -56,6 +65,15 @@ func (h *AssignmentHandler) Create(c *gin.Context) {
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, assignResponse))
 }
 
+// Assignment godoc
+// @Summary      Update assignment
+// @Description  Update assignment
+// @Tags         Assignments
+// @Accept       json
+// @Produce      json
+// @Param        assignment   body    dto.AssignmentCreateRequest   true  "Data"
+// @Param		id	path		string				true	"id"
+// @Router       /api/assignment/{id} [PUT]
 func (h *AssignmentHandler) Update(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)
@@ -65,7 +83,7 @@ func (h *AssignmentHandler) Update(c *gin.Context) {
 		log.Error("Happened error when convert assetId to int64. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when convert assetId to int64")
 	}
-	var request dto.AssingmentCreateRequest
+	var request dto.AssignmentCreateRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		log.Error("Happened error when mapping request from FE. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when mapping request from FE.")
@@ -93,4 +111,33 @@ func (h *AssignmentHandler) Update(c *gin.Context) {
 	assignResponse.Asset.FileAttachment = *assignmentUpdated.Asset.FileAttachment
 	assignResponse.Asset.ImageUpload = *assignmentUpdated.Asset.ImageUpload
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, assignResponse))
+}
+
+// Assignment godoc
+// @Summary Get all assign with filter
+// @Description Get all assign have permission
+// @Tags Assignments
+// @Accept json
+// @Produce json
+// @Param        assignment   query    filter.AssignmentFilter   false  "filter assignment"
+// @param Authorization header string true "Authorization"
+// @Router /api/assignment/filter [GET]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
+func (h *AssignmentHandler) FilterAsset(c *gin.Context) {
+	defer pkg.PanicHandler(c)
+	var filter filter.AssignmentFilter
+	userId := utils.GetUserIdFromContext(c)
+	if err := c.ShouldBindQuery(&filter); err != nil {
+		log.Error("Happened error when mapping query to filter. Error", err)
+		pkg.PanicExeption(constant.InvalidRequest, "Happened error when mapping query to filter")
+	}
+	data, err := h.service.Filter(userId, filter.EmailAssigned, filter.EmailAssign, filter.AssetName, filter.Page, filter.Limit)
+	if err != nil {
+		log.Error("Happened error when filter asset. Error", err)
+		pkg.PanicExeption(constant.UnknownError, "Happened error when filter asset")
+	}
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, data))
 }

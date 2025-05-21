@@ -1,4 +1,22 @@
 definitions:
+  dto.AssignmentCreateRequest:
+    properties:
+      assetId:
+        type: integer
+      userId:
+        type: integer
+    type: object
+  dto.AssignmentResponse:
+    properties:
+      asset:
+        $ref: '#/definitions/dto.UserAssignmentAssetResponse'
+      id:
+        type: integer
+      userAssign:
+        $ref: '#/definitions/dto.UsersAssignmentResponse'
+      userAssigned:
+        $ref: '#/definitions/dto.UsersAssignmentResponse'
+    type: object
   dto.CheckPasswordReset:
     properties:
       email:
@@ -11,51 +29,64 @@ definitions:
     type: object
   dto.CreateCategoryRequest:
     properties:
-      category_name:
+      categoryName:
         type: string
     required:
-    - category_name
+    - categoryName
     type: object
   dto.CreateDepartmentRequest:
     properties:
-      department_name:
+      departmentName:
         type: string
-      location_id:
+      locationId:
         type: integer
     required:
-    - department_name
-    - location_id
+    - departmentName
+    - locationId
     type: object
   dto.CreateLocationRequest:
     properties:
-      location_name:
+      locationName:
         type: string
     required:
-    - location_name
+    - locationName
     type: object
   dto.RefreshRequest:
     properties:
-      refresh_token:
+      refreshToken:
         type: string
     required:
-    - refresh_token
+    - refreshToken
     type: object
   dto.UpdateInformationUserRequest:
     properties:
-      first_name:
+      firstName:
         type: string
-      last_name:
+      lastName:
         type: string
     required:
-    - first_name
-    - last_name
+    - firstName
+    - lastName
     type: object
   dto.UpdateRoleUserRequest:
     properties:
-      role_title:
+      roleTitle:
         type: string
     required:
-    - role_title
+    - roleTitle
+    type: object
+  dto.UserAssignmentAssetResponse:
+    properties:
+      assetName:
+        type: string
+      fileAttachment:
+        type: string
+      id:
+        type: integer
+      imageUpload:
+        type: string
+      status:
+        type: string
     type: object
   dto.UserLoginRequest:
     properties:
@@ -71,9 +102,9 @@ definitions:
     properties:
       email:
         type: string
-      first_name:
+      firstName:
         type: string
-      last_name:
+      lastName:
         type: string
       password:
         type: string
@@ -81,20 +112,31 @@ definitions:
         type: string
     required:
     - email
-    - first_name
-    - last_name
+    - firstName
+    - lastName
     - password
     - redirectUrl
     type: object
   dto.UserRequestResetPassword:
     properties:
-      new_password:
+      newPassword:
         type: string
       token:
         type: string
     required:
-    - new_password
+    - newPassword
     - token
+    type: object
+  dto.UsersAssignmentResponse:
+    properties:
+      email:
+        type: string
+      firstName:
+        type: string
+      id:
+        type: integer
+      lastName:
+        type: string
     type: object
 info:
   contact: {}
@@ -117,12 +159,12 @@ paths:
       parameters:
       - description: Asset Name
         in: formData
-        name: asset_name
+        name: assetName
         required: true
         type: string
       - description: Purchase Date (RFC3339 format, e.g. 2023-04-15T10:00:00Z)
         in: formData
-        name: purchase_date
+        name: purchaseDate
         required: true
         type: string
       - description: Cost
@@ -136,22 +178,22 @@ paths:
         type: integer
       - description: Warranty Expiry (RFC3339 format, e.g. 2023-12-31T23:59:59Z)
         in: formData
-        name: warrant_expiry
+        name: warrantExpiry
         required: true
         type: string
       - description: Serial Number
         in: formData
-        name: serial_number
+        name: serialNumber
         required: true
         type: string
       - description: Category ID
         in: formData
-        name: category_id
+        name: categoryId
         required: true
         type: integer
       - description: Department ID
         in: formData
-        name: department_id
+        name: departmentId
         required: true
         type: integer
       - description: File to upload
@@ -210,12 +252,12 @@ paths:
       parameters:
       - description: Asset Name
         in: formData
-        name: asset_name
+        name: assetName
         required: true
         type: string
       - description: Purchase Date (RFC3339 format, e.g. 2023-04-15T10:00:00Z)
         in: formData
-        name: purchase_date
+        name: purchaseDate
         required: true
         type: string
       - description: Cost
@@ -229,7 +271,7 @@ paths:
         type: integer
       - description: Warranty Expiry (RFC3339 format, e.g. 2023-12-31T23:59:59Z)
         in: formData
-        name: warrant_expiry
+        name: warrantExpiry
         required: true
         type: string
       - description: Maintenance (RFC3339 format, e.g. 2023-12-31T23:59:59Z)
@@ -239,7 +281,7 @@ paths:
         type: string
       - description: Serial Number
         in: formData
-        name: serial_number
+        name: serialNumber
         required: true
         type: string
       - description: Serial Number
@@ -249,12 +291,12 @@ paths:
         type: string
       - description: Category ID
         in: formData
-        name: category_id
+        name: categoryId
         required: true
         type: integer
       - description: Department ID
         in: formData
-        name: department_id
+        name: departmentId
         required: true
         type: integer
       - description: File to upload
@@ -280,7 +322,7 @@ paths:
       description: Get all assets have permission
       parameters:
       - in: query
-        name: asset_name
+        name: assetName
         type: string
       - in: query
         name: limit
@@ -304,6 +346,81 @@ paths:
       summary: Get all assets with filter
       tags:
       - assets
+  /api/assignment:
+    post:
+      consumes:
+      - application/json
+      description: Create assignment
+      parameters:
+      - description: Data
+        in: body
+        name: assignment
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AssignmentResponse'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create assignment
+      tags:
+      - Assignments
+  /api/assignment/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Update assignment
+      parameters:
+      - description: Data
+        in: body
+        name: assignment
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AssignmentCreateRequest'
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Update assignment
+      tags:
+      - Assignments
+  /api/assignment/filter:
+    get:
+      consumes:
+      - application/json
+      description: Get all assign have permission
+      parameters:
+      - in: query
+        name: emailAssign
+        type: string
+      - in: query
+        name: emailAssigned
+        type: string
+      - in: query
+        name: limit
+        type: integer
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: status
+        type: string
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: Get all assign with filter
+      tags:
+      - Assignments
   /api/auth/login:
     post:
       consumes:
@@ -603,7 +720,7 @@ paths:
       responses: {}
       summary: Update Role
       tags:
-      - users
+      - roles
   /api/user/session:
     get:
       consumes:

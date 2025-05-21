@@ -1,8 +1,8 @@
 package dto
 
-type AssingmentCreateRequest struct {
-	UserId  *int64 `json:"user_id"`
-	AssetId *int64 `json:"asset_id"`
+type AssignmentCreateRequest struct {
+	UserId  *int64 `json:"userId"`
+	AssetId *int64 `json:"assetId"`
 }
 
 type AssignmentResponse struct {

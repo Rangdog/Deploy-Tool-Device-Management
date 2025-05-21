@@ -1,6 +1,7 @@
 package service
 
 import (
+	"BE_Manage_device/internal/domain/dto"
 	"BE_Manage_device/internal/domain/entity"
 	"BE_Manage_device/internal/domain/filter"
 	"BE_Manage_device/internal/domain/repository"
@@ -45,7 +46,7 @@ func (service *AssignmentService) Filter(userId int64, emailAssigned *string, em
 		Limit:         limit,
 	}
 	db := service.repo.GetDB()
-	dbFilter := filter.ApplyFilter(db.Model(&entity.Assets{}), userId)
+	dbFilter := filter.ApplyFilter(db.Model(&entity.Assignments{}), userId)
 	if filter.Page <= 0 {
 		filter.Page = 1
 	}
@@ -56,13 +57,34 @@ func (service *AssignmentService) Filter(userId int64, emailAssigned *string, em
 	var total int64
 	dbFilter.Count(&total)
 	offset := (filter.Page - 1) * filter.Limit
-	var assignment []entity.Assignments
-	resutl := dbFilter.Offset(offset).Limit(filter.Limit).Find(&assignment)
+	var assignments []entity.Assignments
+	resutl := dbFilter.Offset(offset).Limit(filter.Limit).Find(&assignments)
 	if resutl.Error != nil {
 		return nil, resutl.Error
 	}
+	assignmentsRes := []dto.AssignmentResponse{}
+	for _, assignment := range assignments {
+		assignResponse := dto.AssignmentResponse{}
+		assignResponse.Id = assignment.Id
+		assignResponse.UserAssigned.Id = assignment.UserAssigned.Id
+		assignResponse.UserAssigned.FirstName = assignment.UserAssigned.FirstName
+		assignResponse.UserAssigned.LastName = assignment.UserAssigned.LastName
+		assignResponse.UserAssigned.Email = assignment.UserAssigned.Email
+
+		assignResponse.UserAssign.Id = assignment.UserAssign.Id
+		assignResponse.UserAssign.FirstName = assignment.UserAssign.FirstName
+		assignResponse.UserAssign.LastName = assignment.UserAssign.LastName
+		assignResponse.UserAssign.Email = assignment.UserAssign.Email
+
+		assignResponse.Asset.Id = assignment.Asset.Id
+		assignResponse.Asset.AssetName = assignment.Asset.AssetName
+		assignResponse.Asset.Status = assignment.Asset.Status
+		assignResponse.Asset.FileAttachment = *assignment.Asset.FileAttachment
+		assignResponse.Asset.ImageUpload = *assignment.Asset.ImageUpload
+		assignmentsRes = append(assignmentsRes, assignResponse)
+	}
 	data := map[string]any{
-		"data":       assignment,
+		"data":       assignmentsRes,
 		"page":       filter.Page,
 		"limit":      filter.Limit,
 		"total":      total,

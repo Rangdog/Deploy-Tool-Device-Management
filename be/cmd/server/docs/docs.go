@@ -46,14 +46,14 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Asset Name",
-                        "name": "asset_name",
+                        "name": "assetName",
                         "in": "formData",
                         "required": true
                     },
                     {
                         "type": "string",
                         "description": "Purchase Date (RFC3339 format, e.g. 2023-04-15T10:00:00Z)",
-                        "name": "purchase_date",
+                        "name": "purchaseDate",
                         "in": "formData",
                         "required": true
                     },
@@ -73,28 +73,28 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Warranty Expiry (RFC3339 format, e.g. 2023-12-31T23:59:59Z)",
-                        "name": "warrant_expiry",
+                        "name": "warrantExpiry",
                         "in": "formData",
                         "required": true
                     },
                     {
                         "type": "string",
                         "description": "Serial Number",
-                        "name": "serial_number",
+                        "name": "serialNumber",
                         "in": "formData",
                         "required": true
                     },
                     {
                         "type": "integer",
                         "description": "Category ID",
-                        "name": "category_id",
+                        "name": "categoryId",
                         "in": "formData",
                         "required": true
                     },
                     {
                         "type": "integer",
                         "description": "Department ID",
-                        "name": "department_id",
+                        "name": "departmentId",
                         "in": "formData",
                         "required": true
                     },
@@ -137,7 +137,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "name": "asset_name",
+                        "name": "assetName",
                         "in": "query"
                     },
                     {
@@ -206,14 +206,14 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Asset Name",
-                        "name": "asset_name",
+                        "name": "assetName",
                         "in": "formData",
                         "required": true
                     },
                     {
                         "type": "string",
                         "description": "Purchase Date (RFC3339 format, e.g. 2023-04-15T10:00:00Z)",
-                        "name": "purchase_date",
+                        "name": "purchaseDate",
                         "in": "formData",
                         "required": true
                     },
@@ -233,7 +233,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Warranty Expiry (RFC3339 format, e.g. 2023-12-31T23:59:59Z)",
-                        "name": "warrant_expiry",
+                        "name": "warrantExpiry",
                         "in": "formData",
                         "required": true
                     },
@@ -247,7 +247,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Serial Number",
-                        "name": "serial_number",
+                        "name": "serialNumber",
                         "in": "formData",
                         "required": true
                     },
@@ -261,14 +261,14 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Category ID",
-                        "name": "category_id",
+                        "name": "categoryId",
                         "in": "formData",
                         "required": true
                     },
                     {
                         "type": "integer",
                         "description": "Department ID",
-                        "name": "department_id",
+                        "name": "departmentId",
                         "in": "formData",
                         "required": true
                     },
@@ -302,6 +302,122 @@ const docTemplate = `{
                 ],
                 "summary": "Delete assets",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/assignment": {
+            "post": {
+                "description": "Create assignment",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Assignments"
+                ],
+                "summary": "Create assignment",
+                "parameters": [
+                    {
+                        "description": "Data",
+                        "name": "assignment",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.AssignmentResponse"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/assignment/filter": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "Get all assign have permission",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Assignments"
+                ],
+                "summary": "Get all assign with filter",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "emailAssign",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "emailAssigned",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/assignment/{id}": {
+            "put": {
+                "description": "Update assignment",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Assignments"
+                ],
+                "summary": "Update assignment",
+                "parameters": [
+                    {
+                        "description": "Data",
+                        "name": "assignment",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.AssignmentCreateRequest"
+                        }
+                    },
                     {
                         "type": "string",
                         "description": "id",
@@ -715,7 +831,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "roles"
                 ],
                 "summary": "Update Role",
                 "parameters": [
@@ -791,6 +907,34 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.AssignmentCreateRequest": {
+            "type": "object",
+            "properties": {
+                "assetId": {
+                    "type": "integer"
+                },
+                "userId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.AssignmentResponse": {
+            "type": "object",
+            "properties": {
+                "asset": {
+                    "$ref": "#/definitions/dto.UserAssignmentAssetResponse"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "userAssign": {
+                    "$ref": "#/definitions/dto.UsersAssignmentResponse"
+                },
+                "userAssigned": {
+                    "$ref": "#/definitions/dto.UsersAssignmentResponse"
+                }
+            }
+        },
         "dto.CheckPasswordReset": {
             "type": "object",
             "required": [
@@ -809,10 +953,10 @@ const docTemplate = `{
         "dto.CreateCategoryRequest": {
             "type": "object",
             "required": [
-                "category_name"
+                "categoryName"
             ],
             "properties": {
-                "category_name": {
+                "categoryName": {
                     "type": "string"
                 }
             }
@@ -820,14 +964,14 @@ const docTemplate = `{
         "dto.CreateDepartmentRequest": {
             "type": "object",
             "required": [
-                "department_name",
-                "location_id"
+                "departmentName",
+                "locationId"
             ],
             "properties": {
-                "department_name": {
+                "departmentName": {
                     "type": "string"
                 },
-                "location_id": {
+                "locationId": {
                     "type": "integer"
                 }
             }
@@ -835,10 +979,10 @@ const docTemplate = `{
         "dto.CreateLocationRequest": {
             "type": "object",
             "required": [
-                "location_name"
+                "locationName"
             ],
             "properties": {
-                "location_name": {
+                "locationName": {
                     "type": "string"
                 }
             }
@@ -846,10 +990,10 @@ const docTemplate = `{
         "dto.RefreshRequest": {
             "type": "object",
             "required": [
-                "refresh_token"
+                "refreshToken"
             ],
             "properties": {
-                "refresh_token": {
+                "refreshToken": {
                     "type": "string"
                 }
             }
@@ -857,14 +1001,14 @@ const docTemplate = `{
         "dto.UpdateInformationUserRequest": {
             "type": "object",
             "required": [
-                "first_name",
-                "last_name"
+                "firstName",
+                "lastName"
             ],
             "properties": {
-                "first_name": {
+                "firstName": {
                     "type": "string"
                 },
-                "last_name": {
+                "lastName": {
                     "type": "string"
                 }
             }
@@ -872,10 +1016,30 @@ const docTemplate = `{
         "dto.UpdateRoleUserRequest": {
             "type": "object",
             "required": [
-                "role_title"
+                "roleTitle"
             ],
             "properties": {
-                "role_title": {
+                "roleTitle": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UserAssignmentAssetResponse": {
+            "type": "object",
+            "properties": {
+                "assetName": {
+                    "type": "string"
+                },
+                "fileAttachment": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "imageUpload": {
+                    "type": "string"
+                },
+                "status": {
                     "type": "string"
                 }
             }
@@ -899,8 +1063,8 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "email",
-                "first_name",
-                "last_name",
+                "firstName",
+                "lastName",
                 "password",
                 "redirectUrl"
             ],
@@ -908,10 +1072,10 @@ const docTemplate = `{
                 "email": {
                     "type": "string"
                 },
-                "first_name": {
+                "firstName": {
                     "type": "string"
                 },
-                "last_name": {
+                "lastName": {
                     "type": "string"
                 },
                 "password": {
@@ -925,14 +1089,31 @@ const docTemplate = `{
         "dto.UserRequestResetPassword": {
             "type": "object",
             "required": [
-                "new_password",
+                "newPassword",
                 "token"
             ],
             "properties": {
-                "new_password": {
+                "newPassword": {
                     "type": "string"
                 },
                 "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UsersAssignmentResponse": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "lastName": {
                     "type": "string"
                 }
             }

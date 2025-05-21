@@ -7,7 +7,7 @@ import (
 )
 
 type AssetFilter struct {
-	AssetName *string `form:"asset_name" json:"asset_name"`
+	AssetName *string `form:"assetName" json:"assetName"`
 	Status    *string `form:"status" json:"status"`
 	Page      int     `form:"page" json:"page"`
 	Limit     int     `form:"limit" json:"limit"`

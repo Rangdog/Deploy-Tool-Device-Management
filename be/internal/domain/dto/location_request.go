@@ -1,5 +1,5 @@
 package dto
 
 type CreateLocationRequest struct {
-	LocationName string `json:"location_name" binding:"required"`
+	LocationName string `json:"locationName" binding:"required"`
 }

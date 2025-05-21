@@ -29,14 +29,14 @@ func NewAssetsHandler(service *service.AssetsService) *AssetsHandler {
 // @Tags assets
 // @Accept multipart/form-data
 // @Produce json
-// @Param asset_name formData string true "Asset Name"
-// @Param purchase_date formData string true "Purchase Date (RFC3339 format, e.g. 2023-04-15T10:00:00Z)"
+// @Param assetName formData string true "Asset Name"
+// @Param purchaseDate formData string true "Purchase Date (RFC3339 format, e.g. 2023-04-15T10:00:00Z)"
 // @Param cost formData number true "Cost"
 // @Param owner formData int64 false "Owner ID"
-// @Param warrant_expiry formData string true "Warranty Expiry (RFC3339 format, e.g. 2023-12-31T23:59:59Z)"
-// @Param serial_number formData string true "Serial Number"
-// @Param category_id formData int64 true "Category ID"
-// @Param department_id formData int64 true "Department ID"
+// @Param warrantExpiry formData string true "Warranty Expiry (RFC3339 format, e.g. 2023-12-31T23:59:59Z)"
+// @Param serialNumber formData string true "Serial Number"
+// @Param categoryId formData int64 true "Category ID"
+// @Param departmentId formData int64 true "Department ID"
 // @Param file formData file true "File to upload"
 // @Param image formData file true "Image to upload"
 // @Router /api/assets [post]
@@ -45,14 +45,14 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 
 	userId := utils.GetUserIdFromContext(c)
 
-	assetName := c.PostForm("asset_name")
-	purchaseDateStr := c.PostForm("purchase_date")
+	assetName := c.PostForm("assetName")
+	purchaseDateStr := c.PostForm("purchaseDate")
 	costStr := c.PostForm("cost")
 	ownerStr := c.PostForm("owner")
-	warrantExpiryStr := c.PostForm("warrant_expiry")
-	serialNumber := c.PostForm("serial_number")
-	categoryIdStr := c.PostForm("category_id")
-	departmentIdStr := c.PostForm("department_id")
+	warrantExpiryStr := c.PostForm("warrantExpiry")
+	serialNumber := c.PostForm("serialNumber")
+	categoryIdStr := c.PostForm("categoryId")
+	departmentIdStr := c.PostForm("departmentId")
 
 	purchaseDate, err := time.Parse(time.RFC3339, purchaseDateStr)
 	if err != nil {
@@ -169,16 +169,16 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 // @Tags assets
 // @Accept multipart/form-data
 // @Produce json
-// @Param asset_name formData string true "Asset Name"
-// @Param purchase_date formData string true "Purchase Date (RFC3339 format, e.g. 2023-04-15T10:00:00Z)"
+// @Param assetName formData string true "Asset Name"
+// @Param purchaseDate formData string true "Purchase Date (RFC3339 format, e.g. 2023-04-15T10:00:00Z)"
 // @Param cost formData number true "Cost"
 // @Param owner formData int64 false "Owner ID"
-// @Param warrant_expiry formData string true "Warranty Expiry (RFC3339 format, e.g. 2023-12-31T23:59:59Z)"
+// @Param warrantExpiry formData string true "Warranty Expiry (RFC3339 format, e.g. 2023-12-31T23:59:59Z)"
 // @Param maintenance formData string true "Maintenance (RFC3339 format, e.g. 2023-12-31T23:59:59Z)"
-// @Param serial_number formData string true "Serial Number"
+// @Param serialNumber formData string true "Serial Number"
 // @Param status formData string true "Serial Number"
-// @Param category_id formData int64 true "Category ID"
-// @Param department_id formData int64 true "Department ID"
+// @Param categoryId formData int64 true "Category ID"
+// @Param departmentId formData int64 true "Department ID"
 // @Param file formData file true "File to upload"
 // @Param image formData file true "Image to upload"
 // @Router /api/assets/{id} [PUT]
@@ -193,16 +193,16 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 
 	userId := utils.GetUserIdFromContext(c)
 
-	assetName := c.PostForm("asset_name")
-	purchaseDateStr := c.PostForm("purchase_date")
+	assetName := c.PostForm("assetName")
+	purchaseDateStr := c.PostForm("purchaseDate")
 	maintenanceStr := c.PostForm("maintenance")
 	costStr := c.PostForm("cost")
 	ownerStr := c.PostForm("owner")
-	warrantExpiryStr := c.PostForm("warrant_expiry")
-	serialNumber := c.PostForm("serial_number")
+	warrantExpiryStr := c.PostForm("warrantExpiry")
+	serialNumber := c.PostForm("serialNumber")
 	Status := c.PostForm("status")
-	categoryIdStr := c.PostForm("category_id")
-	departmentIdStr := c.PostForm("department_id")
+	categoryIdStr := c.PostForm("categoryId")
+	departmentIdStr := c.PostForm("departmentId")
 
 	purchaseDate, err := time.Parse(time.RFC3339, purchaseDateStr)
 	if err != nil {
