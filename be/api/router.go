@@ -47,6 +47,7 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandle
 	api.POST("/assets", AssetsHandler.Create)
 	api.GET("/assets/:id", AssetsHandler.GetAssetById)
 	api.GET("/assets", AssetsHandler.GetAllAsset)
+	api.GET("/assets/filter", AssetsHandler.FilterAsset)
 	api.PUT("/assets/:id", AssetsHandler.Update)
 	api.DELETE("/assets/:id", AssetsHandler.DeleteAsset)
 

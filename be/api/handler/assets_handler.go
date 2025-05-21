@@ -3,6 +3,7 @@ package handler
 import (
 	"BE_Manage_device/constant"
 	"BE_Manage_device/internal/domain/dto"
+	"BE_Manage_device/internal/domain/filter"
 	"BE_Manage_device/internal/domain/service"
 	"BE_Manage_device/pkg"
 	"BE_Manage_device/pkg/utils"
@@ -453,4 +454,33 @@ func (h *AssetsHandler) DeleteAsset(c *gin.Context) {
 		pkg.PanicExeption(constant.UnknownError, "Happened error when delete assets")
 	}
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccessNoData(http.StatusOK, constant.Success))
+}
+
+// Asset godoc
+// @Summary Get all assets with filter
+// @Description Get all assets have permission
+// @Tags assets
+// @Accept json
+// @Produce json
+// @Param        asset   query    filter.AssetFilter   false  "filter asset"
+// @param Authorization header string true "Authorization"
+// @Router /api/assets/filter [GET]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
+func (h *AssetsHandler) FilterAsset(c *gin.Context) {
+	defer pkg.PanicHandler(c)
+	var filter filter.AssetFilter
+	userId := utils.GetUserIdFromContext(c)
+	if err := c.ShouldBindQuery(&filter); err != nil {
+		log.Error("Happened error when mapping query to filter. Error", err)
+		pkg.PanicExeption(constant.InvalidRequest, "Happened error when mapping query to filter")
+	}
+	data, err := h.service.Filter(userId, filter.AssetName, filter.Status, filter.Page, filter.Limit)
+	if err != nil {
+		log.Error("Happened error when filter asset. Error", err)
+		pkg.PanicExeption(constant.UnknownError, "Happened error when filter asset")
+	}
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, data))
 }

@@ -2,10 +2,12 @@ package service
 
 import (
 	"BE_Manage_device/internal/domain/entity"
+	"BE_Manage_device/internal/domain/filter"
 	"BE_Manage_device/internal/domain/repository"
 	"BE_Manage_device/pkg/utils"
 	"errors"
 	"fmt"
+	"math"
 	"mime/multipart"
 	"sync"
 	"time"
@@ -224,4 +226,38 @@ func (service *AssetsService) DeleteAsset(userId int64, id int64) error {
 	}
 	tx.Commit()
 	return nil
+}
+
+func (service *AssetsService) Filter(userId int64, assetName *string, status *string, page int, limit int) (*map[string]any, error) {
+	var filter = filter.AssetFilter{
+		AssetName: assetName,
+		Status:    status,
+		Page:      page,
+		Limit:     limit,
+	}
+	db := service.repo.GetDB()
+	dbFilter := filter.ApplyFilter(db.Model(&entity.Assets{}), userId)
+	if filter.Page <= 0 {
+		filter.Page = 1
+	}
+
+	if filter.Limit <= 0 {
+		filter.Limit = 10
+	}
+	var total int64
+	dbFilter.Count(&total)
+	offset := (filter.Page - 1) * filter.Limit
+	var Assets []entity.Assets
+	resutl := dbFilter.Offset(offset).Limit(filter.Limit).Find(&Assets)
+	if resutl.Error != nil {
+		return nil, resutl.Error
+	}
+	data := map[string]any{
+		"data":       Assets,
+		"page":       filter.Page,
+		"limit":      filter.Limit,
+		"total":      total,
+		"total_page": int(math.Ceil(float64(total) / float64(filter.Limit))),
+	}
+	return &data, nil
 }

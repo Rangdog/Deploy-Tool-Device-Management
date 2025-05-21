@@ -170,6 +170,39 @@ paths:
       summary: Create assets
       tags:
       - assets
+  /api/assets/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete assets
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Delete assets
+      tags:
+      - assets
+    get:
+      consumes:
+      - application/json
+      description: Get assets
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Get assets
+      tags:
+      - assets
     put:
       consumes:
       - multipart/form-data
@@ -240,37 +273,35 @@ paths:
       summary: Update assets
       tags:
       - assets
-  /api/assets/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete assets
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: Delete assets
-      tags:
-      - assets
+  /api/assets/filter:
     get:
       consumes:
       - application/json
-      description: Get assets
+      description: Get all assets have permission
       parameters:
-      - description: id
-        in: path
-        name: id
+      - in: query
+        name: asset_name
+        type: string
+      - in: query
+        name: limit
+        type: integer
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: status
+        type: string
+      - description: Authorization
+        in: header
+        name: Authorization
         required: true
         type: string
       produces:
       - application/json
       responses: {}
-      summary: Get assets
+      security:
+      - JWT: []
+      summary: Get all assets with filter
       tags:
       - assets
   /api/auth/login:
