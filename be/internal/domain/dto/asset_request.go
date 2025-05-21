@@ -25,7 +25,7 @@ type AssetResponse struct {
 	SerialNumber   string             `json:"serialNumber"`
 	FileAttachment string             `json:"fileAttachment"`
 	ImageUpload    string             `json:"imageUpload"`
-	Maintenance    string             `json:"maintenance,omitempty"`
+	Maintenance    float64            `json:"maintenance,omitempty"`
 	Category       CategoryResponse   `json:"category"`
 	Department     DepartmentResponse `json:"department"`
 }

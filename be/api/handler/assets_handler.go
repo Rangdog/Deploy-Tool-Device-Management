@@ -149,7 +149,7 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 		},
 	}
 	if asset.ScheduleMaintenance != nil {
-		assetResponse.Maintenance = asset.ScheduleMaintenance.Format("2006-01-02")
+		assetResponse.Maintenance = *asset.ScheduleMaintenance
 	}
 	if asset.OnwerUser != nil {
 		assetResponse.Owner = dto.OwnerResponse{
@@ -180,13 +180,13 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 // @Param department_id formData int64 true "Department ID"
 // @Param file formData file true "File to upload"
 // @Param image formData file true "Image to upload"
-// @Router /api/assets [PUT]
+// @Router /api/assets/{id} [PUT]
 func (h *AssetsHandler) Update(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	idStr := c.Param("id")
 	assetId, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
-		log.Error("Happened error when convert step id to int64. Error", err)
+		log.Error("Happened error when convert asset id to int64. Error", err)
 		pkg.PanicExeption(constant.UnknownError)
 	}
 
@@ -252,9 +252,9 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 		pkg.PanicExeption(constant.InvalidRequest, "Image upload missing")
 		return
 	}
-	maintenance, err := time.Parse(time.RFC3339, maintenanceStr)
+	maintenance, err := strconv.ParseFloat(maintenanceStr, 64)
 	if err != nil {
-		pkg.PanicExeption(constant.InvalidRequest, "Invalid purchase_date format")
+		pkg.PanicExeption(constant.InvalidRequest, "Invalid maintenance format")
 	}
 	assetUpdate, err := h.service.UpdateAsset(
 		userId,
@@ -304,7 +304,7 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 		},
 	}
 	if asset.ScheduleMaintenance != nil {
-		assetResponse.Maintenance = asset.ScheduleMaintenance.Format("2006-01-02")
+		assetResponse.Maintenance = *asset.ScheduleMaintenance
 	}
 	if asset.OnwerUser != nil {
 		assetResponse.Owner = dto.OwnerResponse{
@@ -363,7 +363,7 @@ func (h *AssetsHandler) GetAssetById(c *gin.Context) {
 		},
 	}
 	if asset.ScheduleMaintenance != nil {
-		assetResponse.Maintenance = asset.ScheduleMaintenance.Format("2006-01-02")
+		assetResponse.Maintenance = *asset.ScheduleMaintenance
 	}
 	if asset.OnwerUser != nil {
 		assetResponse.Owner = dto.OwnerResponse{
@@ -416,7 +416,7 @@ func (h *AssetsHandler) GetAllAsset(c *gin.Context) {
 			},
 		}
 		if asset.ScheduleMaintenance != nil {
-			assetResponse.Maintenance = asset.ScheduleMaintenance.Format("2006-01-02")
+			assetResponse.Maintenance = *asset.ScheduleMaintenance
 		}
 		if asset.OnwerUser != nil {
 			assetResponse.Owner = dto.OwnerResponse{

@@ -142,7 +142,7 @@ func (service *AssetsService) SetRole(assetId int64, tx *gorm.DB, wg *sync.WaitG
 	return true
 }
 
-func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName string, purchaseDate time.Time, cost float64, owner *int64, warrantExpiry time.Time, serialNumber string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, categoryId int64, departmentId int64, status string, maintenance time.Time) (*entity.Assets, error) {
+func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName string, purchaseDate time.Time, cost float64, owner *int64, warrantExpiry time.Time, serialNumber string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, categoryId int64, departmentId int64, status string, maintenance float64) (*entity.Assets, error) {
 	imgFile, err := image.Open()
 	if err != nil {
 		return nil, fmt.Errorf("cannot open image: %w", err)
@@ -199,6 +199,7 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 		tx.Rollback()
 		return nil, err
 	}
+	tx.Commit()
 	return assetUpdated, nil
 }
 
@@ -221,5 +222,6 @@ func (service *AssetsService) DeleteAsset(userId int64, id int64) error {
 		tx.Rollback()
 		return err
 	}
+	tx.Commit()
 	return nil
 }

@@ -103,7 +103,7 @@ func (r *PostgreSQLAssetsRepository) UpdateAsset(assets *entity.Assets, tx *gorm
 		updates["image_upload"] = assets.ImageUpload
 	}
 	if assets.ScheduleMaintenance != nil {
-		updates["maintenance"] = assets.ScheduleMaintenance
+		updates["schedule_maintenance"] = assets.ScheduleMaintenance
 	}
 	if assets.CategoryId != 0 {
 		updates["category_id"] = assets.CategoryId
