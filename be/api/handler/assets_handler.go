@@ -207,6 +207,7 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 	layout := "Mon Jan 02 2006 15:04:05 GMT-0700 (MST)"
 	purchaseDate, err := time.Parse(layout, purchaseDateStr)
 	if err != nil {
+		log.Info("Error:", err.Error())
 		pkg.PanicExeption(constant.InvalidRequest, "Invalid purchase_date format")
 	}
 
