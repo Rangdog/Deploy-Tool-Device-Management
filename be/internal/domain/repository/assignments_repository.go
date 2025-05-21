@@ -8,6 +8,6 @@ import (
 
 type AssignmentRepository interface {
 	Create(*entity.Assignments) (*entity.Assignments, error)
-	Update(id int64, userId, assetId *int64, AssignBy int64) (*entity.Assignments, error)
+	Update(assignmentId int64, AssignBy, assetId int64, userId, departmentId *int64, tx *gorm.DB) (*entity.Assignments, error)
 	GetDB() *gorm.DB
 }

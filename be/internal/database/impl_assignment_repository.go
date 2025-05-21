@@ -25,25 +25,26 @@ func (r *PostgreSQLAssignmentRepository) Create(assignment *entity.Assignments) 
 	return assignmentCreated, result.Error
 }
 
-func (r *PostgreSQLAssignmentRepository) Update(id int64, userId, assetId *int64, AssignBy int64) (*entity.Assignments, error) {
+func (r *PostgreSQLAssignmentRepository) Update(assignmentId int64, AssignBy, assetId int64, userId, departmentId *int64, tx *gorm.DB) (*entity.Assignments, error) {
 	var assignment entity.Assignments
 
 	updates := map[string]interface{}{}
 	if userId != nil {
 		updates["user_id"] = *userId
 	}
-	if assetId != nil {
-		updates["asset_id"] = *assetId
+	if departmentId != nil {
+		updates["department_id"] = *departmentId
 	}
+	updates["asset_id"] = assetId
 	updates["assign_by"] = AssignBy
 
-	err := r.db.Model(&assignment).Where("id = ?", id).Updates(updates).Error
+	err := tx.Model(&assignment).Where("id = ?", assignmentId).Updates(updates).Error
 	if err != nil {
 		return nil, err
 	}
 
 	// Trả về bản ghi sau khi cập nhật (tuỳ bạn muốn lấy lại hay không)
-	err = r.db.Preload("UserAssigned").Preload("UserAssign").Preload("Asset").First(&assignment, id).Error
+	err = tx.Preload("UserAssigned").Preload("UserAssign").Preload("Asset").First(&assignment, assignmentId).Error
 	if err != nil {
 		return nil, err
 	}

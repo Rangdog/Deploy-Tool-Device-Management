@@ -7,7 +7,7 @@ type AssetLog struct {
 	Action        string    `json:"action"`
 	Timestamp     time.Time `json:"timeStamp"`
 	UserId        int64     `json:"userId"`
-	Asset_id      int64     `json:"assetId"`
-	AssignmentId  *int64    `json:"assignmentId"`
+	AssetId       int64     `json:"assetId"`
+	DepartmentId  *int64    `json:"departmentId"`
 	ChangeSummary string    `json:"changeSummary"`
 }

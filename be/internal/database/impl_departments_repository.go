@@ -30,3 +30,12 @@ func (r *PostgreSQLDepartmentsRepository) Delete(id int64) error {
 	result := r.db.Model(entity.Departments{}).Where("id = ?", id).Delete(entity.Departments{})
 	return result.Error
 }
+
+func (r *PostgreSQLDepartmentsRepository) GetDepartmentById(id int64) (*entity.Departments, error) {
+	department := &entity.Departments{}
+	result := r.db.Model(entity.Departments{}).Where("id = ?", id).First(department)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return department, nil
+}

@@ -19,3 +19,12 @@ func (r *PostgreSQLAssetsLogrepository) Create(assetsLog *entity.AssetLog, tx *g
 	result := tx.Create(assetsLog)
 	return assetsLog, result.Error
 }
+
+func (r *PostgreSQLAssetsLogrepository) GetLogByAssetId(assetId int64) ([]*entity.AssetLog, error) {
+	assetLogs := []*entity.AssetLog{}
+	result := r.db.Model(entity.AssetLog{}).Where("asset_id = ?", assetId).Find(&assetLogs)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return assetLogs, nil
+}

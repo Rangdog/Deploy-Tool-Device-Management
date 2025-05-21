@@ -116,6 +116,31 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/api/assets-log/{id}": {
+            "get": {
+                "description": "Get assets log by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Assets log"
+                ],
+                "summary": "Get assets log by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/api/assets/filter": {
             "get": {
                 "security": [
@@ -333,7 +358,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.AssignmentResponse"
+                            "$ref": "#/definitions/dto.AssignmentCreateRequest"
                         }
                     }
                 ],
@@ -909,29 +934,18 @@ const docTemplate = `{
     "definitions": {
         "dto.AssignmentCreateRequest": {
             "type": "object",
+            "required": [
+                "assetId"
+            ],
             "properties": {
                 "assetId": {
                     "type": "integer"
                 },
+                "departmentId": {
+                    "type": "integer"
+                },
                 "userId": {
                     "type": "integer"
-                }
-            }
-        },
-        "dto.AssignmentResponse": {
-            "type": "object",
-            "properties": {
-                "asset": {
-                    "$ref": "#/definitions/dto.UserAssignmentAssetResponse"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "userAssign": {
-                    "$ref": "#/definitions/dto.UsersAssignmentResponse"
-                },
-                "userAssigned": {
-                    "$ref": "#/definitions/dto.UsersAssignmentResponse"
                 }
             }
         },
@@ -1024,26 +1038,6 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.UserAssignmentAssetResponse": {
-            "type": "object",
-            "properties": {
-                "assetName": {
-                    "type": "string"
-                },
-                "fileAttachment": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "imageUpload": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                }
-            }
-        },
         "dto.UserLoginRequest": {
             "type": "object",
             "required": [
@@ -1097,23 +1091,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "token": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.UsersAssignmentResponse": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "firstName": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "lastName": {
                     "type": "string"
                 }
             }

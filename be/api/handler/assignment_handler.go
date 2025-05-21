@@ -28,7 +28,7 @@ func NewAssignmentHandler(service *service.AssignmentService) *AssignmentHandler
 // @Tags         Assignments
 // @Accept       json
 // @Produce      json
-// @Param        assignment   body    dto.AssignmentResponse   true  "Data"
+// @Param        assignment   body    dto.AssignmentCreateRequest   true  "Data"
 // @Router       /api/assignment [POST]
 func (h *AssignmentHandler) Create(c *gin.Context) {
 	defer pkg.PanicHandler(c)
@@ -38,7 +38,7 @@ func (h *AssignmentHandler) Create(c *gin.Context) {
 		log.Error("Happened error when mapping request from FE. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when mapping request from FE.")
 	}
-	assignment, err := h.service.Create(userId, *request.UserId, *request.AssetId)
+	assignment, err := h.service.Create(request.UserId, request.DepartmentId, userId, request.AssetId)
 	if err != nil {
 		log.Error("Happened error when create assignment. Error", err)
 		pkg.PanicExeption(constant.UnknownError, "Happened error when create assignment.")
@@ -78,7 +78,7 @@ func (h *AssignmentHandler) Update(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)
 	idStr := c.Param("id")
-	assignment, err := strconv.ParseInt(idStr, 10, 64)
+	assignmentId, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
 		log.Error("Happened error when convert assetId to int64. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when convert assetId to int64")
@@ -88,7 +88,7 @@ func (h *AssignmentHandler) Update(c *gin.Context) {
 		log.Error("Happened error when mapping request from FE. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when mapping request from FE.")
 	}
-	assignmentUpdated, err := h.service.Update(userId, *request.UserId, *request.AssetId, assignment)
+	assignmentUpdated, err := h.service.Update(userId, request.AssetId, assignmentId, request.UserId, request.DepartmentId)
 	if err != nil {
 		log.Error("Happened error when update assignment. Error", err)
 		pkg.PanicExeption(constant.UnknownError, "Happened error when update assignment.")

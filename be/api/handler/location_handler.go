@@ -69,6 +69,7 @@ func (h *LocationHandler) GetAll(c *gin.Context) {
 // @Param		id	path		string				true	"id"
 // @Router       /api/locations/{id} [DELETE]
 func (h *LocationHandler) Delete(c *gin.Context) {
+	defer pkg.PanicHandler(c)
 	id := c.Param("id")
 	IdConvert, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {

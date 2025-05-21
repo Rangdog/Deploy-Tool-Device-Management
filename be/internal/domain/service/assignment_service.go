@@ -5,22 +5,29 @@ import (
 	"BE_Manage_device/internal/domain/entity"
 	"BE_Manage_device/internal/domain/filter"
 	"BE_Manage_device/internal/domain/repository"
+	"fmt"
 	"math"
+	"time"
 )
 
 type AssignmentService struct {
-	repo repository.AssignmentRepository
+	repo           repository.AssignmentRepository
+	assetLogRepo   repository.AssetsLogRepository
+	assetRepo      repository.AssetsRepository
+	departmentRepo repository.DepartmentsRepository
+	userRepo       repository.UserRepository
 }
 
-func NewAssignmentService(repo repository.AssignmentRepository) *AssignmentService {
-	return &AssignmentService{repo: repo}
+func NewAssignmentService(repo repository.AssignmentRepository, assetLogRepo repository.AssetsLogRepository, assetRepo repository.AssetsRepository, departmentRepo repository.DepartmentsRepository, userRepo repository.UserRepository) *AssignmentService {
+	return &AssignmentService{repo: repo, assetLogRepo: assetLogRepo, assetRepo: assetRepo, departmentRepo: departmentRepo, userRepo: userRepo}
 }
 
-func (service *AssignmentService) Create(userId, userIdAssign, assetId int64) (*entity.Assignments, error) {
+func (service *AssignmentService) Create(userIdAssign, departmentId *int64, userId, assetId int64) (*entity.Assignments, error) {
 	assignment := entity.Assignments{
-		UserId:   &userIdAssign,
-		AssetId:  &assetId,
-		AssignBy: userId,
+		UserId:       userIdAssign,
+		AssetId:      assetId,
+		AssignBy:     userId,
+		DepartmentId: departmentId,
 	}
 	assignmentCreated, err := service.repo.Create(&assignment)
 	if err != nil {
@@ -29,11 +36,46 @@ func (service *AssignmentService) Create(userId, userIdAssign, assetId int64) (*
 	return assignmentCreated, err
 }
 
-func (service *AssignmentService) Update(userId, userIdAssign, assetId, assignmentId int64) (*entity.Assignments, error) {
-	assigmentUpdated, err := service.repo.Update(assignmentId, &userIdAssign, &assetId, userId)
+func (service *AssignmentService) Update(userId, assetId, assignmentId int64, userIdAssign, departmentId *int64) (*entity.Assignments, error) {
+	asset, err := service.assetRepo.GetAssetById(assetId)
 	if err != nil {
 		return nil, err
 	}
+	tx := service.repo.GetDB().Begin()
+	assigmentUpdated, err := service.repo.Update(assignmentId, userId, assetId, userIdAssign, departmentId, tx)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	assetLog := entity.AssetLog{}
+	assetLog.Timestamp = time.Now()
+	assetLog.Action = "Transfer"
+	if departmentId != nil && departmentId != &asset.DepartmentId {
+		department, err := service.departmentRepo.GetDepartmentById(*departmentId)
+		if err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+		assetLog.DepartmentId = departmentId
+		str := fmt.Sprintf("Transfer from department %v to department %v\n", asset.Department.DepartmentName, department.DepartmentName)
+		assetLog.ChangeSummary = str
+	}
+	if userIdAssign != nil && userIdAssign != &asset.OnwerUser.Id {
+		users, err := service.userRepo.FindByUserId(*userIdAssign)
+		if err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+		assetLog.UserId = *userIdAssign
+		str := fmt.Sprintf("Transfer from user: %v to user: %v\n", asset.OnwerUser.Email, users.Email)
+		assetLog.ChangeSummary += str
+	}
+	_, err = service.assetLogRepo.Create(&assetLog, tx)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	tx.Commit()
 	return assigmentUpdated, nil
 }
 

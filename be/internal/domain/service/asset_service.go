@@ -75,7 +75,7 @@ func (service *AssetsService) Create(userId int64, assetName string, purchaseDat
 		Action:        "Create",
 		Timestamp:     time.Now(),
 		UserId:        userId,
-		Asset_id:      assetCreate.Id,
+		AssetId:       assetCreate.Id,
 		ChangeSummary: "Create",
 	}
 	_, err = service.assertLogRepository.Create(&assetLog, tx)
@@ -194,7 +194,7 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 		Action:        "Update",
 		Timestamp:     time.Now(),
 		UserId:        userId,
-		Asset_id:      assetUpdated.Id,
+		AssetId:       assetUpdated.Id,
 		ChangeSummary: "Update",
 	}
 	_, err = service.assertLogRepository.Create(&assetLog, tx)
@@ -217,7 +217,7 @@ func (service *AssetsService) DeleteAsset(userId int64, id int64) error {
 		Action:        "Delete",
 		Timestamp:     time.Now(),
 		UserId:        userId,
-		Asset_id:      id,
+		AssetId:       id,
 		ChangeSummary: "Delete",
 	}
 	_, err = service.assertLogRepository.Create(&assetLog, tx)

@@ -54,12 +54,13 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 	categoryIdStr := c.PostForm("categoryId")
 	departmentIdStr := c.PostForm("departmentId")
 
-	purchaseDate, err := time.Parse(time.RFC3339, purchaseDateStr)
+	layout := "Mon Jan 02 2006 15:04:05 GMT-0700 (MST)"
+	purchaseDate, err := time.Parse(layout, purchaseDateStr)
 	if err != nil {
 		pkg.PanicExeption(constant.InvalidRequest, "Invalid purchase_date format")
 	}
 
-	warrantExpiry, err := time.Parse(time.RFC3339, warrantExpiryStr)
+	warrantExpiry, err := time.Parse(layout, warrantExpiryStr)
 	if err != nil {
 		pkg.PanicExeption(constant.InvalidRequest, "Invalid warrant_expiry format")
 	}
@@ -203,13 +204,13 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 	Status := c.PostForm("status")
 	categoryIdStr := c.PostForm("categoryId")
 	departmentIdStr := c.PostForm("departmentId")
-
-	purchaseDate, err := time.Parse(time.RFC3339, purchaseDateStr)
+	layout := "Mon Jan 02 2006 15:04:05 GMT-0700 (MST)"
+	purchaseDate, err := time.Parse(layout, purchaseDateStr)
 	if err != nil {
 		pkg.PanicExeption(constant.InvalidRequest, "Invalid purchase_date format")
 	}
 
-	warrantExpiry, err := time.Parse(time.RFC3339, warrantExpiryStr)
+	warrantExpiry, err := time.Parse(layout, warrantExpiryStr)
 	if err != nil {
 		pkg.PanicExeption(constant.InvalidRequest, "Invalid warrant_expiry format")
 	}

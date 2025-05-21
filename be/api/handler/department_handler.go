@@ -69,6 +69,7 @@ func (h *DepartmentsHandler) GetAll(c *gin.Context) {
 // @Param		id	path		string				true	"id"
 // @Router       /api/departments/{id} [DELETE]
 func (h *DepartmentsHandler) Delete(c *gin.Context) {
+	defer pkg.PanicHandler(c)
 	id := c.Param("id")
 	IdConvert, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {

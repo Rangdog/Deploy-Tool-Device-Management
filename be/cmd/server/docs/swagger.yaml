@@ -3,19 +3,12 @@ definitions:
     properties:
       assetId:
         type: integer
+      departmentId:
+        type: integer
       userId:
         type: integer
-    type: object
-  dto.AssignmentResponse:
-    properties:
-      asset:
-        $ref: '#/definitions/dto.UserAssignmentAssetResponse'
-      id:
-        type: integer
-      userAssign:
-        $ref: '#/definitions/dto.UsersAssignmentResponse'
-      userAssigned:
-        $ref: '#/definitions/dto.UsersAssignmentResponse'
+    required:
+    - assetId
     type: object
   dto.CheckPasswordReset:
     properties:
@@ -75,19 +68,6 @@ definitions:
     required:
     - roleTitle
     type: object
-  dto.UserAssignmentAssetResponse:
-    properties:
-      assetName:
-        type: string
-      fileAttachment:
-        type: string
-      id:
-        type: integer
-      imageUpload:
-        type: string
-      status:
-        type: string
-    type: object
   dto.UserLoginRequest:
     properties:
       email:
@@ -126,17 +106,6 @@ definitions:
     required:
     - newPassword
     - token
-    type: object
-  dto.UsersAssignmentResponse:
-    properties:
-      email:
-        type: string
-      firstName:
-        type: string
-      id:
-        type: integer
-      lastName:
-        type: string
     type: object
 info:
   contact: {}
@@ -212,6 +181,23 @@ paths:
       summary: Create assets
       tags:
       - assets
+  /api/assets-log/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get assets log by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Get assets log by id
+      tags:
+      - Assets log
   /api/assets/{id}:
     delete:
       consumes:
@@ -357,7 +343,7 @@ paths:
         name: assignment
         required: true
         schema:
-          $ref: '#/definitions/dto.AssignmentResponse'
+          $ref: '#/definitions/dto.AssignmentCreateRequest'
       produces:
       - application/json
       responses: {}
