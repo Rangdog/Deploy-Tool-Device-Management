@@ -16,8 +16,8 @@ type AssetCreateRequest struct {
 
 type AssetResponse struct {
 	ID             int64              `json:"id"`
-	AssetName      string             `json:"asset_name"`
-	PurchaseDate   string             `json:"purchase_date"`
+	AssetName      string             `json:"assetName"`
+	PurchaseDate   string             `json:"purchaseDate"`
 	Cost           float64            `json:"cost"`
 	Owner          OwnerResponse      `json:"owner,omitempty"`
 	WarrantExpiry  string             `json:"warrantExpiry"`

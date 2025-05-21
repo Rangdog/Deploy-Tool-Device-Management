@@ -390,7 +390,45 @@ func (h *AssetsHandler) GetAllAsset(c *gin.Context) {
 		log.Error("Happened error when get all assets. Error", err)
 		pkg.PanicExeption(constant.UnknownError, "Happened error when get all assets")
 	}
-	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, assets))
+	assetsResponse := []dto.AssetResponse{}
+	for _, asset := range assets {
+		assetResponse := dto.AssetResponse{
+			ID:             asset.Id,
+			AssetName:      asset.AssetName,
+			PurchaseDate:   asset.PurchaseDate.Format("2006-01-02"),
+			Cost:           asset.Cost,
+			WarrantExpiry:  asset.WarrantExpiry.Format("2006-01-02"),
+			Status:         asset.Status,
+			SerialNumber:   asset.SerialNumber,
+			FileAttachment: *asset.FileAttachment,
+			ImageUpload:    *asset.ImageUpload,
+			Category: dto.CategoryResponse{
+				ID:           asset.Category.Id,
+				CategoryName: asset.Category.CategoryName,
+			},
+			Department: dto.DepartmentResponse{
+				ID:             asset.Department.Id,
+				DepartmentName: asset.Department.DepartmentName,
+				Location: dto.LocationResponse{
+					ID:           asset.Department.Location.Id,
+					LocationName: asset.Department.Location.LocationName,
+				},
+			},
+		}
+		if asset.ScheduleMaintenance != nil {
+			assetResponse.Maintenance = asset.ScheduleMaintenance.Format("2006-01-02")
+		}
+		if asset.OnwerUser != nil {
+			assetResponse.Owner = dto.OwnerResponse{
+				ID:        asset.OnwerUser.Id,
+				FirstName: asset.OnwerUser.FirstName,
+				LastName:  asset.OnwerUser.LastName,
+				Email:     asset.OnwerUser.Email,
+			}
+		}
+		assetsResponse = append(assetsResponse, assetResponse)
+	}
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, assetsResponse))
 }
 
 // Asset godoc
