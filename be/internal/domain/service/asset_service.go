@@ -1,6 +1,7 @@
 package service
 
 import (
+	"BE_Manage_device/internal/domain/dto"
 	"BE_Manage_device/internal/domain/entity"
 	"BE_Manage_device/internal/domain/filter"
 	"BE_Manage_device/internal/domain/repository"
@@ -247,13 +248,51 @@ func (service *AssetsService) Filter(userId int64, assetName *string, status *st
 	var total int64
 	dbFilter.Count(&total)
 	offset := (filter.Page - 1) * filter.Limit
-	var Assets []entity.Assets
-	resutl := dbFilter.Offset(offset).Limit(filter.Limit).Find(&Assets)
+	var assets []entity.Assets
+	resutl := dbFilter.Offset(offset).Limit(filter.Limit).Find(&assets)
 	if resutl.Error != nil {
 		return nil, resutl.Error
 	}
+	assetsResponse := []dto.AssetResponse{}
+	for _, asset := range assets {
+		assetResponse := dto.AssetResponse{
+			ID:             asset.Id,
+			AssetName:      asset.AssetName,
+			PurchaseDate:   asset.PurchaseDate.Format("2006-01-02"),
+			Cost:           asset.Cost,
+			WarrantExpiry:  asset.WarrantExpiry.Format("2006-01-02"),
+			Status:         asset.Status,
+			SerialNumber:   asset.SerialNumber,
+			FileAttachment: *asset.FileAttachment,
+			ImageUpload:    *asset.ImageUpload,
+			Category: dto.CategoryResponse{
+				ID:           asset.Category.Id,
+				CategoryName: asset.Category.CategoryName,
+			},
+			Department: dto.DepartmentResponse{
+				ID:             asset.Department.Id,
+				DepartmentName: asset.Department.DepartmentName,
+				Location: dto.LocationResponse{
+					ID:           asset.Department.Location.Id,
+					LocationName: asset.Department.Location.LocationName,
+				},
+			},
+		}
+		if asset.ScheduleMaintenance != nil {
+			assetResponse.Maintenance = *asset.ScheduleMaintenance
+		}
+		if asset.OnwerUser != nil {
+			assetResponse.Owner = dto.OwnerResponse{
+				ID:        asset.OnwerUser.Id,
+				FirstName: asset.OnwerUser.FirstName,
+				LastName:  asset.OnwerUser.LastName,
+				Email:     asset.OnwerUser.Email,
+			}
+		}
+		assetsResponse = append(assetsResponse, assetResponse)
+	}
 	data := map[string]any{
-		"data":       Assets,
+		"data":       assetsResponse,
 		"page":       filter.Page,
 		"limit":      filter.Limit,
 		"total":      total,

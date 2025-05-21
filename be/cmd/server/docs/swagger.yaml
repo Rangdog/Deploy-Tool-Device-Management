@@ -514,7 +514,7 @@ paths:
       responses: {}
       summary: GetRole
       tags:
-      - users
+      - roles
   /api/user/{email}:
     delete:
       consumes:

@@ -618,7 +618,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "roles"
                 ],
                 "summary": "GetRole",
                 "responses": {}

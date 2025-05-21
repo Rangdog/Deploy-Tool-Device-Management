@@ -20,7 +20,7 @@ func NewRoleHandler(service *service.RoleService) *RoleHandler {
 // User godoc
 // @Summary      GetRole
 // @Description  GetRole
-// @Tags         users
+// @Tags         roles
 // @Accept       json
 // @Produce      json
 // @Router       /api/roles [GET]
