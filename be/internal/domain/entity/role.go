@@ -8,8 +8,8 @@ type Roles struct {
 	Slug        string     `gorm:"type:VARCHAR(250);index:unique_slug,unique" json:"slug"`
 	Description string     `json:"description"`
 	Activated   bool       `gorm:"default:true" json:"activated"`
-	Created_at  time.Time  `gorm:"NOT NULL" json:"created_at"`
-	Updated_at  *time.Time `json:"updated_at"`
+	Created_at  time.Time  `gorm:"NOT NULL" json:"createdAt"`
+	Updated_at  *time.Time `json:"updatedAt"`
 	Content     string     `json:"content"`
 
 	Users           []Users          `gorm:"foreignKey:RoleId;references:Id"`
