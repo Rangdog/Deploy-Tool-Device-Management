@@ -10,6 +10,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -126,4 +127,15 @@ func (s *SupabaseUploader) Upload(objectPath string, file multipart.File, conten
 	// Trả về URL public nếu bucket public
 	publicURL := fmt.Sprintf("https://%s.supabase.co/storage/v1/object/public/%s/%s", s.ProjectRef, s.Bucket, objectPath)
 	return publicURL, nil
+}
+
+func CleanTimezoneLabel(input string) string {
+	// Tìm vị trí của " ("
+	idx := strings.Index(input, " (")
+	if idx != -1 {
+		// Cắt từ đầu đến trước " ("
+		return input[:idx]
+	}
+	// Nếu không có gì để cắt, trả về nguyên gốc
+	return input
 }
