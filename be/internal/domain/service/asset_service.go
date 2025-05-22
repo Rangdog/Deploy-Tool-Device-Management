@@ -169,21 +169,24 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 	if err != nil {
 		return nil, err
 	}
+	duration := time.Duration(maintenance * float64(24) * float64(time.Hour))
+	maintenanceDay := time.Now().Add(duration)
 	tx := service.repo.GetDB().Begin()
 	asset := entity.Assets{
-		Id:                  assetId,
-		AssetName:           assetName,
-		PurchaseDate:        purchaseDate,
-		Cost:                cost,
-		Owner:               owner,
-		WarrantExpiry:       warrantExpiry,
-		SerialNumber:        serialNumber,
-		ImageUpload:         &imageUrl,
-		FileAttachment:      &fileUrl,
-		CategoryId:          categoryId,
-		DepartmentId:        departmentId,
-		ScheduleMaintenance: &maintenance,
-		Status:              status,
+		Id:                    assetId,
+		AssetName:             assetName,
+		PurchaseDate:          purchaseDate,
+		Cost:                  cost,
+		Owner:                 owner,
+		WarrantExpiry:         warrantExpiry,
+		SerialNumber:          serialNumber,
+		ImageUpload:           &imageUrl,
+		FileAttachment:        &fileUrl,
+		CategoryId:            categoryId,
+		DepartmentId:          departmentId,
+		ScheduleMaintenance:   &maintenance,
+		ExpectDateMaintenance: maintenanceDay,
+		Status:                status,
 	}
 	assetUpdated, err := service.repo.UpdateAsset(&asset, tx)
 	if err != nil {
@@ -280,6 +283,7 @@ func (service *AssetsService) Filter(userId int64, assetName *string, status *st
 		}
 		if asset.ScheduleMaintenance != nil {
 			assetResponse.Maintenance = *asset.ScheduleMaintenance
+			assetResponse.ExpectDateMaintenance = asset.ExpectDateMaintenance.Format("2006-01-02")
 		}
 		if asset.OnwerUser != nil {
 			assetResponse.Owner = dto.OwnerResponse{

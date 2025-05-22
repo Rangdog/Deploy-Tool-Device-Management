@@ -116,7 +116,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/assets-log/{id}": {
+        "/api/assets-log/{asset_id}": {
             "get": {
                 "description": "Get assets log by id",
                 "consumes": [
@@ -133,7 +133,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "id",
-                        "name": "id",
+                        "name": "asset_id",
                         "in": "path",
                         "required": true
                     }

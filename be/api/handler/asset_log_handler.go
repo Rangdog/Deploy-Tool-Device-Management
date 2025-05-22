@@ -25,8 +25,8 @@ func NewAssetLogHandler(service *service.AssetLogService) *AssetLogHandler {
 // @Tags Assets log
 // @Accept json
 // @Produce json
-// @Param		id	path		string				true	"id"
-// @Router /api/assets-log/{id} [GET]
+// @Param		asset_id	path		string				true	"id"
+// @Router /api/assets-log/{asset_id} [GET]
 func (h *AssetLogHandler) GetLogByAssetId(c *gin.Context) {
 	id := c.Param("id")
 	defer pkg.PanicHandler(c)

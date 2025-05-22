@@ -181,7 +181,7 @@ paths:
       summary: Create assets
       tags:
       - assets
-  /api/assets-log/{id}:
+  /api/assets-log/{asset_id}:
     get:
       consumes:
       - application/json
@@ -189,7 +189,7 @@ paths:
       parameters:
       - description: id
         in: path
-        name: id
+        name: asset_id
         required: true
         type: string
       produces:
