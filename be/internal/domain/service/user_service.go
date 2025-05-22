@@ -30,13 +30,14 @@ func (service *UserService) Register(firstName, lastName, password, email, redir
 	if err != nil {
 		return nil, err
 	}
+	role := service.roleRepository.GetRoleByTile("Viewer")
 	token := uuid.New().String()
 	users := &entity.Users{
 		FirstName: firstName,
 		LastName:  lastName,
 		Password:  string(hashedPassword),
 		Email:     email,
-		RoleId:    1,
+		RoleId:    role.Id,
 		IsActive:  false,
 		Token:     token,
 	}
