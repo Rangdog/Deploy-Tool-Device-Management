@@ -28,3 +28,7 @@ func (r *PostgreSQLAssetsLogrepository) GetLogByAssetId(assetId int64) ([]*entit
 	}
 	return assetLogs, nil
 }
+
+func (r *PostgreSQLAssetsLogrepository) GetDB() *gorm.DB {
+	return r.db
+}

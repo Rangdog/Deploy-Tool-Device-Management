@@ -9,4 +9,5 @@ import (
 type AssetsLogRepository interface {
 	Create(assetsLog *entity.AssetLog, tx *gorm.DB) (*entity.AssetLog, error)
 	GetLogByAssetId(assetId int64) ([]*entity.AssetLog, error)
+	GetDB() *gorm.DB
 }

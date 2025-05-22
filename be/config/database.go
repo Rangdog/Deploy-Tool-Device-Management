@@ -90,12 +90,37 @@ var rolePermissions = []entity.RolePermission{
 	{RoleId: 4, PermissionId: 13, AccessLevel: "conditional", Created_at: time.Now()},
 }
 
+var user = entity.Users{
+	FirstName: "Admin",
+	LastName:  "Admin",
+	RoleId:    1,
+	Email:     "admin",
+	Password:  "admin",
+	IsActive:  true,
+}
+
 func ConnectToDB() *gorm.DB {
 	db, err := gorm.Open(postgres.Open(DB_DNS), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Error connecting to database. Error:", err)
 	}
-	err = db.AutoMigrate(&entity.Roles{}, &entity.Permission{}, &entity.RolePermission{}, &entity.Users{}, &entity.UsersSessions{}, &entity.UserRbac{}, &entity.Locations{}, &entity.Departments{}, &entity.Categories{}, &entity.Assets{}, &entity.AssetLog{}, entity.Assignments{})
+	createEnumSQL := `
+	DO $$
+	BEGIN
+		IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'asset_status') THEN
+			CREATE TYPE asset_status AS ENUM (
+				'New', 
+				'In Use', 
+				'Under Maintenance', 
+				'Retired', 
+				'Disposed'
+			);
+		END IF;
+	END
+	$$;
+	`
+	db.Exec(createEnumSQL)
+	err = db.AutoMigrate(&entity.Roles{}, &entity.Permission{}, &entity.RolePermission{}, &entity.Users{}, &entity.UsersSessions{}, &entity.UserRbac{}, &entity.Locations{}, &entity.Departments{}, &entity.Categories{}, &entity.Assets{}, &entity.AssetLog{}, &entity.Assignments{}, &entity.RequestTransfer{}, &entity.Notifications{})
 	if err != nil {
 		log.Fatal("Error migrate to database. Error:", err)
 	}
@@ -115,5 +140,7 @@ func ConnectToDB() *gorm.DB {
 		db.Where("role_id = ? and permission_id = ?", rolePermission.RoleId, rolePermission.PermissionId).FirstOrCreate(&existing, rolePermission)
 	}
 
+	var existing entity.Users
+	db.Where("email = ?", user.Email).FirstOrCreate(&existing, user)
 	return db
 }

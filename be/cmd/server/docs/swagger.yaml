@@ -44,6 +44,16 @@ definitions:
     required:
     - locationName
     type: object
+  dto.CreateRequestTransferRequest:
+    properties:
+      assetId:
+        type: integer
+      departmentId:
+        type: integer
+    required:
+    - assetId
+    - departmentId
+    type: object
   dto.RefreshRequest:
     properties:
       refreshToken:
@@ -192,9 +202,40 @@ paths:
         name: asset_id
         required: true
         type: string
+      - in: query
+        name: assetName
+        type: string
+      - in: query
+        name: category_id
+        type: integer
+      - in: query
+        name: cost
+        type: string
+      - in: query
+        name: email
+        type: string
+      - in: query
+        name: limit
+        type: integer
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: serial_number
+        type: string
+      - in: query
+        name: status
+        type: string
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses: {}
+      security:
+      - JWT: []
       summary: Get assets log by id
       tags:
       - Assets log
@@ -295,6 +336,11 @@ paths:
         name: image
         required: true
         type: file
+      - description: expectDayMaintenance Date (RFC3339 format, e.g. 2023-04-15T10:00:00Z)
+        in: formData
+        name: expectDayMaintenance
+        required: true
+        type: string
       produces:
       - application/json
       responses: {}
@@ -311,11 +357,23 @@ paths:
         name: assetName
         type: string
       - in: query
+        name: category_id
+        type: integer
+      - in: query
+        name: cost
+        type: string
+      - in: query
+        name: email
+        type: string
+      - in: query
         name: limit
         type: integer
       - in: query
         name: page
         type: integer
+      - in: query
+        name: serial_number
+        type: string
       - in: query
         name: status
         type: string
@@ -607,6 +665,29 @@ paths:
       summary: Delete location
       tags:
       - locations
+  /api/request-transfer/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Request Transfer
+      parameters:
+      - description: Data
+        in: body
+        name: Request-Transfer
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateRequestTransferRequest'
+      - description: project_id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Request Transfer
+      tags:
+      - RequestTransfer
   /api/roles:
     get:
       consumes:

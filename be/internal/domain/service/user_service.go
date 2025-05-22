@@ -195,7 +195,7 @@ func (service *UserService) UpdateInformation(id int64, firstName, lastName stri
 func (service *UserService) UpdateRole(id int64, roleTitle string) (*entity.Users, error) {
 	roles := service.roleRepository.GetRoleByTile(roleTitle)
 	if roles == nil {
-		return nil, errors.New("someming went  rong ")
+		return nil, errors.New("something went wrong ")
 	}
 	user := entity.Users{Id: id, RoleId: roles.Id}
 	userUpdated, err := service.repo.UpdateUser(&user)

@@ -29,7 +29,8 @@ func (service *AssignmentService) Create(userIdAssign, departmentId *int64, user
 		AssignBy:     userId,
 		DepartmentId: departmentId,
 	}
-	assignmentCreated, err := service.repo.Create(&assignment)
+	tx := service.repo.GetDB().Begin()
+	assignmentCreated, err := service.repo.Create(&assignment, tx)
 	if err != nil {
 		return nil, err
 	}

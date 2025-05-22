@@ -183,6 +183,7 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 // @Param departmentId formData int64 true "Department ID"
 // @Param file formData file true "File to upload"
 // @Param image formData file true "Image to upload"
+// @Param expectDayMaintenance formData string true "expectDayMaintenance Date (RFC3339 format, e.g. 2023-04-15T10:00:00Z)"
 // @Router /api/assets/{id} [PUT]
 func (h *AssetsHandler) Update(c *gin.Context) {
 	defer pkg.PanicHandler(c)
@@ -205,6 +206,7 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 	Status := c.PostForm("status")
 	categoryIdStr := c.PostForm("categoryId")
 	departmentIdStr := c.PostForm("departmentId")
+	expectDayMaintenanceStr := c.PostForm("expectDayMaintenance")
 
 	purchaseDate, err := time.Parse(time.RFC3339Nano, purchaseDateStr)
 	if err != nil {
@@ -214,6 +216,11 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 	warrantExpiry, err := time.Parse(time.RFC3339, warrantExpiryStr)
 	if err != nil {
 		pkg.PanicExeption(constant.InvalidRequest, "Invalid warrant_expiry format")
+	}
+
+	expectDate, err := time.Parse(time.RFC3339Nano, expectDayMaintenanceStr)
+	if err != nil {
+		pkg.PanicExeption(constant.InvalidRequest, "Invalid expectDate format")
 	}
 
 	cost, err := strconv.ParseFloat(costStr, 64)
@@ -274,6 +281,7 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 		departmentId,
 		Status,
 		maintenance,
+		expectDate,
 	)
 	if err != nil {
 		pkg.PanicExeption(constant.InvalidRequest, "Failed to update asset")
@@ -308,7 +316,7 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 	}
 	if asset.ScheduleMaintenance != nil {
 		assetResponse.Maintenance = *asset.ScheduleMaintenance
-		assetResponse.ExpectDateMaintenance = asset.ExpectDateMaintenance.Format("2006-01-02")
+		assetResponse.ExpectDateMaintenance = asset.ExpectDateMaintenance.Format("2006-01-02 15:04:05")
 	}
 	if asset.OnwerUser != nil {
 		assetResponse.Owner = dto.OwnerResponse{
@@ -368,7 +376,7 @@ func (h *AssetsHandler) GetAssetById(c *gin.Context) {
 	}
 	if asset.ScheduleMaintenance != nil {
 		assetResponse.Maintenance = *asset.ScheduleMaintenance
-		assetResponse.ExpectDateMaintenance = asset.ExpectDateMaintenance.Format("2006-01-02")
+		assetResponse.ExpectDateMaintenance = asset.ExpectDateMaintenance.Format("2006-01-02 15:04:05")
 	}
 	if asset.OnwerUser != nil {
 		assetResponse.Owner = dto.OwnerResponse{
@@ -422,7 +430,7 @@ func (h *AssetsHandler) GetAllAsset(c *gin.Context) {
 		}
 		if asset.ScheduleMaintenance != nil {
 			assetResponse.Maintenance = *asset.ScheduleMaintenance
-			assetResponse.ExpectDateMaintenance = asset.ExpectDateMaintenance.Format("2006-01-02")
+			assetResponse.ExpectDateMaintenance = asset.ExpectDateMaintenance.Format("2006-01-02 15:04:05")
 		}
 		if asset.OnwerUser != nil {
 			assetResponse.Owner = dto.OwnerResponse{

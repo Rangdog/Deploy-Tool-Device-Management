@@ -28,6 +28,7 @@ func main() {
 	roleRepository := database.NewPostgreSQLRoleRepository(db)
 	userRBACRepository := database.NewPostgreSQLUserRBACRepository(db)
 	assignmentRepository := database.NewPostgreSQLAssignmentRepository(db)
+	requestTransferRepository := database.NewPostgreSQLRequestTransferRepository(db)
 	emailService := service.NewEmailService(config.SmtpPasswd)
 	//User
 	userService := service.NewUserService(userRepository, emailService, userSessionRepository, roleRepository)
@@ -42,7 +43,7 @@ func main() {
 	departmentService := service.NewDepartmentsService(departmentRepository)
 	departmentHandler := handler.NewDepartmentsHandler(departmentService)
 	//Assets
-	assetsService := service.NewAssetsService(assetsRepository, assetsLogRepository, roleRepository, userRBACRepository, userRepository)
+	assetsService := service.NewAssetsService(assetsRepository, assetsLogRepository, roleRepository, userRBACRepository, userRepository, assignmentRepository)
 	assetsHandler := handler.NewAssetsHandler(assetsService)
 	//Role
 	roleService := service.NewRoleService(roleRepository)
@@ -53,6 +54,9 @@ func main() {
 	//AssetLog
 	assetLogService := service.NewAssetLogService(assetsLogRepository)
 	assetLogHandler := handler.NewAssetLogHandler(assetLogService)
+	//Request Transfer
+	requestTransferService := service.NewRequestTransferService(requestTransferRepository)
+	requestTransferHandler := handler.NewRequestTransferHandler(requestTransferService)
 
 	docs.SwaggerInfo.Title = "API Tool device manage"
 	docs.SwaggerInfo.Description = "App Tool device manage"
@@ -62,7 +66,7 @@ func main() {
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
 	r := gin.Default()
-	api.SetupRoutes(r, userHandler, locationHandler, categoriesHandler, departmentHandler, assetsHandler, roleHandler, assignmentHandler, assetLogHandler, userSessionRepository)
+	api.SetupRoutes(r, userHandler, locationHandler, categoriesHandler, departmentHandler, assetsHandler, roleHandler, assignmentHandler, assetLogHandler, requestTransferHandler, userSessionRepository)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	if err := r.Run(config.Port); err != nil {

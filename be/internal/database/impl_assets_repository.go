@@ -128,3 +128,8 @@ func (r *PostgreSQLAssetsRepository) DeleteAsset(id int64, tx *gorm.DB) error {
 	result := tx.Model(entity.Assets{}).Where("id = ?", id).Update("status", "Disposed")
 	return result.Error
 }
+
+func (r *PostgreSQLAssetsRepository) UpdateQrURL(assetId int64, qrUrl string) error {
+	result := r.db.Model(entity.Assets{}).Where("id = ?", assetId).Update("qr_url", qrUrl)
+	return result.Error
+}

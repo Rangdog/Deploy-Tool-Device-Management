@@ -13,6 +13,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -22,10 +23,11 @@ type AssetsService struct {
 	roleRepository      repository.RoleRepository
 	userRBACRepository  repository.UserRBACRepository
 	userRepository      repository.UserRepository
+	assignRepository    repository.AssignmentRepository
 }
 
-func NewAssetsService(repo repository.AssetsRepository, assertLogRepository repository.AssetsLogRepository, roleRepository repository.RoleRepository, userRBACRepository repository.UserRBACRepository, userRepository repository.UserRepository) *AssetsService {
-	return &AssetsService{repo: repo, assertLogRepository: assertLogRepository, roleRepository: roleRepository, userRBACRepository: userRBACRepository, userRepository: userRepository}
+func NewAssetsService(repo repository.AssetsRepository, assertLogRepository repository.AssetsLogRepository, roleRepository repository.RoleRepository, userRBACRepository repository.UserRBACRepository, userRepository repository.UserRepository, assignRepository repository.AssignmentRepository) *AssetsService {
+	return &AssetsService{repo: repo, assertLogRepository: assertLogRepository, roleRepository: roleRepository, userRBACRepository: userRBACRepository, userRepository: userRepository, assignRepository: assignRepository}
 }
 
 func (service *AssetsService) Create(userId int64, assetName string, purchaseDate time.Time, cost float64, owner *int64, warrantExpiry time.Time, serialNumber string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, categoryId int64, departmentId int64) (*entity.Assets, error) {
@@ -83,10 +85,28 @@ func (service *AssetsService) Create(userId int64, assetName string, purchaseDat
 		tx.Rollback()
 		return nil, err
 	}
+	assign := entity.Assignments{
+		AssetId:  assetCreate.Id,
+		UserId:   &userId,
+		AssignBy: userId,
+	}
+	_, err = service.assignRepository.Create(&assign, tx)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
 	var wg sync.WaitGroup
 	wg.Add(1)
 	go service.SetRole(assetCreate.Id, tx, &wg) // commit ở đây
 	wg.Wait()
+	qrUrl, err := utils.GenerateAssetQR(assetCreate.Id)
+	if err != nil {
+		logrus.Info("Error when create qrurl")
+	}
+	err = service.repo.UpdateQrURL(assetCreate.Id, qrUrl)
+	if err != nil {
+		logrus.Info("Error when update qrurl into asset")
+	}
 	return assetCreate, nil
 }
 
@@ -145,7 +165,7 @@ func (service *AssetsService) SetRole(assetId int64, tx *gorm.DB, wg *sync.WaitG
 	return true
 }
 
-func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName string, purchaseDate time.Time, cost float64, owner *int64, warrantExpiry time.Time, serialNumber string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, categoryId int64, departmentId int64, status string, maintenance float64) (*entity.Assets, error) {
+func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName string, purchaseDate time.Time, cost float64, owner *int64, warrantExpiry time.Time, serialNumber string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, categoryId int64, departmentId int64, status string, maintenance float64, expectDayMaintenance time.Time) (*entity.Assets, error) {
 	imgFile, err := image.Open()
 	if err != nil {
 		return nil, fmt.Errorf("cannot open image: %w", err)
@@ -169,8 +189,6 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 	if err != nil {
 		return nil, err
 	}
-	duration := time.Duration(maintenance * float64(24) * float64(time.Hour))
-	maintenanceDay := time.Now().Add(duration)
 	tx := service.repo.GetDB().Begin()
 	asset := entity.Assets{
 		Id:                    assetId,
@@ -185,7 +203,7 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 		CategoryId:            categoryId,
 		DepartmentId:          departmentId,
 		ScheduleMaintenance:   &maintenance,
-		ExpectDateMaintenance: maintenanceDay,
+		ExpectDateMaintenance: expectDayMaintenance,
 		Status:                status,
 	}
 	assetUpdated, err := service.repo.UpdateAsset(&asset, tx)
@@ -283,7 +301,7 @@ func (service *AssetsService) Filter(userId int64, assetName *string, status *st
 		}
 		if asset.ScheduleMaintenance != nil {
 			assetResponse.Maintenance = *asset.ScheduleMaintenance
-			assetResponse.ExpectDateMaintenance = asset.ExpectDateMaintenance.Format("2006-01-02")
+			assetResponse.ExpectDateMaintenance = asset.ExpectDateMaintenance.Format("2006-01-02 15:04:05")
 		}
 		if asset.OnwerUser != nil {
 			assetResponse.Owner = dto.OwnerResponse{

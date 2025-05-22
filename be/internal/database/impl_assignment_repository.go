@@ -15,13 +15,13 @@ func NewPostgreSQLAssignmentRepository(db *gorm.DB) repository.AssignmentReposit
 	return &PostgreSQLAssignmentRepository{db: db}
 }
 
-func (r *PostgreSQLAssignmentRepository) Create(assignment *entity.Assignments) (*entity.Assignments, error) {
-	result := r.db.Create(assignment)
+func (r *PostgreSQLAssignmentRepository) Create(assignment *entity.Assignments, tx *gorm.DB) (*entity.Assignments, error) {
+	result := tx.Create(assignment)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 	var assignmentCreated = &entity.Assignments{}
-	result = r.db.Model(entity.Assignments{}).Where("id = ?", assignment.Id).Preload("UserAssigned").Preload("UserAssign").Preload("Asset").First(&assignmentCreated)
+	result = tx.Model(entity.Assignments{}).Where("id = ?", assignment.Id).Preload("UserAssigned").Preload("UserAssign").Preload("Asset").First(&assignmentCreated)
 	return assignmentCreated, result.Error
 }
 

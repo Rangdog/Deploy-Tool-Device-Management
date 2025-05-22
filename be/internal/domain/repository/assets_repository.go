@@ -16,4 +16,5 @@ type AssetsRepository interface {
 	GetHeadDepartmentIdByAssetId(id int64) (int64, error)
 	UpdateAsset(asset *entity.Assets, tx *gorm.DB) (*entity.Assets, error)
 	DeleteAsset(id int64, tx *gorm.DB) error
+	UpdateQrURL(assetId int64, qrUrl string) error
 }

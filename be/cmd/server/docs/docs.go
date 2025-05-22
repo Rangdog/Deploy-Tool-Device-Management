@@ -118,6 +118,11 @@ const docTemplate = `{
         },
         "/api/assets-log/{asset_id}": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Get assets log by id",
                 "consumes": [
                     "application/json"
@@ -135,6 +140,53 @@ const docTemplate = `{
                         "description": "id",
                         "name": "asset_id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "assetName",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "category_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "cost",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "email",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "serial_number",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -167,12 +219,32 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "name": "category_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "cost",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "email",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "name": "limit",
                         "in": "query"
                     },
                     {
                         "type": "integer",
                         "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "serial_number",
                         "in": "query"
                     },
                     {
@@ -308,6 +380,13 @@ const docTemplate = `{
                         "type": "file",
                         "description": "Image to upload",
                         "name": "image",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "expectDayMaintenance Date (RFC3339 format, e.g. 2023-04-15T10:00:00Z)",
+                        "name": "expectDayMaintenance",
                         "in": "formData",
                         "required": true
                     }
@@ -749,6 +828,40 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/api/request-transfer/{id}": {
+            "post": {
+                "description": "Request Transfer",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "RequestTransfer"
+                ],
+                "summary": "Request Transfer",
+                "parameters": [
+                    {
+                        "description": "Data",
+                        "name": "Request-Transfer",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateRequestTransferRequest"
+                        }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "project_id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/api/roles": {
             "get": {
                 "description": "GetRole",
@@ -998,6 +1111,21 @@ const docTemplate = `{
             "properties": {
                 "locationName": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.CreateRequestTransferRequest": {
+            "type": "object",
+            "required": [
+                "assetId",
+                "departmentId"
+            ],
+            "properties": {
+                "assetId": {
+                    "type": "integer"
+                },
+                "departmentId": {
+                    "type": "integer"
                 }
             }
         },

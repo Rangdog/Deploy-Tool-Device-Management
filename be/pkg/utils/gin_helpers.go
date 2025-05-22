@@ -10,12 +10,12 @@ import (
 	"mime/multipart"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	log "github.com/sirupsen/logrus"
+	"github.com/skip2/go-qrcode"
 )
 
 func GetUserIdFromContext(c *gin.Context) int64 {
@@ -129,13 +129,62 @@ func (s *SupabaseUploader) Upload(objectPath string, file multipart.File, conten
 	return publicURL, nil
 }
 
-func CleanTimezoneLabel(input string) string {
-	// Tìm vị trí của " ("
-	idx := strings.Index(input, " (")
-	if idx != -1 {
-		// Cắt từ đầu đến trước " ("
-		return input[:idx]
+func (s *SupabaseUploader) UploadReader(objectPath string, reader io.Reader, contentType string) (string, error) {
+	// Đọc toàn bộ nội dung từ reader vào buffer
+	var buf bytes.Buffer
+	_, err := io.Copy(&buf, reader)
+	if err != nil {
+		return "", fmt.Errorf("failed to read content: %w", err)
 	}
-	// Nếu không có gì để cắt, trả về nguyên gốc
-	return input
+
+	// Tạo URL Supabase Storage
+	url := fmt.Sprintf("https://%s.supabase.co/storage/v1/object/%s/%s", s.ProjectRef, s.Bucket, objectPath)
+
+	// Tạo request POST (upload)
+	req, err := http.NewRequest("POST", url, &buf)
+	if err != nil {
+		return "", fmt.Errorf("failed to create request: %w", err)
+	}
+	req.Header.Set("Authorization", "Bearer "+s.ApiKey)
+	req.Header.Set("Content-Type", contentType)
+	req.Header.Set("Content-Length", fmt.Sprint(buf.Len()))
+
+	// Gửi request
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("failed to upload: %w", err)
+	}
+	defer resp.Body.Close()
+
+	// Kiểm tra trạng thái phản hồi
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+		body, _ := io.ReadAll(resp.Body)
+		return "", fmt.Errorf("upload failed: %s", string(body))
+	}
+
+	// Trả về URL public (nếu bucket là public)
+	publicURL := fmt.Sprintf("https://%s.supabase.co/storage/v1/object/public/%s/%s", s.ProjectRef, s.Bucket, objectPath)
+	return publicURL, nil
+}
+
+func GenerateAssetQR(assetID int64) (string, error) {
+	url := fmt.Sprintf("%s/assets/%d", config.BASE_URL_FRONTEND, assetID)
+	png, err := qrcode.Encode(url, qrcode.Medium, 256)
+	if err != nil {
+		return "", fmt.Errorf("QR encoding failed: %w", err)
+	}
+	// Tạo tên file và đường dẫn
+	fileName := fmt.Sprintf("qr_%d_%d.png", assetID, time.Now().UnixNano())
+	path := "qr-codes/" + fileName
+	// Tạo reader để upload
+	reader := bytes.NewReader(png)
+	contentType := "image/png"
+	uploader := NewSupabaseUploader()
+	qrURL, err := uploader.UploadReader(path, reader, contentType)
+	if err != nil {
+		return "", fmt.Errorf("upload failed: %w", err)
+	}
+
+	return qrURL, nil
 }
