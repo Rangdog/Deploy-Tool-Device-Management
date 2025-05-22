@@ -57,6 +57,7 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 	purchaseDate, err := time.Parse(time.RFC3339Nano, purchaseDateStr)
 
 	if err != nil {
+		log.Info("Error: ", err.Error())
 		pkg.PanicExeption(constant.InvalidRequest, "Invalid purchase_date format")
 	}
 
