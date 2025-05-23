@@ -33,5 +33,5 @@ func (f *AssignmentFilter) ApplyFilter(db *gorm.DB, userId int64) *gorm.DB {
 		str += "%"
 		db = db.Where("LOWER(name) LIKE LOWER(?)", str)
 	}
-	return db.Preload("UserAssigned").Preload("UserAssign").Preload("Asset")
+	return db.Preload("UserAssigned").Preload("UserAssign").Preload("Asset").Order("assignments.id ASC")
 }

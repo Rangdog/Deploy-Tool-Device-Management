@@ -30,7 +30,7 @@ func NewAssetsService(repo repository.AssetsRepository, assertLogRepository repo
 	return &AssetsService{repo: repo, assertLogRepository: assertLogRepository, roleRepository: roleRepository, userRBACRepository: userRBACRepository, userRepository: userRepository, assignRepository: assignRepository}
 }
 
-func (service *AssetsService) Create(userId int64, assetName string, purchaseDate time.Time, cost float64, owner *int64, warrantExpiry time.Time, serialNumber string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, categoryId int64, departmentId int64) (*entity.Assets, error) {
+func (service *AssetsService) Create(userId int64, assetName string, purchaseDate time.Time, cost float64, warrantExpiry time.Time, serialNumber string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, categoryId int64, departmentId int64) (*entity.Assets, error) {
 	imgFile, err := image.Open()
 	if err != nil {
 		return nil, fmt.Errorf("cannot open image: %w", err)
@@ -59,7 +59,7 @@ func (service *AssetsService) Create(userId int64, assetName string, purchaseDat
 		AssetName:      assetName,
 		PurchaseDate:   purchaseDate,
 		Cost:           cost,
-		Owner:          owner,
+		Owner:          &userId,
 		WarrantExpiry:  warrantExpiry,
 		Status:         "New",
 		SerialNumber:   serialNumber,
@@ -86,9 +86,10 @@ func (service *AssetsService) Create(userId int64, assetName string, purchaseDat
 		return nil, err
 	}
 	assign := entity.Assignments{
-		AssetId:  assetCreate.Id,
-		UserId:   &userId,
-		AssignBy: userId,
+		AssetId:      assetCreate.Id,
+		UserId:       &userId,
+		AssignBy:     userId,
+		DepartmentId: &departmentId,
 	}
 	_, err = service.assignRepository.Create(&assign, tx)
 	if err != nil {
@@ -250,12 +251,16 @@ func (service *AssetsService) DeleteAsset(userId int64, id int64) error {
 	return nil
 }
 
-func (service *AssetsService) Filter(userId int64, assetName *string, status *string, page int, limit int) (*map[string]any, error) {
+func (service *AssetsService) Filter(userId int64, assetName *string, status *string, categoryId *string, cost *string, serialNumber *string, email *string, page int, limit int) (*map[string]any, error) {
 	var filter = filter.AssetFilter{
-		AssetName: assetName,
-		Status:    status,
-		Page:      page,
-		Limit:     limit,
+		AssetName:    assetName,
+		CategoryId:   categoryId,
+		Cost:         cost,
+		SerialNumber: serialNumber,
+		Email:        email,
+		Status:       status,
+		Page:         page,
+		Limit:        limit,
 	}
 	db := service.repo.GetDB()
 	dbFilter := filter.ApplyFilter(db.Model(&entity.Assets{}), userId)

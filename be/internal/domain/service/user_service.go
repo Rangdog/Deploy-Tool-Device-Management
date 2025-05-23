@@ -15,14 +15,16 @@ import (
 )
 
 type UserService struct {
-	repo            repository.UserRepository
-	emailService    *EmailService
-	userSessionRepo repository.UsersSessionRepository
-	roleRepository  repository.RoleRepository
+	repo               repository.UserRepository
+	emailService       *EmailService
+	userSessionRepo    repository.UsersSessionRepository
+	roleRepository     repository.RoleRepository
+	assetRepo          repository.AssetsRepository
+	userRBACRepository repository.UserRBACRepository
 }
 
-func NewUserService(repo repository.UserRepository, emailService *EmailService, userSessionRepo repository.UsersSessionRepository, roleRepository repository.RoleRepository) *UserService {
-	return &UserService{repo: repo, emailService: emailService, userSessionRepo: userSessionRepo, roleRepository: roleRepository}
+func NewUserService(repo repository.UserRepository, emailService *EmailService, userSessionRepo repository.UsersSessionRepository, roleRepository repository.RoleRepository, assetRepo repository.AssetsRepository, userRBACRepository repository.UserRBACRepository) *UserService {
+	return &UserService{repo: repo, emailService: emailService, userSessionRepo: userSessionRepo, roleRepository: roleRepository, assetRepo: assetRepo, userRBACRepository: userRBACRepository}
 }
 
 func (service *UserService) Register(firstName, lastName, password, email, redirectUrl string) (*entity.Users, error) {
@@ -95,7 +97,25 @@ func (service *UserService) Activate(token string) error {
 		return err
 	}
 	err = service.repo.Update(users)
+	go service.SetRole(users.Id, users.RoleId)
 	return err
+}
+
+func (service *UserService) SetRole(userId int64, roleId int64) {
+	tx := service.repo.GetDB().Begin()
+	assets, _ := service.assetRepo.GetAllAsset()
+	for _, asset := range assets {
+		userRbac := entity.UserRbac{
+			AssetId: asset.Id,
+			UserId:  userId,
+			RoleId:  roleId,
+		}
+		err := service.userRBACRepository.Create(&userRbac, tx)
+		if err != nil {
+			tx.Rollback()
+		}
+	}
+	tx.Commit()
 }
 
 func (service *UserService) FindUserByEmail(email string) (*entity.Users, error) {

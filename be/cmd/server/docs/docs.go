@@ -148,8 +148,8 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "type": "integer",
-                        "name": "category_id",
+                        "type": "string",
+                        "name": "categoryId",
                         "in": "query"
                     },
                     {
@@ -174,7 +174,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "name": "serial_number",
+                        "name": "serialNumber",
                         "in": "query"
                     },
                     {
@@ -218,8 +218,8 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "type": "integer",
-                        "name": "category_id",
+                        "type": "string",
+                        "name": "categoryId",
                         "in": "query"
                     },
                     {
@@ -244,7 +244,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "name": "serial_number",
+                        "name": "serialNumber",
                         "in": "query"
                     },
                     {

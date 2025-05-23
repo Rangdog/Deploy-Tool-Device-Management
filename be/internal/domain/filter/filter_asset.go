@@ -2,6 +2,7 @@ package filter
 
 import (
 	"fmt"
+	"strconv"
 
 	"gorm.io/gorm"
 )
@@ -9,9 +10,9 @@ import (
 type AssetFilter struct {
 	AssetName    *string `form:"assetName" json:"assetName"`
 	Status       *string `form:"status" json:"status"`
-	CategoryId   *int64  `form:"category_id" json:"categoryId"`
+	CategoryId   *string `form:"categoryId" json:"categoryId"`
 	Cost         *string `form:"cost" json:"cost"`
-	SerialNumber *string `form:"serial_number" json:"serialNumber"`
+	SerialNumber *string `form:"serialNumber" json:"serialNumber"`
 	Email        *string `form:"email" json:"email"`
 	Page         int     `form:"page" json:"page"`
 	Limit        int     `form:"limit" json:"limit"`
@@ -23,7 +24,7 @@ func (f *AssetFilter) ApplyFilter(db *gorm.DB, userId int64) *gorm.DB {
 		Joins("JOIN role_permissions on role_permissions.role_id = roles.id").
 		Joins("JOIN permissions on permissions.id = role_permissions.permission_id").
 		Joins("JOIN categories on categories.id = assets.category_id").
-		Joins("JOIN users on users.id = user_rbacs.user_id").
+		Joins("JOIN users on users.id = assets.owner").
 		Where("user_rbacs.user_id = ? and permissions.slug = ?", userId, "view-assets")
 	if f.Status != nil {
 		db = db.Where("status = ?", *f.Status)
@@ -31,16 +32,19 @@ func (f *AssetFilter) ApplyFilter(db *gorm.DB, userId int64) *gorm.DB {
 	if f.AssetName != nil {
 		str := fmt.Sprintf("%v", *f.AssetName)
 		str += "%"
-		db = db.Where("LOWER(assets.name) LIKE LOWER(?)", str)
+		db = db.Where("LOWER(assets.asset_name) LIKE LOWER(?)", str)
 	}
 	if f.CategoryId != nil {
-		db = db.Where("categories.id = ?", *f.CategoryId)
+		parsedID, _ := strconv.ParseInt(*f.CategoryId, 10, 64)
+		db = db.Where("categories.id = ?", parsedID)
 	}
 	if f.Cost != nil {
 		if *f.Cost == "DESC" {
 			db = db.Order("assets.cost DESC")
 		} else if *f.Cost == "ASC" {
 			db = db.Order("assets.cost ASC")
+		} else {
+			db = db.Order("assets.id ASC")
 		}
 	}
 	if f.SerialNumber != nil {

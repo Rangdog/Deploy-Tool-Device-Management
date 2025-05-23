@@ -48,7 +48,6 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 	assetName := c.PostForm("assetName")
 	purchaseDateStr := c.PostForm("purchaseDate")
 	costStr := c.PostForm("cost")
-	ownerStr := c.PostForm("owner")
 	warrantExpiryStr := c.PostForm("warrantExpiry")
 	serialNumber := c.PostForm("serialNumber")
 	categoryIdStr := c.PostForm("categoryId")
@@ -69,15 +68,6 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 	cost, err := strconv.ParseFloat(costStr, 64)
 	if err != nil {
 		pkg.PanicExeption(constant.InvalidRequest, "Invalid cost format")
-	}
-
-	var owner *int64
-	if ownerStr != "" {
-		val, err := strconv.ParseInt(ownerStr, 10, 64)
-		if err != nil {
-			pkg.PanicExeption(constant.InvalidRequest, "Invalid owner format")
-		}
-		owner = &val
 	}
 
 	categoryId, err := strconv.ParseInt(categoryIdStr, 10, 64)
@@ -111,7 +101,6 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 		assetName,
 		purchaseDate,
 		cost,
-		owner,
 		warrantExpiry,
 		serialNumber,
 		image,
@@ -490,7 +479,7 @@ func (h *AssetsHandler) FilterAsset(c *gin.Context) {
 		log.Error("Happened error when mapping query to filter. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when mapping query to filter")
 	}
-	data, err := h.service.Filter(userId, filter.AssetName, filter.Status, filter.Page, filter.Limit)
+	data, err := h.service.Filter(userId, filter.AssetName, filter.Status, filter.CategoryId, filter.Cost, filter.SerialNumber, filter.Email, filter.Page, filter.Limit)
 	if err != nil {
 		log.Error("Happened error when filter asset. Error", err)
 		pkg.PanicExeption(constant.UnknownError, "Happened error when filter asset")

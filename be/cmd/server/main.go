@@ -31,7 +31,7 @@ func main() {
 	requestTransferRepository := database.NewPostgreSQLRequestTransferRepository(db)
 	emailService := service.NewEmailService(config.SmtpPasswd)
 	//User
-	userService := service.NewUserService(userRepository, emailService, userSessionRepository, roleRepository)
+	userService := service.NewUserService(userRepository, emailService, userSessionRepository, roleRepository, assetsRepository, userRBACRepository)
 	userHandler := handler.NewUserHandler(userService)
 	//Location
 	locationService := service.NewLocationService(locationRepository)

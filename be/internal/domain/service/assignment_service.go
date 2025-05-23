@@ -43,7 +43,7 @@ func (service *AssignmentService) Update(userId, assetId, assignmentId int64, us
 		return nil, err
 	}
 	tx := service.repo.GetDB().Begin()
-	assigmentUpdated, err := service.repo.Update(assignmentId, userId, assetId, userIdAssign, departmentId, tx)
+	assignmentUpdated, err := service.repo.Update(assignmentId, userId, assetId, userIdAssign, departmentId, tx)
 	if err != nil {
 		tx.Rollback()
 		return nil, err
@@ -51,6 +51,7 @@ func (service *AssignmentService) Update(userId, assetId, assignmentId int64, us
 	assetLog := entity.AssetLog{}
 	assetLog.Timestamp = time.Now()
 	assetLog.Action = "Transfer"
+	assetLog.AssetId = assetId
 	if departmentId != nil && departmentId != &asset.DepartmentId {
 		department, err := service.departmentRepo.GetDepartmentById(*departmentId)
 		if err != nil {
@@ -77,7 +78,7 @@ func (service *AssignmentService) Update(userId, assetId, assignmentId int64, us
 		return nil, err
 	}
 	tx.Commit()
-	return assigmentUpdated, nil
+	return assignmentUpdated, nil
 }
 
 func (service *AssignmentService) Filter(userId int64, emailAssigned *string, emailAssign *string, assetName *string, page int, limit int) (*map[string]any, error) {

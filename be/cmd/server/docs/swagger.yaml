@@ -206,8 +206,8 @@ paths:
         name: assetName
         type: string
       - in: query
-        name: category_id
-        type: integer
+        name: categoryId
+        type: string
       - in: query
         name: cost
         type: string
@@ -221,7 +221,7 @@ paths:
         name: page
         type: integer
       - in: query
-        name: serial_number
+        name: serialNumber
         type: string
       - in: query
         name: status
@@ -357,8 +357,8 @@ paths:
         name: assetName
         type: string
       - in: query
-        name: category_id
-        type: integer
+        name: categoryId
+        type: string
       - in: query
         name: cost
         type: string
@@ -372,7 +372,7 @@ paths:
         name: page
         type: integer
       - in: query
-        name: serial_number
+        name: serialNumber
         type: string
       - in: query
         name: status
