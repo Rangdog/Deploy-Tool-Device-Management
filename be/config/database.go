@@ -120,7 +120,7 @@ func ConnectToDB() *gorm.DB {
 	$$;
 	`
 	db.Exec(createEnumSQL)
-	err = db.AutoMigrate(&entity.Roles{}, &entity.Permission{}, &entity.RolePermission{}, &entity.Users{}, &entity.UsersSessions{}, &entity.UserRbac{}, &entity.Locations{}, &entity.Departments{}, &entity.Categories{}, &entity.Assets{}, &entity.AssetLog{}, &entity.Assignments{}, &entity.RequestTransfer{}, &entity.Notifications{})
+	err = db.AutoMigrate(&entity.Roles{}, &entity.Permission{}, &entity.RolePermission{}, &entity.Users{}, &entity.UsersSessions{}, &entity.UserRbac{}, &entity.Locations{}, &entity.Departments{}, &entity.Categories{}, &entity.Assets{}, &entity.AssetLog{}, &entity.Assignments{}, &entity.RequestTransfer{}, &entity.Notifications{}, &entity.MaintenanceSchedules{}, &entity.MaintenanceNotifications{})
 	if err != nil {
 		log.Fatal("Error migrate to database. Error:", err)
 	}

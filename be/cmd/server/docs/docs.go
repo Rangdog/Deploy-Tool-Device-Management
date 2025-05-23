@@ -828,6 +828,58 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/api/maintenance-schedules": {
+            "post": {
+                "description": "Create maintenanceSchedules",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MaintenanceScheduless"
+                ],
+                "summary": "Create maintenanceSchedules",
+                "parameters": [
+                    {
+                        "description": "Data",
+                        "name": "MaintenanceSchedules",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateMaintenanceSchedulesRequest"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/maintenance-schedules/{id}": {
+            "get": {
+                "description": "Get maintenanceSchedules",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MaintenanceScheduless"
+                ],
+                "summary": "Get maintenanceSchedules by assetId",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "asset_id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/api/request-transfer/{id}": {
             "post": {
                 "description": "Request Transfer",
@@ -1110,6 +1162,25 @@ const docTemplate = `{
             ],
             "properties": {
                 "locationName": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.CreateMaintenanceSchedulesRequest": {
+            "type": "object",
+            "required": [
+                "assetId",
+                "endDate",
+                "startDate"
+            ],
+            "properties": {
+                "assetId": {
+                    "type": "integer"
+                },
+                "endDate": {
+                    "type": "string"
+                },
+                "startDate": {
                     "type": "string"
                 }
             }

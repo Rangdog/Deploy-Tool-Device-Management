@@ -57,5 +57,6 @@ func (f *AssetFilter) ApplyFilter(db *gorm.DB, userId int64) *gorm.DB {
 		str += "%"
 		db = db.Where("LOWER(users.email) LIKE LOWER(?)", str)
 	}
+	db = db.Where("status != ?", "Disposed")
 	return db.Preload("Category").Preload("Department").Preload("OnwerUser").Preload("Department.Location")
 }

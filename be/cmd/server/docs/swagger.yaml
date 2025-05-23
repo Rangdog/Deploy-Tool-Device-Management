@@ -44,6 +44,19 @@ definitions:
     required:
     - locationName
     type: object
+  dto.CreateMaintenanceSchedulesRequest:
+    properties:
+      assetId:
+        type: integer
+      endDate:
+        type: string
+      startDate:
+        type: string
+    required:
+    - assetId
+    - endDate
+    - startDate
+    type: object
   dto.CreateRequestTransferRequest:
     properties:
       assetId:
@@ -665,6 +678,41 @@ paths:
       summary: Delete location
       tags:
       - locations
+  /api/maintenance-schedules:
+    post:
+      consumes:
+      - application/json
+      description: Create maintenanceSchedules
+      parameters:
+      - description: Data
+        in: body
+        name: MaintenanceSchedules
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateMaintenanceSchedulesRequest'
+      produces:
+      - application/json
+      responses: {}
+      summary: Create maintenanceSchedules
+      tags:
+      - MaintenanceScheduless
+  /api/maintenance-schedules/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get maintenanceSchedules
+      parameters:
+      - description: asset_id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      summary: Get maintenanceSchedules by assetId
+      tags:
+      - MaintenanceScheduless
   /api/request-transfer/{id}:
     post:
       consumes:
