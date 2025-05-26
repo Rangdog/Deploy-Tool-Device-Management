@@ -32,8 +32,10 @@ func (service *AssignmentService) Create(userIdAssign, departmentId *int64, user
 	tx := service.repo.GetDB().Begin()
 	assignmentCreated, err := service.repo.Create(&assignment, tx)
 	if err != nil {
+		tx.Rollback()
 		return nil, err
 	}
+	tx.Commit()
 	return assignmentCreated, err
 }
 
@@ -73,6 +75,11 @@ func (service *AssignmentService) Update(userId, assetId, assignmentId int64, us
 		assetLog.ChangeSummary += str
 	}
 	_, err = service.assetLogRepo.Create(&assetLog, tx)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	_, err = service.assetRepo.UpdateAssetLifeCycleStage(assetId, "In Use", tx)
 	if err != nil {
 		tx.Rollback()
 		return nil, err
