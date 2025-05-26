@@ -179,3 +179,18 @@ func (r *PostgreSQLAssetsRepository) GetAssetByStatus(status string) ([]*entity.
 	}
 	return assets, nil
 }
+
+func (r *PostgreSQLAssetsRepository) GetAssetsWasWarrantyExpiry() ([]*entity.Assets, error) {
+	assets := []*entity.Assets{}
+
+	today := time.Now().Truncate(24 * time.Hour)
+	tomorrow := today.Add(24 * time.Hour)
+
+	err := r.db.Model(&entity.Assets{}).
+		Joins("LEFT JOIN notifications ON notifications.asset_id = assets.id AND notifications.type = ?", "Expired").
+		Where("assets.warrant_expiry >= ? AND assets.warrant_expiry < ?", today, tomorrow).
+		Where("notifications.id IS NULL").
+		Find(&assets).Error
+
+	return assets, err
+}

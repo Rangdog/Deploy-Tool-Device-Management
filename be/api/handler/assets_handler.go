@@ -142,6 +142,7 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 				LocationName: asset.Department.Location.LocationName,
 			},
 		},
+		QrURL: *asset.QrUrl,
 	}
 	if asset.ScheduleMaintenance != nil {
 		assetResponse.Maintenance = *asset.ScheduleMaintenance
@@ -305,6 +306,7 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 				LocationName: asset.Department.Location.LocationName,
 			},
 		},
+		QrURL: *asset.QrUrl,
 	}
 	if asset.ScheduleMaintenance != nil {
 		assetResponse.Maintenance = *asset.ScheduleMaintenance
@@ -365,6 +367,7 @@ func (h *AssetsHandler) GetAssetById(c *gin.Context) {
 				LocationName: asset.Department.Location.LocationName,
 			},
 		},
+		QrURL: *asset.QrUrl,
 	}
 	if asset.ScheduleMaintenance != nil {
 		assetResponse.Maintenance = *asset.ScheduleMaintenance
@@ -419,6 +422,7 @@ func (h *AssetsHandler) GetAllAsset(c *gin.Context) {
 					LocationName: asset.Department.Location.LocationName,
 				},
 			},
+			QrURL: *asset.QrUrl,
 		}
 		if asset.ScheduleMaintenance != nil {
 			assetResponse.Maintenance = *asset.ScheduleMaintenance

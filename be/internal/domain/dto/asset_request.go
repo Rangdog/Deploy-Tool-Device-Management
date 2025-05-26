@@ -14,6 +14,7 @@ type AssetResponse struct {
 	Maintenance           float64            `json:"maintenance,omitempty"`
 	ExpectDateMaintenance string             `json:"expectDateMaintenance,omitempty"`
 	Category              CategoryResponse   `json:"category"`
+	QrURL                 string             `json:"qrUrl"`
 	Department            DepartmentResponse `json:"department"`
 }
 

@@ -20,4 +20,5 @@ type AssetsRepository interface {
 	GetUserHavePermissionNotifications(id int64) ([]*entity.Users, error)
 	CheckAssetFinishMaintenance(id int64) (bool, error)
 	GetAssetByStatus(string) ([]*entity.Assets, error)
+	GetAssetsWasWarrantyExpiry() ([]*entity.Assets, error)
 }

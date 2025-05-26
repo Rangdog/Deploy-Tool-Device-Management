@@ -313,6 +313,7 @@ func (service *AssetsService) Filter(userId int64, assetName *string, status *st
 					LocationName: asset.Department.Location.LocationName,
 				},
 			},
+			QrURL: *asset.QrUrl,
 		}
 		if asset.ScheduleMaintenance != nil {
 			assetResponse.Maintenance = *asset.ScheduleMaintenance

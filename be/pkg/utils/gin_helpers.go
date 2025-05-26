@@ -309,3 +309,58 @@ func UpdateStatusWhenFinishMaintenance(db *gorm.DB, assetRepo repository.AssetsR
 		}
 	}
 }
+
+// func SendEmailsForWarrantyExpiry(db *gorm.DB, emailNotifier interfaces.EmailNotifier, assetRepo repository.AssetsRepository) {
+// 	assets, err := assetRepo.GetAssetsWasWarrantyExpiry()
+// 	if err != nil {
+// 		log.Printf("❌ Error fetching assets : %v", err)
+// 		return
+// 	}
+
+// 	for _, a := range assets {
+// 		users, err := assetRepo.GetUserHavePermissionNotifications(a.Id)
+// 		if len(users) == 0 {
+// 			log.Printf("⚠️ No users with notification permission for asset ID %d", a.Id)
+// 			return // hoặc có thể return error nếu muốn rollback transaction
+// 		}
+// 		if err != nil {
+// 			log.Printf("❌ error fetching emails %d", a.Id)
+// 			return
+// 		}
+// 		var emails []string
+// 		for _, u := range users {
+// 			emails = append(emails, u.Email)
+// 		}
+// 		subject := fmt.Sprintf("Asset %s is expired on %s", a.AssetName, a.WarrantExpiry.Format("Jan 2, 2006"))
+// 		body := fmt.Sprintf(`
+// 			<html>
+// 				<body>
+// 					<p>Dear team,</p>
+// 					<p>Please be informed that the following asset is expired:</p>
+// 					<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse;">
+// 						<tr>
+// 							<th align="left">Asset</th>
+// 							<td>%s</td>
+// 						</tr>
+// 						<tr>
+// 							<th align="left">Expiry Date</th>
+// 							<td>%s</td>
+// 						</tr>
+// 					</table>
+// 					<p>Kindly plan accordingly.</p>
+// 					<p>Best regards,<br>Your Manager Asset Team</p>
+// 				</body>
+// 			</html>
+// 		`, a.AssetName, a.WarrantExpiry.Format("Jan 2, 2006"))
+// 		go emailNotifier.SendEmails(emails, subject, body)
+// 		now := time.Now()
+// 		typ := "Expired"
+// 		assetId := a.Id
+
+// 		notify := entity.Notifications{
+// 			NotifyDate: &now,
+// 			Type:       &typ,
+// 			AssetId:    &assetId,
+// 		}
+// 	}
+// }
