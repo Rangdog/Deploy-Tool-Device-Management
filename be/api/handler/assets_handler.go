@@ -130,6 +130,7 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 		SerialNumber:   asset.SerialNumber,
 		FileAttachment: *asset.FileAttachment,
 		ImageUpload:    *asset.ImageUpload,
+		QrURL:          *asset.QrUrl,
 		Category: dto.CategoryResponse{
 			ID:           asset.Category.Id,
 			CategoryName: asset.Category.CategoryName,
@@ -142,7 +143,6 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 				LocationName: asset.Department.Location.LocationName,
 			},
 		},
-		QrURL: *asset.QrUrl,
 	}
 	if asset.ScheduleMaintenance != nil {
 		assetResponse.Maintenance = *asset.ScheduleMaintenance
@@ -294,6 +294,7 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 		SerialNumber:   asset.SerialNumber,
 		FileAttachment: *asset.FileAttachment,
 		ImageUpload:    *asset.ImageUpload,
+		QrURL:          *asset.QrUrl,
 		Category: dto.CategoryResponse{
 			ID:           asset.Category.Id,
 			CategoryName: asset.Category.CategoryName,
@@ -306,7 +307,6 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 				LocationName: asset.Department.Location.LocationName,
 			},
 		},
-		QrURL: *asset.QrUrl,
 	}
 	if asset.ScheduleMaintenance != nil {
 		assetResponse.Maintenance = *asset.ScheduleMaintenance
@@ -355,6 +355,7 @@ func (h *AssetsHandler) GetAssetById(c *gin.Context) {
 		SerialNumber:   asset.SerialNumber,
 		FileAttachment: *asset.FileAttachment,
 		ImageUpload:    *asset.ImageUpload,
+		QrURL:          *asset.QrUrl,
 		Category: dto.CategoryResponse{
 			ID:           asset.Category.Id,
 			CategoryName: asset.Category.CategoryName,
@@ -367,7 +368,6 @@ func (h *AssetsHandler) GetAssetById(c *gin.Context) {
 				LocationName: asset.Department.Location.LocationName,
 			},
 		},
-		QrURL: *asset.QrUrl,
 	}
 	if asset.ScheduleMaintenance != nil {
 		assetResponse.Maintenance = *asset.ScheduleMaintenance
@@ -410,6 +410,7 @@ func (h *AssetsHandler) GetAllAsset(c *gin.Context) {
 			SerialNumber:   asset.SerialNumber,
 			FileAttachment: *asset.FileAttachment,
 			ImageUpload:    *asset.ImageUpload,
+			QrURL:          *asset.QrUrl,
 			Category: dto.CategoryResponse{
 				ID:           asset.Category.Id,
 				CategoryName: asset.Category.CategoryName,
@@ -422,7 +423,6 @@ func (h *AssetsHandler) GetAllAsset(c *gin.Context) {
 					LocationName: asset.Department.Location.LocationName,
 				},
 			},
-			QrURL: *asset.QrUrl,
 		}
 		if asset.ScheduleMaintenance != nil {
 			assetResponse.Maintenance = *asset.ScheduleMaintenance

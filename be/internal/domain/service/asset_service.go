@@ -301,6 +301,7 @@ func (service *AssetsService) Filter(userId int64, assetName *string, status *st
 			SerialNumber:   asset.SerialNumber,
 			FileAttachment: *asset.FileAttachment,
 			ImageUpload:    *asset.ImageUpload,
+			QrURL:          *asset.QrUrl,
 			Category: dto.CategoryResponse{
 				ID:           asset.Category.Id,
 				CategoryName: asset.Category.CategoryName,
@@ -313,7 +314,6 @@ func (service *AssetsService) Filter(userId int64, assetName *string, status *st
 					LocationName: asset.Department.Location.LocationName,
 				},
 			},
-			QrURL: *asset.QrUrl,
 		}
 		if asset.ScheduleMaintenance != nil {
 			assetResponse.Maintenance = *asset.ScheduleMaintenance
