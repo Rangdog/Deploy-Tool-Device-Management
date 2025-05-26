@@ -59,7 +59,7 @@ func (f *AssetFilter) ApplyFilter(db *gorm.DB, userId int64) *gorm.DB {
 		db = db.Where("LOWER(users.email) LIKE LOWER(?)", str)
 	}
 	if f.DepartmentId != nil {
-		parsedID, _ := strconv.ParseInt(*f.CategoryId, 10, 64)
+		parsedID, _ := strconv.ParseInt(*f.DepartmentId, 10, 64)
 		db = db.Where("assets.department_id = ?", parsedID)
 	}
 	db = db.Where("status != ?", "Disposed")
