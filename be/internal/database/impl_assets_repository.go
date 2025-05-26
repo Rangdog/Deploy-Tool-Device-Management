@@ -4,7 +4,9 @@ import (
 	"BE_Manage_device/internal/domain/entity"
 	"BE_Manage_device/internal/domain/repository"
 	"errors"
+	"time"
 
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -38,14 +40,14 @@ func (r *PostgreSQLAssetsRepository) Delete(id int64) error {
 	return result.Error
 }
 
-func (r *PostgreSQLAssetsRepository) UpdateAssetLifeCycleStage(id int64, status string) (*entity.Assets, error) {
-	result := r.db.Model(&entity.Assets{}).Where("id = ?", id).Update("status", status)
+func (r *PostgreSQLAssetsRepository) UpdateAssetLifeCycleStage(id int64, status string, tx *gorm.DB) (*entity.Assets, error) {
+	result := tx.Model(&entity.Assets{}).Where("id = ?", id).Update("status", status)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
 	var asset entity.Assets
-	if err := r.db.First(&asset, id).Error; err != nil {
+	if err := tx.First(&asset, id).Error; err != nil {
 		return nil, err
 	}
 
@@ -132,4 +134,48 @@ func (r *PostgreSQLAssetsRepository) DeleteAsset(id int64, tx *gorm.DB) error {
 func (r *PostgreSQLAssetsRepository) UpdateQrURL(assetId int64, qrUrl string) error {
 	result := r.db.Model(entity.Assets{}).Where("id = ?", assetId).Update("qr_url", qrUrl)
 	return result.Error
+}
+
+func (r *PostgreSQLAssetsRepository) GetUserHavePermissionNotifications(id int64) ([]*entity.Users, error) {
+	users := []*entity.Users{}
+	result := r.db.Model(&entity.Assets{}).
+		Joins("JOIN user_rbacs ON user_rbacs.asset_id = assets.id").
+		Joins("JOIN users ON users.id = user_rbacs.user_id").
+		Joins("JOIN roles ON roles.id = user_rbacs.role_id").
+		Joins("JOIN role_permissions ON role_permissions.role_id = roles.id").
+		Joins("JOIN permissions ON permissions.id = role_permissions.permission_id").
+		Where("assets.id = ? AND permissions.slug = ?", id, "notifications").
+		Select("users.*").
+		Find(&users)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return users, nil
+}
+
+func (r *PostgreSQLAssetsRepository) CheckAssetFinishMaintenance(id int64) (bool, error) {
+	var schedule entity.MaintenanceSchedules
+	err := r.db.
+		Model(&entity.Assets{}).
+		Joins("JOIN maintenance_schedules ON maintenance_schedules.asset_id = assets.id").
+		Where("assets.id = ?", id).
+		Order("maintenance_schedules.start_date DESC").
+		First(&schedule).Error
+
+	if err != nil {
+		logrus.Printf("⚠️ Error checking maintenance for asset %d: %v", id, err)
+		return false, err
+	}
+
+	return schedule.EndDate.Before(time.Now()), nil
+}
+
+func (r *PostgreSQLAssetsRepository) GetAssetByStatus(status string) ([]*entity.Assets, error) {
+	var assets = []*entity.Assets{}
+	result := r.db.Model(entity.Assets{}).Where("status = ?", status).Find(assets)
+	if result != nil {
+		return nil, result.Error
+	}
+	return assets, nil
 }

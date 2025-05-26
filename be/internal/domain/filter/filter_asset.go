@@ -14,6 +14,7 @@ type AssetFilter struct {
 	Cost         *string `form:"cost" json:"cost"`
 	SerialNumber *string `form:"serialNumber" json:"serialNumber"`
 	Email        *string `form:"email" json:"email"`
+	DepartmentId *string `form:"departmentId" json:"departmentId"`
 	Page         int     `form:"page" json:"page"`
 	Limit        int     `form:"limit" json:"limit"`
 }
@@ -56,6 +57,10 @@ func (f *AssetFilter) ApplyFilter(db *gorm.DB, userId int64) *gorm.DB {
 		str := fmt.Sprintf("%v", *f.Email)
 		str += "%"
 		db = db.Where("LOWER(users.email) LIKE LOWER(?)", str)
+	}
+	if f.DepartmentId != nil {
+		parsedID, _ := strconv.ParseInt(*f.CategoryId, 10, 64)
+		db = db.Where("assets.department_id = ?", parsedID)
 	}
 	db = db.Where("status != ?", "Disposed")
 	return db.Preload("Category").Preload("Department").Preload("OnwerUser").Preload("Department.Location")

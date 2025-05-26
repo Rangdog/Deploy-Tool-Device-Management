@@ -159,6 +159,11 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "name": "departmentId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "name": "email",
                         "in": "query"
                     },
@@ -225,6 +230,11 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "name": "cost",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "departmentId",
                         "in": "query"
                     },
                     {

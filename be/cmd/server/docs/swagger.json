@@ -148,6 +148,11 @@
                     },
                     {
                         "type": "string",
+                        "name": "departmentId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "name": "email",
                         "in": "query"
                     },
@@ -214,6 +219,11 @@
                     {
                         "type": "string",
                         "name": "cost",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "departmentId",
                         "in": "query"
                     },
                     {

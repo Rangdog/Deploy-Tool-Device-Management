@@ -225,6 +225,9 @@ paths:
         name: cost
         type: string
       - in: query
+        name: departmentId
+        type: string
+      - in: query
         name: email
         type: string
       - in: query
@@ -374,6 +377,9 @@ paths:
         type: string
       - in: query
         name: cost
+        type: string
+      - in: query
+        name: departmentId
         type: string
       - in: query
         name: email

@@ -251,13 +251,14 @@ func (service *AssetsService) DeleteAsset(userId int64, id int64) error {
 	return nil
 }
 
-func (service *AssetsService) Filter(userId int64, assetName *string, status *string, categoryId *string, cost *string, serialNumber *string, email *string, page int, limit int) (*map[string]any, error) {
+func (service *AssetsService) Filter(userId int64, assetName *string, status *string, categoryId *string, cost *string, serialNumber *string, email *string, departmentId *string, page int, limit int) (*map[string]any, error) {
 	var filter = filter.AssetFilter{
 		AssetName:    assetName,
 		CategoryId:   categoryId,
 		Cost:         cost,
 		SerialNumber: serialNumber,
 		Email:        email,
+		DepartmentId: departmentId,
 		Status:       status,
 		Page:         page,
 		Limit:        limit,

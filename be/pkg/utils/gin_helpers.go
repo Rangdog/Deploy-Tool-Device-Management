@@ -3,8 +3,12 @@ package utils
 import (
 	"BE_Manage_device/config"
 	"BE_Manage_device/constant"
+	"BE_Manage_device/internal/domain/entity"
+	"BE_Manage_device/internal/domain/repository"
 	"BE_Manage_device/pkg"
+	"BE_Manage_device/pkg/interfaces"
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -16,6 +20,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	log "github.com/sirupsen/logrus"
 	"github.com/skip2/go-qrcode"
+	"gorm.io/gorm"
 )
 
 func GetUserIdFromContext(c *gin.Context) int64 {
@@ -187,4 +192,120 @@ func GenerateAssetQR(assetID int64) (string, error) {
 	}
 
 	return qrURL, nil
+}
+
+func CheckAndSenMaintenanceNotification(db *gorm.DB, emailNotifier interfaces.EmailNotifier, assetRepo repository.AssetsRepository) {
+	today := time.Now().Truncate(24 * time.Hour)
+	var schedules []entity.MaintenanceSchedules
+	err := db.Where("start_date <= ? AND end_date >= ?", today, today).Find(&schedules).Error
+	if err != nil {
+		log.Printf("Error fetching maintenance schedules: %v", err)
+		return
+	}
+	for _, s := range schedules {
+		// Check nếu đã thông báo rồi
+		var noti entity.MaintenanceNotifications
+		err := db.Where("schedule_id = ?", s.Id).First(&noti).Error
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			log.Printf("✅ Already notified for schedule ID %d today", s.Id)
+			continue
+		}
+
+		// Nếu chưa có thông báo thì tiến hành
+		err = db.Transaction(func(tx *gorm.DB) error {
+			// 1. Lấy user nhận email
+			users, err := assetRepo.GetUserHavePermissionNotifications(s.AssetId)
+			if len(users) == 0 {
+				log.Printf("⚠️ No users with notification permission for asset ID %d", s.AssetId)
+				return nil // hoặc có thể return error nếu muốn rollback transaction
+			}
+			if err != nil {
+				return fmt.Errorf("error fetching emails: %w", err)
+			}
+
+			// 2. Lấy asset
+			asset, err := assetRepo.GetAssetById(s.AssetId)
+			if err != nil {
+				return fmt.Errorf("error fetching asset: %w", err)
+			}
+
+			// 3. Chuẩn bị email
+			var emails []string
+			for _, u := range users {
+				emails = append(emails, u.Email)
+			}
+			subject := fmt.Sprintf("Asset %s is scheduled for maintenance on %s", asset.AssetName, s.StartDate.Format("Jan 2, 2006"))
+			body := fmt.Sprintf(`
+			<html>
+				<body>
+					<p>Dear team,</p>
+					<p>Please be informed that the following asset is scheduled for maintenance:</p>
+					<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse;">
+						<tr>
+							<th align="left">Asset</th>
+							<td>%s</td>
+						</tr>
+						<tr>
+							<th align="left">Start Date</th>
+							<td>%s</td>
+						</tr>
+						<tr>
+							<th align="left">End Date</th>
+							<td>%s</td>
+						</tr>
+					</table>
+					<p>Kindly plan accordingly.</p>
+					<p>Best regards,<br>Your Maintenance Team</p>
+				</body>
+			</html>
+		`, asset.AssetName, s.StartDate.Format("Jan 2, 2006"), s.EndDate.Format("Jan 2, 2006"))
+
+			// 5. Cập nhật lifecycle
+			if _, err := assetRepo.UpdateAssetLifeCycleStage(asset.Id, "Under Maintenance", tx); err != nil {
+				return fmt.Errorf("error updating asset stage: %w", err)
+			}
+
+			// 6. Ghi log notification
+			notify := entity.MaintenanceNotifications{
+				ScheduleId: s.Id,
+				NotifyDate: today,
+			}
+			if err := tx.Create(&notify).Error; err != nil {
+				return fmt.Errorf("error inserting notification: %w", err)
+			}
+
+			// 4. Gửi email (ngoài transaction, async)
+			go emailNotifier.SendEmails(emails, subject, body)
+			return nil
+		})
+
+		if err != nil {
+			log.Printf("❌ Transaction failed for schedule %d: %v", s.Id, err)
+		}
+	}
+}
+
+func UpdateStatusWhenFinishMaintenance(db *gorm.DB, assetRepo repository.AssetsRepository) {
+	assets, err := assetRepo.GetAssetByStatus("Under Maintenance")
+	if err != nil {
+		log.Printf("❌ Error fetching assets with status 'Under Maintenance': %v", err)
+		return
+	}
+
+	for _, a := range assets {
+		finished, err := assetRepo.CheckAssetFinishMaintenance(a.Id)
+		if err != nil {
+			log.Printf("⚠️ Error checking maintenance status for asset %d: %v", a.Id, err)
+			continue
+		}
+
+		if finished {
+			_, err := assetRepo.UpdateAssetLifeCycleStage(a.Id, "In Use", db)
+			if err != nil {
+				log.Printf("❌ Error updating asset %d to 'In Use': %v", a.Id, err)
+			} else {
+				log.Printf("✅ Asset %d moved to 'In Use'", a.Id)
+			}
+		}
+	}
 }
