@@ -67,15 +67,6 @@ func (r *PostgreSQLAssetsRepository) GetDB() *gorm.DB {
 	return r.db
 }
 
-func (r *PostgreSQLAssetsRepository) GetHeadDepartmentIdByAssetId(id int64) (int64, error) {
-	department := entity.Departments{}
-	result := r.db.Model(entity.Assets{}).Joins("Join departments on departments.id = department_id").Where("id = ?", id).First(&department)
-	if result.Error != nil {
-		return -1, result.Error
-	}
-	return *department.UserId, nil
-}
-
 func (r *PostgreSQLAssetsRepository) UpdateAsset(assets *entity.Assets, tx *gorm.DB) (*entity.Assets, error) {
 	var assetUpdate = entity.Assets{}
 	updates := map[string]interface{}{}
@@ -193,4 +184,9 @@ func (r *PostgreSQLAssetsRepository) GetAssetsWasWarrantyExpiry() ([]*entity.Ass
 		Find(&assets).Error
 
 	return assets, err
+}
+
+func (r *PostgreSQLAssetsRepository) UpdateOwner(id int64, ownerId int64, tx *gorm.DB) error {
+	result := tx.Model(entity.Assets{}).Where("id = ?", id).Update("owner", ownerId)
+	return result.Error
 }

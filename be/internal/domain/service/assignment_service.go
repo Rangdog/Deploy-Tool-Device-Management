@@ -5,6 +5,7 @@ import (
 	"BE_Manage_device/internal/domain/entity"
 	"BE_Manage_device/internal/domain/filter"
 	"BE_Manage_device/internal/domain/repository"
+	"errors"
 	"fmt"
 	"math"
 	"time"
@@ -54,23 +55,29 @@ func (service *AssignmentService) Update(userId, assetId, assignmentId int64, us
 	assetLog.Timestamp = time.Now()
 	assetLog.Action = "Transfer"
 	assetLog.AssetId = assetId
-	if departmentId != nil && departmentId != &asset.DepartmentId {
+	if (departmentId == nil && userIdAssign == nil) ||
+		(userIdAssign != nil && *userIdAssign == asset.OnwerUser.Id &&
+			(departmentId == nil || *departmentId == asset.DepartmentId)) {
+		return nil, errors.New("invalid request: cannot assign to current owner with same department or missing info")
+	}
+	if departmentId != nil && *departmentId != asset.DepartmentId {
 		department, err := service.departmentRepo.GetDepartmentById(*departmentId)
 		if err != nil {
 			tx.Rollback()
 			return nil, err
 		}
 		assetLog.DepartmentId = departmentId
+		assetLog.UserId = userId
 		str := fmt.Sprintf("Transfer from department %v to department %v\n", asset.Department.DepartmentName, department.DepartmentName)
 		assetLog.ChangeSummary = str
 	}
-	if userIdAssign != nil && userIdAssign != &asset.OnwerUser.Id {
+	if userIdAssign != nil && *userIdAssign != asset.OnwerUser.Id {
 		users, err := service.userRepo.FindByUserId(*userIdAssign)
 		if err != nil {
 			tx.Rollback()
 			return nil, err
 		}
-		assetLog.UserId = *userIdAssign
+		assetLog.UserId = userId
 		str := fmt.Sprintf("Transfer from user: %v to user: %v\n", asset.OnwerUser.Email, users.Email)
 		assetLog.ChangeSummary += str
 	}
@@ -80,6 +87,11 @@ func (service *AssignmentService) Update(userId, assetId, assignmentId int64, us
 		return nil, err
 	}
 	_, err = service.assetRepo.UpdateAssetLifeCycleStage(assetId, "In Use", tx)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	err = service.assetRepo.UpdateOwner(assetId, assetLog.UserId, tx)
 	if err != nil {
 		tx.Rollback()
 		return nil, err

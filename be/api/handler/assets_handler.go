@@ -32,7 +32,6 @@ func NewAssetsHandler(service *service.AssetsService) *AssetsHandler {
 // @Param assetName formData string true "Asset Name"
 // @Param purchaseDate formData string true "Purchase Date (RFC3339 format, e.g. 2023-04-15T10:00:00Z)"
 // @Param cost formData number true "Cost"
-// @Param owner formData int64 false "Owner ID"
 // @Param warrantExpiry formData string true "Warranty Expiry (RFC3339 format, e.g. 2023-12-31T23:59:59Z)"
 // @Param serialNumber formData string true "Serial Number"
 // @Param categoryId formData int64 true "Category ID"

@@ -6,7 +6,6 @@ import (
 	"BE_Manage_device/internal/domain/filter"
 	"BE_Manage_device/internal/domain/repository"
 	"BE_Manage_device/pkg/utils"
-	"errors"
 	"fmt"
 	"math"
 	"mime/multipart"
@@ -54,12 +53,15 @@ func (service *AssetsService) Create(userId int64, assetName string, purchaseDat
 	if err != nil {
 		return nil, err
 	}
+	userAssetManager, err := service.userRepository.GetUserAssetManageOfDepartment(departmentId)
+	if err != nil {
+		return nil, err
+	}
 	tx := service.repo.GetDB().Begin()
 	asset := entity.Assets{
 		AssetName:      assetName,
 		PurchaseDate:   purchaseDate,
 		Cost:           cost,
-		Owner:          &userId,
 		WarrantExpiry:  warrantExpiry,
 		Status:         "New",
 		SerialNumber:   serialNumber,
@@ -67,6 +69,7 @@ func (service *AssetsService) Create(userId int64, assetName string, purchaseDat
 		FileAttachment: &fileUrl,
 		CategoryId:     categoryId,
 		DepartmentId:   departmentId,
+		Owner:          &userAssetManager.Id,
 	}
 	assetCreate, err := service.repo.Create(&asset, tx)
 	if err != nil {
@@ -87,7 +90,7 @@ func (service *AssetsService) Create(userId int64, assetName string, purchaseDat
 	}
 	assign := entity.Assignments{
 		AssetId:      assetCreate.Id,
-		UserId:       &userId,
+		UserId:       &userAssetManager.Id,
 		AssignBy:     userId,
 		DepartmentId: &departmentId,
 	}
@@ -131,13 +134,13 @@ func (service *AssetsService) SetRole(assetId int64, tx *gorm.DB, wg *sync.WaitG
 	defer wg.Done()
 	users := service.userRepository.GetAllUser()
 	for _, user := range users {
-		if service.roleRepository.GetTitleByRoleId(user.RoleId) == "Department Head" {
-			userId, err := service.repo.GetHeadDepartmentIdByAssetId(assetId)
-			if errors.Is(err, gorm.ErrRecordNotFound) {
+		if service.roleRepository.GetTitleByRoleId(user.RoleId) == "Department Head" && user.IsHeadDepartment {
+			assets, err := service.repo.GetAssetById(assetId)
+			if err != nil {
 				tx.Rollback()
 				return false
 			}
-			if userId == user.Id {
+			if assets.DepartmentId == user.DepartmentId {
 				userRbac := entity.UserRbac{
 					AssetId: assetId,
 					UserId:  user.Id,
