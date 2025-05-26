@@ -260,6 +260,23 @@ paths:
       summary: Get assets log by id
       tags:
       - Assets log
+  /api/assets-retired/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Retired assets
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Retired assets
+      tags:
+      - assets
   /api/assets/{id}:
     delete:
       consumes:

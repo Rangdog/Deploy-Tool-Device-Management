@@ -251,6 +251,15 @@ func (service *AssetsService) DeleteAsset(userId int64, id int64) error {
 	return nil
 }
 
+func (service *AssetsService) UpdateAssetRetired(userId int64, id int64) (*entity.Assets, error) {
+	asset, err := service.repo.UpdateAssetLifeCycleStage(id, "Retired", service.repo.GetDB())
+	if err != nil {
+		return nil, err
+	}
+	return asset, nil
+
+}
+
 func (service *AssetsService) Filter(userId int64, assetName *string, status *string, categoryId *string, cost *string, serialNumber *string, email *string, departmentId *string, page int, limit int) (*map[string]any, error) {
 	var filter = filter.AssetFilter{
 		AssetName:    assetName,

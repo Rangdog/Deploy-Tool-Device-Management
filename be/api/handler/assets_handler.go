@@ -462,6 +462,30 @@ func (h *AssetsHandler) DeleteAsset(c *gin.Context) {
 }
 
 // Asset godoc
+// @Summary Retired assets
+// @Description Retired assets
+// @Tags assets
+// @Accept json
+// @Produce json
+// @Param		id	path		string				true	"id"
+// @Router /api/assets-retired/{id} [PATCH]
+func (h *AssetsHandler) UpdateAssetRetired(c *gin.Context) {
+	defer pkg.PanicHandler(c)
+	userId := utils.GetUserIdFromContext(c)
+	idStr := c.Param("id")
+	assetId, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		log.Error("Happened error when convert assetId to int64. Error", err)
+		pkg.PanicExeption(constant.InvalidRequest, "Happened error when convert assetId to int64")
+	}
+	asset, err := h.service.UpdateAssetRetired(userId, assetId)
+	if err != nil {
+		pkg.PanicExeption(constant.UnknownError, "Happened error when retired assets")
+	}
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, asset))
+}
+
+// Asset godoc
 // @Summary Get all assets with filter
 // @Description Get all assets have permission
 // @Tags assets

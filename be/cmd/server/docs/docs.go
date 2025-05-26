@@ -205,6 +205,31 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/api/assets-retired/{id}": {
+            "patch": {
+                "description": "Retired assets",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "assets"
+                ],
+                "summary": "Retired assets",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/api/assets/filter": {
             "get": {
                 "security": [
