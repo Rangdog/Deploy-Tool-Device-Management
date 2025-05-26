@@ -173,8 +173,8 @@ func (s *SupabaseUploader) UploadReader(objectPath string, reader io.Reader, con
 	return publicURL, nil
 }
 
-func GenerateAssetQR(assetID int64) (string, error) {
-	url := fmt.Sprintf("%s/assets/%d", config.BASE_URL_FRONTEND, assetID)
+func GenerateAssetQR(assetID int64, urlFrontend string) (string, error) {
+	url := fmt.Sprintf("%s/%d", urlFrontend, assetID)
 	png, err := qrcode.Encode(url, qrcode.Medium, 256)
 	if err != nil {
 		return "", fmt.Errorf("QR encoding failed: %w", err)

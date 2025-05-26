@@ -37,6 +37,7 @@ func NewAssetsHandler(service *service.AssetsService) *AssetsHandler {
 // @Param serialNumber formData string true "Serial Number"
 // @Param categoryId formData int64 true "Category ID"
 // @Param departmentId formData int64 true "Department ID"
+// @Param redirectUrl formData string true "redirect url"
 // @Param file formData file true "File to upload"
 // @Param image formData file true "Image to upload"
 // @Router /api/assets [post]
@@ -52,6 +53,7 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 	serialNumber := c.PostForm("serialNumber")
 	categoryIdStr := c.PostForm("categoryId")
 	departmentIdStr := c.PostForm("departmentId")
+	url := c.PostForm("redirectUrl")
 
 	purchaseDate, err := time.Parse(time.RFC3339Nano, purchaseDateStr)
 
@@ -107,6 +109,7 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 		file,
 		categoryId,
 		departmentId,
+		url,
 	)
 
 	if err != nil {

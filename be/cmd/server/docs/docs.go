@@ -99,6 +99,13 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "string",
+                        "description": "redirect url",
+                        "name": "redirectUrl",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
                         "type": "file",
                         "description": "File to upload",
                         "name": "file",

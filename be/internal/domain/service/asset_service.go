@@ -30,7 +30,7 @@ func NewAssetsService(repo repository.AssetsRepository, assertLogRepository repo
 	return &AssetsService{repo: repo, assertLogRepository: assertLogRepository, roleRepository: roleRepository, userRBACRepository: userRBACRepository, userRepository: userRepository, assignRepository: assignRepository}
 }
 
-func (service *AssetsService) Create(userId int64, assetName string, purchaseDate time.Time, cost float64, warrantExpiry time.Time, serialNumber string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, categoryId int64, departmentId int64) (*entity.Assets, error) {
+func (service *AssetsService) Create(userId int64, assetName string, purchaseDate time.Time, cost float64, warrantExpiry time.Time, serialNumber string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, categoryId int64, departmentId int64, url string) (*entity.Assets, error) {
 	imgFile, err := image.Open()
 	if err != nil {
 		return nil, fmt.Errorf("cannot open image: %w", err)
@@ -100,7 +100,7 @@ func (service *AssetsService) Create(userId int64, assetName string, purchaseDat
 	wg.Add(1)
 	go service.SetRole(assetCreate.Id, tx, &wg) // commit ở đây
 	wg.Wait()
-	qrUrl, err := utils.GenerateAssetQR(assetCreate.Id)
+	qrUrl, err := utils.GenerateAssetQR(assetCreate.Id, url)
 	if err != nil {
 		logrus.Info("Error when create qrurl")
 	}

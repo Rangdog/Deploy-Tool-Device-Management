@@ -188,6 +188,11 @@ paths:
         name: departmentId
         required: true
         type: integer
+      - description: redirect url
+        in: formData
+        name: redirectUrl
+        required: true
+        type: string
       - description: File to upload
         in: formData
         name: file
