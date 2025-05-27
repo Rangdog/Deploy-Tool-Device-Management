@@ -40,3 +40,10 @@ type OwnerResponse struct {
 	LastName  string `json:"lastName"`
 	Email     string `json:"email"`
 }
+
+type DashboardSummary struct {
+	TotalAssets      int `json:"total_assets"`
+	Assigned         int `json:"assigned"`
+	UnderMaintenance int `json:"under_maintenance"`
+	Retired          int `json:"retired"`
+}

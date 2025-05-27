@@ -3,15 +3,19 @@ package handler
 import (
 	"BE_Manage_device/constant"
 	"BE_Manage_device/internal/domain/dto"
+	"BE_Manage_device/internal/domain/entity"
 	"BE_Manage_device/internal/domain/filter"
 	"BE_Manage_device/internal/domain/service"
 	"BE_Manage_device/pkg"
 	"BE_Manage_device/pkg/utils"
+	"bytes"
+	"encoding/csv"
 	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/phpdave11/gofpdf"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -26,7 +30,7 @@ func NewAssetsHandler(service *service.AssetsService) *AssetsHandler {
 // Asset godoc
 // @Summary Create assets
 // @Description Create assets
-// @Tags assets
+// @Tags Assets
 // @Accept multipart/form-data
 // @Produce json
 // @Param assetName formData string true "Asset Name"
@@ -160,14 +164,14 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 // Asset godoc
 // @Summary Update assets
 // @Description Update assets
-// @Tags assets
+// @Tags Assets
 // @Accept multipart/form-data
 // @Produce json
 // @Param assetName formData string true "Asset Name"
 // @Param purchaseDate formData string true "Purchase Date (RFC3339 format, e.g. 2023-04-15T10:00:00Z)"
 // @Param cost formData number true "Cost"
 // @Param warrantExpiry formData string true "Warranty Expiry (RFC3339 format, e.g. 2023-12-31T23:59:59Z)"
-// @Param maintenance formData float64 true "schedule_maintenance Float e.g. 7.5"
+// @Param maintenance_time formData float64 true "maintenance_time Float e.g. 7.5"
 // @Param serialNumber formData string true "Serial Number"
 // @Param status formData string true "Serial Number"
 // @Param categoryId formData int64 true "Category ID"
@@ -189,14 +193,14 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 
 	assetName := c.PostForm("assetName")
 	purchaseDateStr := c.PostForm("purchaseDate")
-	maintenanceStr := c.PostForm("maintenance")
 	costStr := c.PostForm("cost")
 	warrantExpiryStr := c.PostForm("warrantExpiry")
 	serialNumber := c.PostForm("serialNumber")
 	Status := c.PostForm("status")
 	categoryIdStr := c.PostForm("categoryId")
 	departmentIdStr := c.PostForm("departmentId")
-	expectDayMaintenanceStr := c.PostForm("expectDayMaintenance")
+	// maintenanceStr := c.PostForm("maintenance_time")
+	// expectDayMaintenanceStr := c.PostForm("expectDayMaintenance")
 
 	purchaseDate, err := time.Parse(time.RFC3339Nano, purchaseDateStr)
 	if err != nil {
@@ -208,10 +212,10 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 		pkg.PanicExeption(constant.InvalidRequest, "Invalid warrant_expiry format")
 	}
 
-	expectDate, err := time.Parse(time.RFC3339Nano, expectDayMaintenanceStr)
-	if err != nil {
-		pkg.PanicExeption(constant.InvalidRequest, "Invalid expectDate format")
-	}
+	// expectDate, err := time.Parse(time.RFC3339Nano, expectDayMaintenanceStr)
+	// if err != nil {
+	// 	pkg.PanicExeption(constant.InvalidRequest, "Invalid expectDate format")
+	// }
 
 	cost, err := strconv.ParseFloat(costStr, 64)
 	if err != nil {
@@ -243,10 +247,10 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 		pkg.PanicExeption(constant.InvalidRequest, "Image upload missing")
 		return
 	}
-	maintenance, err := strconv.ParseFloat(maintenanceStr, 64)
-	if err != nil {
-		pkg.PanicExeption(constant.InvalidRequest, "Invalid maintenance format")
-	}
+	// maintenance, err := strconv.ParseFloat(maintenanceStr, 64)
+	// if err != nil {
+	// 	pkg.PanicExeption(constant.InvalidRequest, "Invalid maintenance format")
+	// }
 	assetUpdate, err := h.service.UpdateAsset(
 		userId,
 		assetId,
@@ -260,8 +264,8 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 		categoryId,
 		departmentId,
 		Status,
-		maintenance,
-		expectDate,
+		0,
+		time.Now(),
 	)
 	if err != nil {
 		pkg.PanicExeption(constant.InvalidRequest, "Failed to update asset")
@@ -313,7 +317,7 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 // Asset godoc
 // @Summary Get assets
 // @Description Get assets
-// @Tags assets
+// @Tags Assets
 // @Accept json
 // @Produce json
 // @Param		id	path		string				true	"id"
@@ -374,7 +378,7 @@ func (h *AssetsHandler) GetAssetById(c *gin.Context) {
 // Asset godoc
 // @Summary Get all assets
 // @Description Get all assets
-// @Tags assets
+// @Tags Assets
 // @Accept json
 // @Produce json
 // @Router /api/assets [GET]
@@ -431,7 +435,7 @@ func (h *AssetsHandler) GetAllAsset(c *gin.Context) {
 // Asset godoc
 // @Summary Delete assets
 // @Description Delete assets
-// @Tags assets
+// @Tags Assets
 // @Accept json
 // @Produce json
 // @Param		id	path		string				true	"id"
@@ -455,7 +459,7 @@ func (h *AssetsHandler) DeleteAsset(c *gin.Context) {
 // Asset godoc
 // @Summary Retired assets
 // @Description Retired assets
-// @Tags assets
+// @Tags Assets
 // @Accept json
 // @Produce json
 // @Param		id	path		string				true	"id"
@@ -479,7 +483,7 @@ func (h *AssetsHandler) UpdateAssetRetired(c *gin.Context) {
 // Asset godoc
 // @Summary Get all assets with filter
 // @Description Get all assets have permission
-// @Tags assets
+// @Tags Assets
 // @Accept json
 // @Produce json
 // @Param        asset   query    filter.AssetFilter   false  "filter asset"
@@ -503,4 +507,91 @@ func (h *AssetsHandler) FilterAsset(c *gin.Context) {
 		pkg.PanicExeption(constant.UnknownError, "Happened error when filter asset")
 	}
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, data))
+}
+
+// Asset godoc
+// @Summary Get Dashboard
+// @Description Get Dashboard
+// @Tags Assets
+// @Accept json
+// @Produce json
+// @Param        asset   query    filter.AssetFilterDashboard   false  "filter asset"
+// @param Authorization header string true "Authorization"
+// @Router /api/assets/filter-dashboard [GET]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
+func (h *AssetsHandler) FilterAssetDashboard(c *gin.Context) {
+	defer pkg.PanicHandler(c)
+	var filter filter.AssetFilterDashboard
+	userId := utils.GetUserIdFromContext(c)
+	if err := c.ShouldBindQuery(&filter); err != nil {
+		log.Error("Happened error when mapping query to filter. Error", err)
+		pkg.PanicExeption(constant.InvalidRequest, "Happened error when mapping query to filter")
+	}
+	summary, assets, err := h.service.ApplyFilterDashBoard(userId, filter.CategoryId, filter.DepartmentId, filter.Status, filter.Export)
+	if err != nil {
+		log.Error("Happened error when filter asset. Error", err)
+		pkg.PanicExeption(constant.UnknownError, "Happened error when filter asset")
+	}
+
+	if *filter.Export == "csv" {
+		data, _ := GenerateCSV(assets)
+		c.Header("Content-Disposition", "attachment; filename=assets.csv")
+		c.Data(http.StatusOK, "text/csv", data)
+		return
+	} else if *filter.Export == "pdf" {
+		data, _ := GeneratePDF(assets)
+		c.Header("Content-Disposition", "attachment; filename=assets.pdf")
+		c.Data(http.StatusOK, "application/pdf", data)
+		return
+	}
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, summary))
+}
+
+func GenerateCSV(assets []*entity.Assets) ([]byte, error) {
+	var b bytes.Buffer
+	writer := csv.NewWriter(&b)
+	writer.Write([]string{"ID", "Name", "Category", "Department", "Status"})
+	for _, a := range assets {
+		writer.Write([]string{
+			strconv.FormatInt(a.Id, 10),
+			a.AssetName, a.Category.CategoryName, a.Department.DepartmentName, a.Status,
+		})
+	}
+	writer.Flush()
+	return b.Bytes(), writer.Error()
+}
+
+func GeneratePDF(assets []*entity.Assets) ([]byte, error) {
+	pdf := gofpdf.New("P", "mm", "A4", "")
+	pdf.AddPage()
+	pdf.SetFont("Arial", "B", 14)
+	pdf.Cell(40, 10, "Asset Dashboard Report")
+	pdf.Ln(12)
+	pdf.SetFont("Arial", "B", 10)
+	pdf.Cell(10, 10, "ID")
+	pdf.Cell(40, 10, "Name")
+	pdf.Cell(30, 10, "Category")
+	pdf.Cell(30, 10, "Department")
+	pdf.Cell(30, 10, "Status")
+	pdf.Ln(8)
+	pdf.SetFont("Arial", "", 10)
+
+	for _, a := range assets {
+		pdf.Cell(10, 10, strconv.FormatInt(a.Id, 10))
+		pdf.Cell(40, 10, a.AssetName)
+		pdf.Cell(30, 10, a.Category.CategoryName)
+		pdf.Cell(30, 10, a.Department.DepartmentName)
+		pdf.Cell(30, 10, a.Status)
+		pdf.Ln(8)
+	}
+
+	var buf bytes.Buffer
+	err := pdf.Output(&buf)
+	if err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
 }

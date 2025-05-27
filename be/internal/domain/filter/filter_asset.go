@@ -19,6 +19,13 @@ type AssetFilter struct {
 	Limit        int     `form:"limit" json:"limit"`
 }
 
+type AssetFilterDashboard struct {
+	CategoryId   *string `form:"categoryId" json:"categoryId"`
+	DepartmentId *string `form:"departmentId" json:"departmentId"`
+	Status       *string `form:"status" json:"status"`
+	Export       *string `form:"export" json:"export"` // "csv" hoặc "pdf" hoặc ""
+}
+
 func (f *AssetFilter) ApplyFilter(db *gorm.DB, userId int64) *gorm.DB {
 	db = db.Joins("JOIN user_rbacs on user_rbacs.asset_id = assets.id").
 		Joins("JOIN roles on roles.id = user_rbacs.role_id").
@@ -62,6 +69,20 @@ func (f *AssetFilter) ApplyFilter(db *gorm.DB, userId int64) *gorm.DB {
 		parsedID, _ := strconv.ParseInt(*f.DepartmentId, 10, 64)
 		db = db.Where("assets.department_id = ?", parsedID)
 	}
-	db = db.Where("status != ?", "Disposed")
+	return db.Preload("Category").Preload("Department").Preload("OnwerUser").Preload("Department.Location")
+}
+
+func (f *AssetFilterDashboard) ApplyFilterDashBoard(db *gorm.DB, userId int64) *gorm.DB {
+	if f.CategoryId != nil {
+		parsedID, _ := strconv.ParseInt(*f.CategoryId, 10, 64)
+		db = db.Where("categories.id = ?", parsedID)
+	}
+	if f.DepartmentId != nil {
+		parsedID, _ := strconv.ParseInt(*f.DepartmentId, 10, 64)
+		db = db.Where("assets.department_id = ?", parsedID)
+	}
+	if f.Status != nil {
+		db = db.Where("status = ?", *f.Status)
+	}
 	return db.Preload("Category").Preload("Department").Preload("OnwerUser").Preload("Department.Location")
 }

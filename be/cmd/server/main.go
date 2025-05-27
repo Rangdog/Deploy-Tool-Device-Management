@@ -82,6 +82,14 @@ func main() {
 		log.Fatalf("❌ Failed to schedule cron job: %v", err)
 	}
 
+	_, err = c.AddFunc("0 8 * * *", func() {
+		log.Println("🔔 Running warranty notification check at 8:00 AM")
+		utils.SendEmailsForWarrantyExpiry(db, emailService, assetsRepository)
+	})
+	if err != nil {
+		log.Fatalf("❌ Failed to schedule cron job: %v", err)
+	}
+
 	_, err = c.AddFunc("0 9 * * *", func() {
 		log.Println("🔔 Running update status when finish maintenance check at 8:00 AM")
 		utils.UpdateStatusWhenFinishMaintenance(db, assetsRepository)

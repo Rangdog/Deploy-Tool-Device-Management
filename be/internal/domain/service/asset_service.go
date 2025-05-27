@@ -340,3 +340,36 @@ func (service *AssetsService) Filter(userId int64, assetName *string, status *st
 	}
 	return &data, nil
 }
+
+func (service *AssetsService) ApplyFilterDashBoard(userId int64, status *string, categoryId *string, departmentId *string, export *string) (*dto.DashboardSummary, []*entity.Assets, error) {
+	var filter = filter.AssetFilterDashboard{
+		CategoryId:   categoryId,
+		DepartmentId: departmentId,
+		Status:       status,
+	}
+	db := service.repo.GetDB()
+	dbFilter := filter.ApplyFilterDashBoard(db.Model(&entity.Assets{}), userId)
+	var assets []*entity.Assets
+	resutl := dbFilter.Find(&assets)
+	if resutl.Error != nil {
+		return nil, nil, resutl.Error
+	}
+	summary := CountDashboard(assets)
+	return &summary, assets, nil
+}
+
+func CountDashboard(assets []*entity.Assets) dto.DashboardSummary {
+	var s dto.DashboardSummary
+	s.TotalAssets = len(assets)
+	for _, a := range assets {
+		switch a.Status {
+		case "Assigned":
+			s.Assigned++
+		case "Under Maintenance":
+			s.UnderMaintenance++
+		case "Retired":
+			s.Retired++
+		}
+	}
+	return s
+}

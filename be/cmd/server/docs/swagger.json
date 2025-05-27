@@ -14,7 +14,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "assets"
+                    "Assets"
                 ],
                 "summary": "Get all assets",
                 "responses": {}
@@ -28,7 +28,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "assets"
+                    "Assets"
                 ],
                 "summary": "Create assets",
                 "parameters": [
@@ -198,7 +198,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "assets"
+                    "Assets"
                 ],
                 "summary": "Retired assets",
                 "parameters": [
@@ -228,7 +228,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "assets"
+                    "Assets"
                 ],
                 "summary": "Get all assets with filter",
                 "parameters": [
@@ -288,6 +288,57 @@
                 "responses": {}
             }
         },
+        "/api/assets/filter-dashboard": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "Get Dashboard",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Assets"
+                ],
+                "summary": "Get Dashboard",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "categoryId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "departmentId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "\"csv\" hoặc \"pdf\" hoặc \"\"",
+                        "name": "export",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/api/assets/{id}": {
             "get": {
                 "description": "Get assets",
@@ -298,7 +349,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "assets"
+                    "Assets"
                 ],
                 "summary": "Get assets",
                 "parameters": [
@@ -321,7 +372,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "assets"
+                    "Assets"
                 ],
                 "summary": "Update assets",
                 "parameters": [
@@ -355,8 +406,8 @@
                     },
                     {
                         "type": "number",
-                        "description": "schedule_maintenance Float e.g. 7.5",
-                        "name": "maintenance",
+                        "description": "maintenance_time Float e.g. 7.5",
+                        "name": "maintenance_time",
                         "in": "formData",
                         "required": true
                     },
@@ -421,7 +472,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "assets"
+                    "Assets"
                 ],
                 "summary": "Delete assets",
                 "parameters": [
@@ -585,7 +636,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "Auth"
                 ],
                 "summary": "Login",
                 "parameters": [
@@ -612,7 +663,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "Auth"
                 ],
                 "summary": "Logout",
                 "responses": {}
@@ -628,7 +679,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "Auth"
                 ],
                 "summary": "Refresh Token",
                 "parameters": [
@@ -655,7 +706,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "Auth"
                 ],
                 "summary": "Register user",
                 "parameters": [
@@ -682,7 +733,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "categories"
+                    "Categories"
                 ],
                 "summary": "Get all categories",
                 "responses": {}
@@ -696,7 +747,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "categories"
+                    "Categories"
                 ],
                 "summary": "Create categories",
                 "parameters": [
@@ -723,7 +774,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "categories"
+                    "Categories"
                 ],
                 "summary": "Delete category",
                 "parameters": [
@@ -748,7 +799,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "departments"
+                    "Departments"
                 ],
                 "summary": "Get all departments",
                 "responses": {}
@@ -762,7 +813,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "departments"
+                    "Departments"
                 ],
                 "summary": "Create departments",
                 "parameters": [
@@ -789,7 +840,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "departments"
+                    "Departments"
                 ],
                 "summary": "Delete department",
                 "parameters": [
@@ -814,7 +865,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "locations"
+                    "Locations"
                 ],
                 "summary": "Get all location",
                 "responses": {}
@@ -828,7 +879,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "locations"
+                    "Locations"
                 ],
                 "summary": "Create Location",
                 "parameters": [
@@ -855,7 +906,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "locations"
+                    "Locations"
                 ],
                 "summary": "Delete location",
                 "parameters": [
@@ -966,7 +1017,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "roles"
+                    "Roles"
                 ],
                 "summary": "GetRole",
                 "responses": {}
@@ -982,7 +1033,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "Users"
                 ],
                 "summary": "Email reset password",
                 "parameters": [
@@ -1009,7 +1060,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "Users"
                 ],
                 "summary": "Update Information",
                 "parameters": [
@@ -1036,7 +1087,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "Users"
                 ],
                 "summary": "Password-reset",
                 "parameters": [
@@ -1090,7 +1141,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "Users"
                 ],
                 "summary": "Get session",
                 "responses": {}
@@ -1106,7 +1157,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "Users"
                 ],
                 "summary": "Delete user",
                 "parameters": [
@@ -1131,7 +1182,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "Users"
                 ],
                 "summary": "Get all user",
                 "responses": {}

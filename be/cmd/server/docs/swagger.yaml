@@ -143,7 +143,7 @@ paths:
       responses: {}
       summary: Get all assets
       tags:
-      - assets
+      - Assets
     post:
       consumes:
       - multipart/form-data
@@ -204,7 +204,7 @@ paths:
       responses: {}
       summary: Create assets
       tags:
-      - assets
+      - Assets
   /api/assets-log/{asset_id}:
     get:
       consumes:
@@ -272,7 +272,7 @@ paths:
       responses: {}
       summary: Retired assets
       tags:
-      - assets
+      - Assets
   /api/assets/{id}:
     delete:
       consumes:
@@ -289,7 +289,7 @@ paths:
       responses: {}
       summary: Delete assets
       tags:
-      - assets
+      - Assets
     get:
       consumes:
       - application/json
@@ -305,7 +305,7 @@ paths:
       responses: {}
       summary: Get assets
       tags:
-      - assets
+      - Assets
     put:
       consumes:
       - multipart/form-data
@@ -331,9 +331,9 @@ paths:
         name: warrantExpiry
         required: true
         type: string
-      - description: schedule_maintenance Float e.g. 7.5
+      - description: maintenance_time Float e.g. 7.5
         in: formData
-        name: maintenance
+        name: maintenance_time
         required: true
         type: number
       - description: Serial Number
@@ -376,7 +376,7 @@ paths:
       responses: {}
       summary: Update assets
       tags:
-      - assets
+      - Assets
   /api/assets/filter:
     get:
       consumes:
@@ -422,7 +422,39 @@ paths:
       - JWT: []
       summary: Get all assets with filter
       tags:
-      - assets
+      - Assets
+  /api/assets/filter-dashboard:
+    get:
+      consumes:
+      - application/json
+      description: Get Dashboard
+      parameters:
+      - in: query
+        name: categoryId
+        type: string
+      - in: query
+        name: departmentId
+        type: string
+      - description: '"csv" hoặc "pdf" hoặc ""'
+        in: query
+        name: export
+        type: string
+      - in: query
+        name: status
+        type: string
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: Get Dashboard
+      tags:
+      - Assets
   /api/assignments:
     post:
       consumes:
@@ -531,7 +563,7 @@ paths:
       responses: {}
       summary: Login
       tags:
-      - auth
+      - Auth
   /api/auth/logout:
     post:
       consumes:
@@ -542,7 +574,7 @@ paths:
       responses: {}
       summary: Logout
       tags:
-      - auth
+      - Auth
   /api/auth/refresh:
     post:
       consumes:
@@ -560,7 +592,7 @@ paths:
       responses: {}
       summary: Refresh Token
       tags:
-      - auth
+      - Auth
   /api/auth/register:
     post:
       consumes:
@@ -578,7 +610,7 @@ paths:
       responses: {}
       summary: Register user
       tags:
-      - auth
+      - Auth
   /api/categories:
     get:
       consumes:
@@ -589,7 +621,7 @@ paths:
       responses: {}
       summary: Get all categories
       tags:
-      - categories
+      - Categories
     post:
       consumes:
       - application/json
@@ -606,7 +638,7 @@ paths:
       responses: {}
       summary: Create categories
       tags:
-      - categories
+      - Categories
   /api/categories/{id}:
     delete:
       consumes:
@@ -623,7 +655,7 @@ paths:
       responses: {}
       summary: Delete category
       tags:
-      - categories
+      - Categories
   /api/departments:
     get:
       consumes:
@@ -634,7 +666,7 @@ paths:
       responses: {}
       summary: Get all departments
       tags:
-      - departments
+      - Departments
     post:
       consumes:
       - application/json
@@ -651,7 +683,7 @@ paths:
       responses: {}
       summary: Create departments
       tags:
-      - departments
+      - Departments
   /api/departments/{id}:
     delete:
       consumes:
@@ -668,7 +700,7 @@ paths:
       responses: {}
       summary: Delete department
       tags:
-      - departments
+      - Departments
   /api/locations:
     get:
       consumes:
@@ -679,7 +711,7 @@ paths:
       responses: {}
       summary: Get all location
       tags:
-      - locations
+      - Locations
     post:
       consumes:
       - application/json
@@ -696,7 +728,7 @@ paths:
       responses: {}
       summary: Create Location
       tags:
-      - locations
+      - Locations
   /api/locations/{id}:
     delete:
       consumes:
@@ -713,7 +745,7 @@ paths:
       responses: {}
       summary: Delete location
       tags:
-      - locations
+      - Locations
   /api/maintenance-schedules:
     post:
       consumes:
@@ -782,7 +814,7 @@ paths:
       responses: {}
       summary: GetRole
       tags:
-      - roles
+      - Roles
   /api/user/{email}:
     delete:
       consumes:
@@ -799,7 +831,7 @@ paths:
       responses: {}
       summary: Delete user
       tags:
-      - users
+      - Users
   /api/user/forget-password:
     post:
       consumes:
@@ -817,7 +849,7 @@ paths:
       responses: {}
       summary: Email reset password
       tags:
-      - users
+      - Users
   /api/user/information:
     patch:
       consumes:
@@ -835,7 +867,7 @@ paths:
       responses: {}
       summary: Update Information
       tags:
-      - users
+      - Users
   /api/user/password-reset:
     patch:
       consumes:
@@ -853,7 +885,7 @@ paths:
       responses: {}
       summary: Password-reset
       tags:
-      - users
+      - Users
   /api/user/role:
     patch:
       consumes:
@@ -882,7 +914,7 @@ paths:
       responses: {}
       summary: Get session
       tags:
-      - users
+      - Users
   /api/users:
     get:
       consumes:
@@ -893,5 +925,5 @@ paths:
       responses: {}
       summary: Get all user
       tags:
-      - users
+      - Users
 swagger: "2.0"

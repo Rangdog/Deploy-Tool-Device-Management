@@ -23,7 +23,7 @@ func NewLocationHandler(service *service.LocationService) *LocationHandler {
 // User godoc
 // @Summary      Create Location
 // @Description  Create location
-// @Tags         locations
+// @Tags         Locations
 // @Accept       json
 // @Produce      json
 // @Param        location   body    dto.CreateLocationRequest   true  "Data"
@@ -46,7 +46,7 @@ func (h *LocationHandler) Create(c *gin.Context) {
 // User godoc
 // @Summary      Get all location
 // @Description  Get all location
-// @Tags         locations
+// @Tags         Locations
 // @Accept       json
 // @Produce      json
 // @Router       /api/locations [GET]
@@ -63,7 +63,7 @@ func (h *LocationHandler) GetAll(c *gin.Context) {
 // User godoc
 // @Summary      Delete location
 // @Description   Delete location via id
-// @Tags         locations
+// @Tags         Locations
 // @Accept       json
 // @Produce      json
 // @Param		id	path		string				true	"id"

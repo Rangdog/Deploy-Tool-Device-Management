@@ -23,7 +23,7 @@ func NewCategoriesHandler(service *service.CategoriesService) *CategoriesHandler
 // User godoc
 // @Summary      Create categories
 // @Description  Create categories
-// @Tags         categories
+// @Tags         Categories
 // @Accept       json
 // @Produce      json
 // @Param        category   body    dto.CreateCategoryRequest   true  "Data"
@@ -46,7 +46,7 @@ func (h *CategoriesHandler) Create(c *gin.Context) {
 // User godoc
 // @Summary      Get all categories
 // @Description  Get all categories
-// @Tags         categories
+// @Tags         Categories
 // @Accept       json
 // @Produce      json
 // @Router       /api/categories [GET]
@@ -63,7 +63,7 @@ func (h *CategoriesHandler) GetAll(c *gin.Context) {
 // User godoc
 // @Summary      Delete category
 // @Description   Delete category via id
-// @Tags         categories
+// @Tags         Categories
 // @Accept       json
 // @Produce      json
 // @Param		id	path		string				true	"id"

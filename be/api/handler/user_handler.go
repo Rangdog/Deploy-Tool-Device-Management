@@ -27,7 +27,7 @@ func NewUserHandler(service *service.UserService) *UserHandler {
 // User godoc
 // @Summary      Register user
 // @Description  Register user
-// @Tags         auth
+// @Tags         Auth
 // @Accept       json
 // @Produce      json
 // @Param        user   body    dto.UserRegisterRequest   true  "Data"
@@ -50,7 +50,7 @@ func (h *UserHandler) Register(c *gin.Context) {
 // User godoc
 // @Summary      Login
 // @Description  Login
-// @Tags         auth
+// @Tags         Auth
 // @Accept       json
 // @Produce      json
 // @Param        user   body    dto.UserLoginRequest   true  "Data"
@@ -99,7 +99,7 @@ func (h *UserHandler) Activate(c *gin.Context) {
 // User godoc
 // @Summary      Refresh Token
 // @Description  Refresh Token
-// @Tags         auth
+// @Tags         Auth
 // @Accept       json
 // @Produce      json
 // @Param        refresh_token   body    dto.RefreshRequest   true  "Data"
@@ -166,7 +166,7 @@ func (h *UserHandler) Refresh(c *gin.Context) {
 // User godoc
 // @Summary      Password-reset
 // @Description  reset password
-// @Tags         users
+// @Tags         Users
 // @Accept       json
 // @Produce      json
 // @Param        Password-reset   body    dto.UserRequestResetPassword   true  "Data"
@@ -218,7 +218,7 @@ func (h *UserHandler) ResetPassword(c *gin.Context) {
 // User godoc
 // @Summary      Get session
 // @Description  Get session
-// @Tags         users
+// @Tags         Users
 // @Accept       json
 // @Produce      json
 // @Router       /api/user/session [GET]
@@ -236,7 +236,7 @@ func (h *UserHandler) Session(c *gin.Context) {
 // User godoc
 // @Summary      Email reset password
 // @Description   Email reset password
-// @Tags         users
+// @Tags         Users
 // @Accept       json
 // @Produce      json
 // @Param        Email_Reset_Password   body    dto.CheckPasswordReset   true  "Data"
@@ -259,7 +259,7 @@ func (h *UserHandler) CheckPasswordReset(c *gin.Context) {
 // User godoc
 // @Summary      Delete user
 // @Description   Delete user via email
-// @Tags         users
+// @Tags         Users
 // @Accept       json
 // @Produce      json
 // @Param		email	path		string				true	"email"
@@ -278,7 +278,7 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 // User godoc
 // @Summary      Logout
 // @Description   Logout
-// @Tags         auth
+// @Tags         Auth
 // @Accept       json
 // @Produce      json
 // @Router       /api/auth/logout [POST]
@@ -301,7 +301,7 @@ func (h *UserHandler) Logout(c *gin.Context) {
 // User godoc
 // @Summary      Get all user
 // @Description   Get all user
-// @Tags         users
+// @Tags         Users
 // @Accept       json
 // @Produce      json
 // @Router       /api/users [GET]
@@ -315,7 +315,7 @@ func (h *UserHandler) GetAllUser(c *gin.Context) {
 // User godoc
 // @Summary      Update Information
 // @Description   Update Information
-// @Tags         users
+// @Tags         Users
 // @Accept       json
 // @Produce      json
 // @Param        Information   body    dto.UpdateInformationUserRequest   true  "Data"

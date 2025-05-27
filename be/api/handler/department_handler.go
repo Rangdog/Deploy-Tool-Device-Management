@@ -23,7 +23,7 @@ func NewDepartmentsHandler(service *service.DepartmentsService) *DepartmentsHand
 // User godoc
 // @Summary      Create departments
 // @Description  Create departments
-// @Tags         departments
+// @Tags         Departments
 // @Accept       json
 // @Produce      json
 // @Param        department   body    dto.CreateDepartmentRequest   true  "Data"
@@ -46,7 +46,7 @@ func (h *DepartmentsHandler) Create(c *gin.Context) {
 // User godoc
 // @Summary      Get all departments
 // @Description  Get all departments
-// @Tags         departments
+// @Tags         Departments
 // @Accept       json
 // @Produce      json
 // @Router       /api/departments [GET]
@@ -63,7 +63,7 @@ func (h *DepartmentsHandler) GetAll(c *gin.Context) {
 // User godoc
 // @Summary      Delete department
 // @Description   Delete department via id
-// @Tags         departments
+// @Tags         Departments
 // @Accept       json
 // @Produce      json
 // @Param		id	path		string				true	"id"

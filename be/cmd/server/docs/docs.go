@@ -25,7 +25,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "assets"
+                    "Assets"
                 ],
                 "summary": "Get all assets",
                 "responses": {}
@@ -39,7 +39,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "assets"
+                    "Assets"
                 ],
                 "summary": "Create assets",
                 "parameters": [
@@ -209,7 +209,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "assets"
+                    "Assets"
                 ],
                 "summary": "Retired assets",
                 "parameters": [
@@ -239,7 +239,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "assets"
+                    "Assets"
                 ],
                 "summary": "Get all assets with filter",
                 "parameters": [
@@ -299,6 +299,57 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/api/assets/filter-dashboard": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "Get Dashboard",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Assets"
+                ],
+                "summary": "Get Dashboard",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "categoryId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "departmentId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "\"csv\" hoặc \"pdf\" hoặc \"\"",
+                        "name": "export",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/api/assets/{id}": {
             "get": {
                 "description": "Get assets",
@@ -309,7 +360,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "assets"
+                    "Assets"
                 ],
                 "summary": "Get assets",
                 "parameters": [
@@ -332,7 +383,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "assets"
+                    "Assets"
                 ],
                 "summary": "Update assets",
                 "parameters": [
@@ -366,8 +417,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "number",
-                        "description": "schedule_maintenance Float e.g. 7.5",
-                        "name": "maintenance",
+                        "description": "maintenance_time Float e.g. 7.5",
+                        "name": "maintenance_time",
                         "in": "formData",
                         "required": true
                     },
@@ -432,7 +483,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "assets"
+                    "Assets"
                 ],
                 "summary": "Delete assets",
                 "parameters": [
@@ -596,7 +647,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "Auth"
                 ],
                 "summary": "Login",
                 "parameters": [
@@ -623,7 +674,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "Auth"
                 ],
                 "summary": "Logout",
                 "responses": {}
@@ -639,7 +690,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "Auth"
                 ],
                 "summary": "Refresh Token",
                 "parameters": [
@@ -666,7 +717,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "Auth"
                 ],
                 "summary": "Register user",
                 "parameters": [
@@ -693,7 +744,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "categories"
+                    "Categories"
                 ],
                 "summary": "Get all categories",
                 "responses": {}
@@ -707,7 +758,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "categories"
+                    "Categories"
                 ],
                 "summary": "Create categories",
                 "parameters": [
@@ -734,7 +785,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "categories"
+                    "Categories"
                 ],
                 "summary": "Delete category",
                 "parameters": [
@@ -759,7 +810,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "departments"
+                    "Departments"
                 ],
                 "summary": "Get all departments",
                 "responses": {}
@@ -773,7 +824,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "departments"
+                    "Departments"
                 ],
                 "summary": "Create departments",
                 "parameters": [
@@ -800,7 +851,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "departments"
+                    "Departments"
                 ],
                 "summary": "Delete department",
                 "parameters": [
@@ -825,7 +876,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "locations"
+                    "Locations"
                 ],
                 "summary": "Get all location",
                 "responses": {}
@@ -839,7 +890,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "locations"
+                    "Locations"
                 ],
                 "summary": "Create Location",
                 "parameters": [
@@ -866,7 +917,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "locations"
+                    "Locations"
                 ],
                 "summary": "Delete location",
                 "parameters": [
@@ -977,7 +1028,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "roles"
+                    "Roles"
                 ],
                 "summary": "GetRole",
                 "responses": {}
@@ -993,7 +1044,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "Users"
                 ],
                 "summary": "Email reset password",
                 "parameters": [
@@ -1020,7 +1071,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "Users"
                 ],
                 "summary": "Update Information",
                 "parameters": [
@@ -1047,7 +1098,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "Users"
                 ],
                 "summary": "Password-reset",
                 "parameters": [
@@ -1101,7 +1152,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "Users"
                 ],
                 "summary": "Get session",
                 "responses": {}
@@ -1117,7 +1168,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "Users"
                 ],
                 "summary": "Delete user",
                 "parameters": [
@@ -1142,7 +1193,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "Users"
                 ],
                 "summary": "Get all user",
                 "responses": {}
