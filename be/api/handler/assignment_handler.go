@@ -29,7 +29,12 @@ func NewAssignmentHandler(service *service.AssignmentService) *AssignmentHandler
 // @Accept       json
 // @Produce      json
 // @Param        assignment   body    dto.AssignmentCreateRequest   true  "Data"
+// @param Authorization header string true "Authorization"
 // @Router       /api/assignments [POST]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *AssignmentHandler) Create(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)
@@ -73,7 +78,12 @@ func (h *AssignmentHandler) Create(c *gin.Context) {
 // @Produce      json
 // @Param        assignment   body    dto.AssignmentCreateRequest   true  "Data"
 // @Param		id	path		string				true	"id"
+// @param Authorization header string true "Authorization"
 // @Router       /api/assignments/{id} [PUT]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *AssignmentHandler) Update(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)
@@ -149,7 +159,12 @@ func (h *AssignmentHandler) FilterAsset(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param		id	path		string				true	"id"
+// @param Authorization header string true "Authorization"
 // @Router       /api/assignments/{id} [GET]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *AssignmentHandler) GetAssignmentById(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)

@@ -27,7 +27,12 @@ func NewDepartmentsHandler(service *service.DepartmentsService) *DepartmentsHand
 // @Accept       json
 // @Produce      json
 // @Param        department   body    dto.CreateDepartmentRequest   true  "Data"
+// @param Authorization header string true "Authorization"
 // @Router       /api/departments [POST]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *DepartmentsHandler) Create(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	var request dto.CreateDepartmentRequest
@@ -49,7 +54,12 @@ func (h *DepartmentsHandler) Create(c *gin.Context) {
 // @Tags         Departments
 // @Accept       json
 // @Produce      json
+// @param Authorization header string true "Authorization"
 // @Router       /api/departments [GET]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *DepartmentsHandler) GetAll(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	departments, err := h.service.GetAll()
@@ -67,7 +77,12 @@ func (h *DepartmentsHandler) GetAll(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param		id	path		string				true	"id"
+// @param Authorization header string true "Authorization"
 // @Router       /api/departments/{id} [DELETE]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *DepartmentsHandler) Delete(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	id := c.Param("id")

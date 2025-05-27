@@ -23,7 +23,12 @@ func NewRoleHandler(service *service.RoleService) *RoleHandler {
 // @Tags         Roles
 // @Accept       json
 // @Produce      json
+// @param Authorization header string true "Authorization"
 // @Router       /api/roles [GET]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *RoleHandler) GetAllRole(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	roles := h.service.GetAllRole()

@@ -6,6 +6,11 @@
     "paths": {
         "/api/assets": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Get all assets",
                 "consumes": [
                     "application/json"
@@ -17,9 +22,23 @@
                     "Assets"
                 ],
                 "summary": "Get all assets",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {}
             },
             "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Create assets",
                 "consumes": [
                     "multipart/form-data"
@@ -100,6 +119,13 @@
                         "description": "Image to upload",
                         "name": "image",
                         "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -190,6 +216,11 @@
         },
         "/api/assets-retired/{id}": {
             "patch": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Retired assets",
                 "consumes": [
                     "application/json"
@@ -341,6 +372,11 @@
         },
         "/api/assets/{id}": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Get assets",
                 "consumes": [
                     "application/json"
@@ -359,11 +395,23 @@
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
             },
             "put": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Update assets",
                 "consumes": [
                     "multipart/form-data"
@@ -445,11 +493,23 @@
                         "name": "image",
                         "in": "formData",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
             },
             "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Delete assets",
                 "consumes": [
                     "application/json"
@@ -468,6 +528,13 @@
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -475,6 +542,11 @@
         },
         "/api/assignments": {
             "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Create assignment",
                 "consumes": [
                     "application/json"
@@ -495,6 +567,13 @@
                         "schema": {
                             "$ref": "#/definitions/dto.AssignmentCreateRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -557,6 +636,11 @@
         },
         "/api/assignments/{id}": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Get assignment",
                 "consumes": [
                     "application/json"
@@ -575,11 +659,23 @@
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
             },
             "put": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Update assignment",
                 "consumes": [
                     "application/json"
@@ -606,6 +702,13 @@
                         "description": "id",
                         "name": "id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -636,7 +739,20 @@
                         }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseSuccessStruct"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseFail"
+                        }
+                    }
+                }
             }
         },
         "/api/auth/logout": {
@@ -652,7 +768,20 @@
                     "Auth"
                 ],
                 "summary": "Logout",
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseSuccessNoData"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseFail"
+                        }
+                    }
+                }
             }
         },
         "/api/auth/refresh": {
@@ -679,7 +808,32 @@
                         }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseSuccessStruct"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseFail"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseFail"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseFail"
+                        }
+                    }
+                }
             }
         },
         "/api/auth/register": {
@@ -706,11 +860,29 @@
                         }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseSuccessNoData"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseFail"
+                        }
+                    }
+                }
             }
         },
         "/api/categories": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Get all categories",
                 "consumes": [
                     "application/json"
@@ -722,9 +894,23 @@
                     "Categories"
                 ],
                 "summary": "Get all categories",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {}
             },
             "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Create categories",
                 "consumes": [
                     "application/json"
@@ -745,6 +931,13 @@
                         "schema": {
                             "$ref": "#/definitions/dto.CreateCategoryRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -752,6 +945,11 @@
         },
         "/api/categories/{id}": {
             "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Delete category via id",
                 "consumes": [
                     "application/json"
@@ -770,6 +968,13 @@
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -777,6 +982,11 @@
         },
         "/api/departments": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Get all departments",
                 "consumes": [
                     "application/json"
@@ -788,9 +998,23 @@
                     "Departments"
                 ],
                 "summary": "Get all departments",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {}
             },
             "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Create departments",
                 "consumes": [
                     "application/json"
@@ -811,6 +1035,13 @@
                         "schema": {
                             "$ref": "#/definitions/dto.CreateDepartmentRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -818,6 +1049,11 @@
         },
         "/api/departments/{id}": {
             "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Delete department via id",
                 "consumes": [
                     "application/json"
@@ -836,6 +1072,13 @@
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -843,6 +1086,11 @@
         },
         "/api/locations": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Get all location",
                 "consumes": [
                     "application/json"
@@ -854,9 +1102,23 @@
                     "Locations"
                 ],
                 "summary": "Get all location",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {}
             },
             "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Create location",
                 "consumes": [
                     "application/json"
@@ -877,6 +1139,13 @@
                         "schema": {
                             "$ref": "#/definitions/dto.CreateLocationRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -884,6 +1153,11 @@
         },
         "/api/locations/{id}": {
             "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Delete location via id",
                 "consumes": [
                     "application/json"
@@ -902,6 +1176,13 @@
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -909,6 +1190,11 @@
         },
         "/api/maintenance-schedules": {
             "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Create maintenanceSchedules",
                 "consumes": [
                     "application/json"
@@ -929,6 +1215,13 @@
                         "schema": {
                             "$ref": "#/definitions/dto.CreateMaintenanceSchedulesRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -936,6 +1229,11 @@
         },
         "/api/maintenance-schedules/{id}": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Get maintenanceSchedules",
                 "consumes": [
                     "application/json"
@@ -954,6 +1252,13 @@
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -961,6 +1266,11 @@
         },
         "/api/request-transfer/{id}": {
             "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Request Transfer",
                 "consumes": [
                     "application/json"
@@ -988,6 +1298,13 @@
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -995,6 +1312,11 @@
         },
         "/api/roles": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "GetRole",
                 "consumes": [
                     "application/json"
@@ -1006,6 +1328,15 @@
                     "Roles"
                 ],
                 "summary": "GetRole",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {}
             }
         },
@@ -1033,11 +1364,29 @@
                         }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseSuccessNoData"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseFail"
+                        }
+                    }
+                }
             }
         },
         "/api/user/information": {
             "patch": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Update Information",
                 "consumes": [
                     "application/json"
@@ -1058,9 +1407,29 @@
                         "schema": {
                             "$ref": "#/definitions/dto.UpdateInformationUserRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseSuccessStruct"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseFail"
+                        }
+                    }
+                }
             }
         },
         "/api/user/password-reset": {
@@ -1087,11 +1456,35 @@
                         }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseSuccessNoData"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseFail"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseFail"
+                        }
+                    }
+                }
             }
         },
         "/api/user/role": {
             "patch": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Update Role",
                 "consumes": [
                     "application/json"
@@ -1112,13 +1505,38 @@
                         "schema": {
                             "$ref": "#/definitions/dto.UpdateRoleUserRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseSuccessStruct"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseFail"
+                        }
+                    }
+                }
             }
         },
         "/api/user/session": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Get session",
                 "consumes": [
                     "application/json"
@@ -1130,11 +1548,38 @@
                     "Users"
                 ],
                 "summary": "Get session",
-                "responses": {}
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseSuccessStruct"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseFail"
+                        }
+                    }
+                }
             }
         },
         "/api/user/{email}": {
             "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Delete user via email",
                 "consumes": [
                     "application/json"
@@ -1149,13 +1594,33 @@
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "email",
                         "name": "email",
                         "in": "path",
                         "required": true
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseSuccessNoData"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseFail"
+                        }
+                    }
+                }
             }
         },
         "/api/users": {
@@ -1171,11 +1636,57 @@
                     "Users"
                 ],
                 "summary": "Get all user",
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseSuccessStruct"
+                        }
+                    }
+                }
             }
         }
     },
     "definitions": {
+        "dto.ApiResponseFail": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ApiResponseSuccessNoData": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ApiResponseSuccessStruct": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "example": 200
+                },
+                "data": {
+                    "type": "string",
+                    "example": "null"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Success"
+                }
+            }
+        },
         "dto.AssignmentCreateRequest": {
             "type": "object",
             "required": [

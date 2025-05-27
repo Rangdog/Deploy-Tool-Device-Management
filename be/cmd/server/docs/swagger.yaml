@@ -1,4 +1,30 @@
 definitions:
+  dto.ApiResponseFail:
+    properties:
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
+  dto.ApiResponseSuccessNoData:
+    properties:
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
+  dto.ApiResponseSuccessStruct:
+    properties:
+      code:
+        example: 200
+        type: integer
+      data:
+        example: "null"
+        type: string
+      message:
+        example: Success
+        type: string
+    type: object
   dto.AssignmentCreateRequest:
     properties:
       assetId:
@@ -138,9 +164,17 @@ paths:
       consumes:
       - application/json
       description: Get all assets
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses: {}
+      security:
+      - JWT: []
       summary: Get all assets
       tags:
       - Assets
@@ -199,9 +233,16 @@ paths:
         name: image
         required: true
         type: file
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses: {}
+      security:
+      - JWT: []
       summary: Create assets
       tags:
       - Assets
@@ -270,6 +311,8 @@ paths:
       produces:
       - application/json
       responses: {}
+      security:
+      - JWT: []
       summary: Retired assets
       tags:
       - Assets
@@ -284,9 +327,16 @@ paths:
         name: id
         required: true
         type: string
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses: {}
+      security:
+      - JWT: []
       summary: Delete assets
       tags:
       - Assets
@@ -300,9 +350,16 @@ paths:
         name: id
         required: true
         type: string
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses: {}
+      security:
+      - JWT: []
       summary: Get assets
       tags:
       - Assets
@@ -361,9 +418,16 @@ paths:
         name: image
         required: true
         type: file
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses: {}
+      security:
+      - JWT: []
       summary: Update assets
       tags:
       - Assets
@@ -457,9 +521,16 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/dto.AssignmentCreateRequest'
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses: {}
+      security:
+      - JWT: []
       summary: Create assignment
       tags:
       - Assignments
@@ -474,9 +545,16 @@ paths:
         name: id
         required: true
         type: string
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses: {}
+      security:
+      - JWT: []
       summary: Get assignment
       tags:
       - Assignments
@@ -496,9 +574,16 @@ paths:
         name: id
         required: true
         type: string
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses: {}
+      security:
+      - JWT: []
       summary: Update assignment
       tags:
       - Assignments
@@ -550,7 +635,15 @@ paths:
           $ref: '#/definitions/dto.UserLoginRequest'
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ApiResponseSuccessStruct'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ApiResponseFail'
       summary: Login
       tags:
       - Auth
@@ -561,7 +654,15 @@ paths:
       description: Logout
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ApiResponseSuccessNoData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ApiResponseFail'
       summary: Logout
       tags:
       - Auth
@@ -579,7 +680,23 @@ paths:
           $ref: '#/definitions/dto.RefreshRequest'
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ApiResponseSuccessStruct'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ApiResponseFail'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dto.ApiResponseFail'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ApiResponseFail'
       summary: Refresh Token
       tags:
       - Auth
@@ -597,7 +714,15 @@ paths:
           $ref: '#/definitions/dto.UserRegisterRequest'
       produces:
       - application/json
-      responses: {}
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.ApiResponseSuccessNoData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ApiResponseFail'
       summary: Register user
       tags:
       - Auth
@@ -606,9 +731,17 @@ paths:
       consumes:
       - application/json
       description: Get all categories
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses: {}
+      security:
+      - JWT: []
       summary: Get all categories
       tags:
       - Categories
@@ -623,9 +756,16 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/dto.CreateCategoryRequest'
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses: {}
+      security:
+      - JWT: []
       summary: Create categories
       tags:
       - Categories
@@ -640,9 +780,16 @@ paths:
         name: id
         required: true
         type: string
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses: {}
+      security:
+      - JWT: []
       summary: Delete category
       tags:
       - Categories
@@ -651,9 +798,17 @@ paths:
       consumes:
       - application/json
       description: Get all departments
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses: {}
+      security:
+      - JWT: []
       summary: Get all departments
       tags:
       - Departments
@@ -668,9 +823,16 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/dto.CreateDepartmentRequest'
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses: {}
+      security:
+      - JWT: []
       summary: Create departments
       tags:
       - Departments
@@ -685,9 +847,16 @@ paths:
         name: id
         required: true
         type: string
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses: {}
+      security:
+      - JWT: []
       summary: Delete department
       tags:
       - Departments
@@ -696,9 +865,17 @@ paths:
       consumes:
       - application/json
       description: Get all location
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses: {}
+      security:
+      - JWT: []
       summary: Get all location
       tags:
       - Locations
@@ -713,9 +890,16 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/dto.CreateLocationRequest'
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses: {}
+      security:
+      - JWT: []
       summary: Create Location
       tags:
       - Locations
@@ -730,9 +914,16 @@ paths:
         name: id
         required: true
         type: string
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses: {}
+      security:
+      - JWT: []
       summary: Delete location
       tags:
       - Locations
@@ -748,9 +939,16 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/dto.CreateMaintenanceSchedulesRequest'
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses: {}
+      security:
+      - JWT: []
       summary: Create maintenanceSchedules
       tags:
       - MaintenanceScheduless
@@ -765,9 +963,16 @@ paths:
         name: id
         required: true
         type: integer
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses: {}
+      security:
+      - JWT: []
       summary: Get maintenanceSchedules by assetId
       tags:
       - MaintenanceScheduless
@@ -788,9 +993,16 @@ paths:
         name: id
         required: true
         type: integer
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses: {}
+      security:
+      - JWT: []
       summary: Request Transfer
       tags:
       - RequestTransfer
@@ -799,9 +1011,17 @@ paths:
       consumes:
       - application/json
       description: GetRole
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses: {}
+      security:
+      - JWT: []
       summary: GetRole
       tags:
       - Roles
@@ -811,6 +1031,11 @@ paths:
       - application/json
       description: Delete user via email
       parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: email
         in: path
         name: email
@@ -818,7 +1043,17 @@ paths:
         type: string
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ApiResponseSuccessNoData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ApiResponseFail'
+      security:
+      - JWT: []
       summary: Delete user
       tags:
       - Users
@@ -836,7 +1071,15 @@ paths:
           $ref: '#/definitions/dto.CheckPasswordReset'
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ApiResponseSuccessNoData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ApiResponseFail'
       summary: Email reset password
       tags:
       - Users
@@ -852,9 +1095,24 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/dto.UpdateInformationUserRequest'
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ApiResponseSuccessStruct'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ApiResponseFail'
+      security:
+      - JWT: []
       summary: Update Information
       tags:
       - Users
@@ -872,7 +1130,19 @@ paths:
           $ref: '#/definitions/dto.UserRequestResetPassword'
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ApiResponseSuccessNoData'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ApiResponseFail'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ApiResponseFail'
       summary: Password-reset
       tags:
       - Users
@@ -888,9 +1158,24 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/dto.UpdateRoleUserRequest'
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ApiResponseSuccessStruct'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ApiResponseFail'
+      security:
+      - JWT: []
       summary: Update Role
       tags:
       - roles
@@ -899,9 +1184,25 @@ paths:
       consumes:
       - application/json
       description: Get session
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ApiResponseSuccessStruct'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ApiResponseFail'
+      security:
+      - JWT: []
       summary: Get session
       tags:
       - Users
@@ -912,7 +1213,11 @@ paths:
       description: Get all user
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ApiResponseSuccessStruct'
       summary: Get all user
       tags:
       - Users

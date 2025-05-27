@@ -27,7 +27,12 @@ func NewCategoriesHandler(service *service.CategoriesService) *CategoriesHandler
 // @Accept       json
 // @Produce      json
 // @Param        category   body    dto.CreateCategoryRequest   true  "Data"
+// @param Authorization header string true "Authorization"
 // @Router       /api/categories [POST]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *CategoriesHandler) Create(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	var request dto.CreateCategoryRequest
@@ -49,7 +54,12 @@ func (h *CategoriesHandler) Create(c *gin.Context) {
 // @Tags         Categories
 // @Accept       json
 // @Produce      json
+// @param Authorization header string true "Authorization"
 // @Router       /api/categories [GET]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *CategoriesHandler) GetAll(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	categories, err := h.service.GetAll()
@@ -67,7 +77,12 @@ func (h *CategoriesHandler) GetAll(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param		id	path		string				true	"id"
+// @param Authorization header string true "Authorization"
 // @Router       /api/categories/{id} [DELETE]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *CategoriesHandler) Delete(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	id := c.Param("id")

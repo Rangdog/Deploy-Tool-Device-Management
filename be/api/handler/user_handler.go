@@ -32,6 +32,8 @@ func NewUserHandler(service *service.UserService) *UserHandler {
 // @Produce      json
 // @Param        user   body    dto.UserRegisterRequest   true  "Data"
 // @Router       /api/auth/register [post]
+// @Success      201   {object}  dto.ApiResponseSuccessNoData
+// @Failure      500   {object}  dto.ApiResponseFail
 func (h *UserHandler) Register(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	var user dto.UserRegisterRequest
@@ -55,6 +57,8 @@ func (h *UserHandler) Register(c *gin.Context) {
 // @Produce      json
 // @Param        user   body    dto.UserLoginRequest   true  "Data"
 // @Router       /api/auth/login [post]
+// @Success      200   {object}  dto.ApiResponseSuccessStruct
+// @Failure      500   {object}  dto.ApiResponseFail
 func (h *UserHandler) Login(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	var user dto.UserLoginRequest
@@ -104,6 +108,10 @@ func (h *UserHandler) Activate(c *gin.Context) {
 // @Produce      json
 // @Param        refresh_token   body    dto.RefreshRequest   true  "Data"
 // @Router       /api/auth/refresh [POST]
+// @Success      200   {object}  dto.ApiResponseSuccessStruct
+// @Failure      401   {object}  dto.ApiResponseFail
+// @Failure      403   {object}  dto.ApiResponseFail
+// @Failure      500   {object}  dto.ApiResponseFail
 func (h *UserHandler) Refresh(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	var rq dto.RefreshRequest
@@ -171,6 +179,9 @@ func (h *UserHandler) Refresh(c *gin.Context) {
 // @Produce      json
 // @Param        Password-reset   body    dto.UserRequestResetPassword   true  "Data"
 // @Router       /api/user/password-reset [PATCH]
+// @Success      200   {object}  dto.ApiResponseSuccessNoData
+// @Failure      401   {object}  dto.ApiResponseFail
+// @Failure      500   {object}  dto.ApiResponseFail
 func (h *UserHandler) ResetPassword(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	var request dto.UserRequestResetPassword
@@ -221,7 +232,14 @@ func (h *UserHandler) ResetPassword(c *gin.Context) {
 // @Tags         Users
 // @Accept       json
 // @Produce      json
+// @param Authorization header string true "Authorization"
 // @Router       /api/user/session [GET]
+// @Success      200   {object}  dto.ApiResponseSuccessStruct
+// @Failure      401   {object}  dto.ApiResponseFail
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *UserHandler) Session(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)
@@ -241,6 +259,8 @@ func (h *UserHandler) Session(c *gin.Context) {
 // @Produce      json
 // @Param        Email_Reset_Password   body    dto.CheckPasswordReset   true  "Data"
 // @Router       /api/user/forget-password [POST]
+// @Success      200   {object}  dto.ApiResponseSuccessNoData
+// @Failure      500   {object}  dto.ApiResponseFail
 func (h *UserHandler) CheckPasswordReset(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	var request dto.CheckPasswordReset
@@ -262,8 +282,15 @@ func (h *UserHandler) CheckPasswordReset(c *gin.Context) {
 // @Tags         Users
 // @Accept       json
 // @Produce      json
+// @param Authorization header string true "Authorization"
 // @Param		email	path		string				true	"email"
 // @Router       /api/user/{email} [DELETE]
+// @Success      200   {object}  dto.ApiResponseSuccessNoData
+// @Failure      500   {object}  dto.ApiResponseFail
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *UserHandler) DeleteUser(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	email := c.Param("email")
@@ -282,6 +309,8 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Router       /api/auth/logout [POST]
+// @Success      200   {object}  dto.ApiResponseSuccessNoData
+// @Failure      500   {object}  dto.ApiResponseFail
 func (h *UserHandler) Logout(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)
@@ -305,6 +334,7 @@ func (h *UserHandler) Logout(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Router       /api/users [GET]
+// @Success      200   {object}  dto.ApiResponseSuccessStruct
 func (h *UserHandler) GetAllUser(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	// userId := utils.GetUserIdFromContext(c)
@@ -319,7 +349,14 @@ func (h *UserHandler) GetAllUser(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        Information   body    dto.UpdateInformationUserRequest   true  "Data"
+// @param Authorization header string true "Authorization"
 // @Router       /api/user/information [PATCH]
+// @Success      200   {object}  dto.ApiResponseSuccessStruct
+// @Failure      500   {object}  dto.ApiResponseFail
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *UserHandler) UpdateInformationUser(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)
@@ -343,7 +380,14 @@ func (h *UserHandler) UpdateInformationUser(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        Role   body    dto.UpdateRoleUserRequest   true  "Data"
+// @param Authorization header string true "Authorization"
 // @Router       /api/user/role [PATCH]
+// @Success      200   {object}  dto.ApiResponseSuccessStruct
+// @Failure      500   {object}  dto.ApiResponseFail
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *UserHandler) UpdateRoleUser(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)

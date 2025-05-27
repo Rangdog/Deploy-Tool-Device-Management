@@ -28,7 +28,12 @@ func NewMaintenanceSchedulesHandler(service *service.MaintenanceSchedulesService
 // @Accept       json
 // @Produce      json
 // @Param        MaintenanceSchedules   body    dto.CreateMaintenanceSchedulesRequest   true  "Data"
+// @param Authorization header string true "Authorization"
 // @Router       /api/maintenance-schedules [POST]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *MaintenanceschedulesHandler) Create(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)
@@ -52,7 +57,12 @@ func (h *MaintenanceschedulesHandler) Create(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param		id	path		int				true	"asset_id"
+// @param Authorization header string true "Authorization"
 // @Router       /api/maintenance-schedules/{id} [GET]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *MaintenanceschedulesHandler) GetAllMaintenanceSchedulesByAssetId(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)

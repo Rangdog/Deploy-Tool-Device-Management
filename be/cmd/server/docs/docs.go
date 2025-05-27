@@ -17,6 +17,11 @@ const docTemplate = `{
     "paths": {
         "/api/assets": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Get all assets",
                 "consumes": [
                     "application/json"
@@ -28,9 +33,23 @@ const docTemplate = `{
                     "Assets"
                 ],
                 "summary": "Get all assets",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {}
             },
             "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Create assets",
                 "consumes": [
                     "multipart/form-data"
@@ -111,6 +130,13 @@ const docTemplate = `{
                         "description": "Image to upload",
                         "name": "image",
                         "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -201,6 +227,11 @@ const docTemplate = `{
         },
         "/api/assets-retired/{id}": {
             "patch": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Retired assets",
                 "consumes": [
                     "application/json"
@@ -352,6 +383,11 @@ const docTemplate = `{
         },
         "/api/assets/{id}": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Get assets",
                 "consumes": [
                     "application/json"
@@ -370,11 +406,23 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
             },
             "put": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Update assets",
                 "consumes": [
                     "multipart/form-data"
@@ -456,11 +504,23 @@ const docTemplate = `{
                         "name": "image",
                         "in": "formData",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
             },
             "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Delete assets",
                 "consumes": [
                     "application/json"
@@ -479,6 +539,13 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -486,6 +553,11 @@ const docTemplate = `{
         },
         "/api/assignments": {
             "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Create assignment",
                 "consumes": [
                     "application/json"
@@ -506,6 +578,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.AssignmentCreateRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -568,6 +647,11 @@ const docTemplate = `{
         },
         "/api/assignments/{id}": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Get assignment",
                 "consumes": [
                     "application/json"
@@ -586,11 +670,23 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
             },
             "put": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Update assignment",
                 "consumes": [
                     "application/json"
@@ -617,6 +713,13 @@ const docTemplate = `{
                         "description": "id",
                         "name": "id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -647,7 +750,20 @@ const docTemplate = `{
                         }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseSuccessStruct"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseFail"
+                        }
+                    }
+                }
             }
         },
         "/api/auth/logout": {
@@ -663,7 +779,20 @@ const docTemplate = `{
                     "Auth"
                 ],
                 "summary": "Logout",
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseSuccessNoData"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseFail"
+                        }
+                    }
+                }
             }
         },
         "/api/auth/refresh": {
@@ -690,7 +819,32 @@ const docTemplate = `{
                         }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseSuccessStruct"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseFail"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseFail"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseFail"
+                        }
+                    }
+                }
             }
         },
         "/api/auth/register": {
@@ -717,11 +871,29 @@ const docTemplate = `{
                         }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseSuccessNoData"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseFail"
+                        }
+                    }
+                }
             }
         },
         "/api/categories": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Get all categories",
                 "consumes": [
                     "application/json"
@@ -733,9 +905,23 @@ const docTemplate = `{
                     "Categories"
                 ],
                 "summary": "Get all categories",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {}
             },
             "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Create categories",
                 "consumes": [
                     "application/json"
@@ -756,6 +942,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.CreateCategoryRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -763,6 +956,11 @@ const docTemplate = `{
         },
         "/api/categories/{id}": {
             "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Delete category via id",
                 "consumes": [
                     "application/json"
@@ -781,6 +979,13 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -788,6 +993,11 @@ const docTemplate = `{
         },
         "/api/departments": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Get all departments",
                 "consumes": [
                     "application/json"
@@ -799,9 +1009,23 @@ const docTemplate = `{
                     "Departments"
                 ],
                 "summary": "Get all departments",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {}
             },
             "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Create departments",
                 "consumes": [
                     "application/json"
@@ -822,6 +1046,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.CreateDepartmentRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -829,6 +1060,11 @@ const docTemplate = `{
         },
         "/api/departments/{id}": {
             "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Delete department via id",
                 "consumes": [
                     "application/json"
@@ -847,6 +1083,13 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -854,6 +1097,11 @@ const docTemplate = `{
         },
         "/api/locations": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Get all location",
                 "consumes": [
                     "application/json"
@@ -865,9 +1113,23 @@ const docTemplate = `{
                     "Locations"
                 ],
                 "summary": "Get all location",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {}
             },
             "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Create location",
                 "consumes": [
                     "application/json"
@@ -888,6 +1150,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.CreateLocationRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -895,6 +1164,11 @@ const docTemplate = `{
         },
         "/api/locations/{id}": {
             "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Delete location via id",
                 "consumes": [
                     "application/json"
@@ -913,6 +1187,13 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -920,6 +1201,11 @@ const docTemplate = `{
         },
         "/api/maintenance-schedules": {
             "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Create maintenanceSchedules",
                 "consumes": [
                     "application/json"
@@ -940,6 +1226,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.CreateMaintenanceSchedulesRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -947,6 +1240,11 @@ const docTemplate = `{
         },
         "/api/maintenance-schedules/{id}": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Get maintenanceSchedules",
                 "consumes": [
                     "application/json"
@@ -965,6 +1263,13 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -972,6 +1277,11 @@ const docTemplate = `{
         },
         "/api/request-transfer/{id}": {
             "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Request Transfer",
                 "consumes": [
                     "application/json"
@@ -999,6 +1309,13 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -1006,6 +1323,11 @@ const docTemplate = `{
         },
         "/api/roles": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "GetRole",
                 "consumes": [
                     "application/json"
@@ -1017,6 +1339,15 @@ const docTemplate = `{
                     "Roles"
                 ],
                 "summary": "GetRole",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {}
             }
         },
@@ -1044,11 +1375,29 @@ const docTemplate = `{
                         }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseSuccessNoData"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseFail"
+                        }
+                    }
+                }
             }
         },
         "/api/user/information": {
             "patch": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Update Information",
                 "consumes": [
                     "application/json"
@@ -1069,9 +1418,29 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.UpdateInformationUserRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseSuccessStruct"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseFail"
+                        }
+                    }
+                }
             }
         },
         "/api/user/password-reset": {
@@ -1098,11 +1467,35 @@ const docTemplate = `{
                         }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseSuccessNoData"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseFail"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseFail"
+                        }
+                    }
+                }
             }
         },
         "/api/user/role": {
             "patch": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Update Role",
                 "consumes": [
                     "application/json"
@@ -1123,13 +1516,38 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.UpdateRoleUserRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseSuccessStruct"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseFail"
+                        }
+                    }
+                }
             }
         },
         "/api/user/session": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Get session",
                 "consumes": [
                     "application/json"
@@ -1141,11 +1559,38 @@ const docTemplate = `{
                     "Users"
                 ],
                 "summary": "Get session",
-                "responses": {}
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseSuccessStruct"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseFail"
+                        }
+                    }
+                }
             }
         },
         "/api/user/{email}": {
             "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Delete user via email",
                 "consumes": [
                     "application/json"
@@ -1160,13 +1605,33 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "email",
                         "name": "email",
                         "in": "path",
                         "required": true
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseSuccessNoData"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseFail"
+                        }
+                    }
+                }
             }
         },
         "/api/users": {
@@ -1182,11 +1647,57 @@ const docTemplate = `{
                     "Users"
                 ],
                 "summary": "Get all user",
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseSuccessStruct"
+                        }
+                    }
+                }
             }
         }
     },
     "definitions": {
+        "dto.ApiResponseFail": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ApiResponseSuccessNoData": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ApiResponseSuccessStruct": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "example": 200
+                },
+                "data": {
+                    "type": "string",
+                    "example": "null"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Success"
+                }
+            }
+        },
         "dto.AssignmentCreateRequest": {
             "type": "object",
             "required": [

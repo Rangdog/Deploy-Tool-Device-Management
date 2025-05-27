@@ -28,7 +28,12 @@ func NewRequestTransferHandler(service *service.RequestTransferService) *Request
 // @Produce      json
 // @Param        Request-Transfer  body    dto.CreateRequestTransferRequest   true  "Data"
 // @Param		id	path		int				true	"project_id"
+// @param Authorization header string true "Authorization"
 // @Router       /api/request-transfer/{id} [POST]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *RequestTransferHandler) Create(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)

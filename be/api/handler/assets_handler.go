@@ -43,7 +43,12 @@ func NewAssetsHandler(service *service.AssetsService) *AssetsHandler {
 // @Param redirectUrl formData string true "redirect url"
 // @Param file formData file true "File to upload"
 // @Param image formData file true "Image to upload"
+// @param Authorization header string true "Authorization"
 // @Router /api/assets [post]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *AssetsHandler) Create(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 
@@ -174,7 +179,12 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 // @Param departmentId formData int64 true "Department ID"
 // @Param file formData file true "File to upload"
 // @Param image formData file true "Image to upload"
+// @param Authorization header string true "Authorization"
 // @Router /api/assets/{id} [PUT]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *AssetsHandler) Update(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	idStr := c.Param("id")
@@ -299,7 +309,12 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param		id	path		string				true	"id"
+// @param Authorization header string true "Authorization"
 // @Router /api/assets/{id} [GET]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *AssetsHandler) GetAssetById(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)
@@ -355,7 +370,12 @@ func (h *AssetsHandler) GetAssetById(c *gin.Context) {
 // @Tags Assets
 // @Accept json
 // @Produce json
+// @param Authorization header string true "Authorization"
 // @Router /api/assets [GET]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *AssetsHandler) GetAllAsset(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	assets, err := h.service.GetAllAsset()
@@ -409,7 +429,12 @@ func (h *AssetsHandler) GetAllAsset(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param		id	path		string				true	"id"
+// @param Authorization header string true "Authorization"
 // @Router /api/assets/{id} [Delete]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *AssetsHandler) DeleteAsset(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)
@@ -434,6 +459,10 @@ func (h *AssetsHandler) DeleteAsset(c *gin.Context) {
 // @Produce json
 // @Param		id	path		string				true	"id"
 // @Router /api/assets-retired/{id} [PATCH]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *AssetsHandler) UpdateAssetRetired(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)

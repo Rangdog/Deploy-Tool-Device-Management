@@ -27,7 +27,12 @@ func NewLocationHandler(service *service.LocationService) *LocationHandler {
 // @Accept       json
 // @Produce      json
 // @Param        location   body    dto.CreateLocationRequest   true  "Data"
+// @param Authorization header string true "Authorization"
 // @Router       /api/locations [POST]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *LocationHandler) Create(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	var request dto.CreateLocationRequest
@@ -49,7 +54,12 @@ func (h *LocationHandler) Create(c *gin.Context) {
 // @Tags         Locations
 // @Accept       json
 // @Produce      json
+// @param Authorization header string true "Authorization"
 // @Router       /api/locations [GET]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *LocationHandler) GetAll(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	locations, err := h.service.GetAll()
@@ -67,7 +77,12 @@ func (h *LocationHandler) GetAll(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param		id	path		string				true	"id"
+// @param Authorization header string true "Authorization"
 // @Router       /api/locations/{id} [DELETE]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *LocationHandler) Delete(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	id := c.Param("id")
