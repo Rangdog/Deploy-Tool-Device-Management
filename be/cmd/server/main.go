@@ -58,7 +58,7 @@ func main() {
 	assetLogService := service.NewAssetLogService(assetsLogRepository)
 	assetLogHandler := handler.NewAssetLogHandler(assetLogService)
 	//Request Transfer
-	requestTransferService := service.NewRequestTransferService(requestTransferRepository)
+	requestTransferService := service.NewRequestTransferService(requestTransferRepository, assignmentService, userRepository)
 	requestTransferHandler := handler.NewRequestTransferHandler(requestTransferService)
 
 	docs.SwaggerInfo.Title = "API Tool device manage"
@@ -98,7 +98,6 @@ func main() {
 		log.Fatalf("❌ Failed to schedule cron job: %v", err)
 	}
 
-	// Bắt đầu chạy cron
 	c.Start()
 
 	if err := r.Run(config.Port); err != nil {

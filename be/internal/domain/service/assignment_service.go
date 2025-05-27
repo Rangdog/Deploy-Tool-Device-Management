@@ -121,9 +121,9 @@ func (service *AssignmentService) Filter(userId int64, emailAssigned *string, em
 	dbFilter.Count(&total)
 	offset := (filter.Page - 1) * filter.Limit
 	var assignments []entity.Assignments
-	resutl := dbFilter.Offset(offset).Limit(filter.Limit).Find(&assignments)
-	if resutl.Error != nil {
-		return nil, resutl.Error
+	result := dbFilter.Offset(offset).Limit(filter.Limit).Find(&assignments)
+	if result.Error != nil {
+		return nil, result.Error
 	}
 	assignmentsRes := []dto.AssignmentResponse{}
 	for _, assignment := range assignments {

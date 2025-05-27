@@ -976,7 +976,7 @@ paths:
       summary: Get maintenanceSchedules by assetId
       tags:
       - MaintenanceScheduless
-  /api/request-transfer/{id}:
+  /api/request-transfer:
     post:
       consumes:
       - application/json
@@ -988,7 +988,26 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/dto.CreateRequestTransferRequest'
-      - description: project_id
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: Request Transfer
+      tags:
+      - RequestTransfer
+  /api/request-transfer/accept/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Accept Request Transfer
+      parameters:
+      - description: request_transfer_id
         in: path
         name: id
         required: true
@@ -1003,7 +1022,31 @@ paths:
       responses: {}
       security:
       - JWT: []
-      summary: Request Transfer
+      summary: Accept Request Transfer
+      tags:
+      - RequestTransfer
+  /api/request-transfer/deny/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Deny Request Transfer
+      parameters:
+      - description: request_transfer_id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: Deny Request Transfer
       tags:
       - RequestTransfer
   /api/roles:

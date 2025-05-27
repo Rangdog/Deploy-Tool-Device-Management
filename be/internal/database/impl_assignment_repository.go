@@ -64,3 +64,12 @@ func (r *PostgreSQLAssignmentRepository) GetAssignmentById(id int64) (*entity.As
 	}
 	return &assignment, nil
 }
+
+func (r *PostgreSQLAssignmentRepository) GetAssignmentByAssetId(assetId int64) (*entity.Assignments, error) {
+	assignment := entity.Assignments{}
+	result := r.db.Model(entity.Assignments{}).Where("asset_id = ?", assetId).Preload("UserAssigned").Preload("UserAssign").Preload("Asset").First(&assignment)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &assignment, nil
+}

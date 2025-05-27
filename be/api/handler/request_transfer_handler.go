@@ -7,6 +7,7 @@ import (
 	"BE_Manage_device/pkg"
 	"BE_Manage_device/pkg/utils"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -27,9 +28,8 @@ func NewRequestTransferHandler(service *service.RequestTransferService) *Request
 // @Accept       json
 // @Produce      json
 // @Param        Request-Transfer  body    dto.CreateRequestTransferRequest   true  "Data"
-// @Param		id	path		int				true	"project_id"
 // @param Authorization header string true "Authorization"
-// @Router       /api/request-transfer/{id} [POST]
+// @Router       /api/request-transfer [POST]
 // @securityDefinitions.apiKey token
 // @in header
 // @name Authorization
@@ -46,6 +46,66 @@ func (h *RequestTransferHandler) Create(c *gin.Context) {
 	if err != nil {
 		log.Error("Happened error when create request transfer. Error", err)
 		pkg.PanicExeption(constant.UnknownError, "Happened error when create request transfer")
+	}
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, requestTransfer))
+}
+
+// Request Transfer godoc
+// @Summary      Accept Request Transfer
+// @Description  Accept Request Transfer
+// @Tags         RequestTransfer
+// @Accept       json
+// @Produce      json
+// @Param		id	path		int				true	"request_transfer_id"
+// @param Authorization header string true "Authorization"
+// @Router       /api/request-transfer/accept/{id} [POST]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
+func (h *RequestTransferHandler) Accept(c *gin.Context) {
+	defer pkg.PanicHandler(c)
+	userId := utils.GetUserIdFromContext(c)
+	idStr := c.Param("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		log.Error("Happened error when convert id to int64. Error", err)
+		pkg.PanicExeption(constant.InvalidRequest)
+	}
+	requestTransfer, err := h.service.Accept(userId, id)
+	if err != nil {
+		log.Error("Happened error when accept request transfer. Error", err)
+		pkg.PanicExeption(constant.UnknownError, "Happened error when accept request transfer")
+	}
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, requestTransfer))
+}
+
+// Request Transfer godoc
+// @Summary      Deny Request Transfer
+// @Description  Deny Request Transfer
+// @Tags         RequestTransfer
+// @Accept       json
+// @Produce      json
+// @Param		id	path		int				true	"request_transfer_id"
+// @param Authorization header string true "Authorization"
+// @Router       /api/request-transfer/deny/{id} [POST]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
+func (h *RequestTransferHandler) Deny(c *gin.Context) {
+	defer pkg.PanicHandler(c)
+	userId := utils.GetUserIdFromContext(c)
+	idStr := c.Param("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		log.Error("Happened error when convert id to int64. Error", err)
+		pkg.PanicExeption(constant.InvalidRequest)
+	}
+	requestTransfer, err := h.service.Deny(userId, id)
+	if err != nil {
+		log.Error("Happened error when deny request transfer. Error", err)
+		pkg.PanicExeption(constant.UnknownError, "Happened error when deny request transfer")
 	}
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, requestTransfer))
 }

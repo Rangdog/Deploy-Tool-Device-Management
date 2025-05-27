@@ -66,5 +66,7 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandle
 	api.GET("/assets-log/{id}", AssetLogHandler.GetLogByAssetId)
 
 	//Request
-	api.POST("/request-transfer/:id", RequestTransferHandler.Create)
+	api.POST("/request-transfer", RequestTransferHandler.Create)
+	api.POST("/request-transfer/accept/:id", RequestTransferHandler.Accept)
+	api.POST("/request-transfer/deny/:id", RequestTransferHandler.Deny)
 }

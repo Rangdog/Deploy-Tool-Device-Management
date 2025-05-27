@@ -11,4 +11,5 @@ type AssignmentRepository interface {
 	Update(assignmentId int64, AssignBy, assetId int64, userId, departmentId *int64, tx *gorm.DB) (*entity.Assignments, error)
 	GetDB() *gorm.DB
 	GetAssignmentById(id int64) (*entity.Assignments, error)
+	GetAssignmentByAssetId(assetId int64) (*entity.Assignments, error)
 }

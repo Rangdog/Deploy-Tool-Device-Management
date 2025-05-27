@@ -1275,7 +1275,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/request-transfer/{id}": {
+        "/api/request-transfer": {
             "post": {
                 "security": [
                     {
@@ -1304,8 +1304,75 @@ const docTemplate = `{
                         }
                     },
                     {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/request-transfer/accept/{id}": {
+            "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "Accept Request Transfer",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "RequestTransfer"
+                ],
+                "summary": "Accept Request Transfer",
+                "parameters": [
+                    {
                         "type": "integer",
-                        "description": "project_id",
+                        "description": "request_transfer_id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/request-transfer/deny/{id}": {
+            "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "Deny Request Transfer",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "RequestTransfer"
+                ],
+                "summary": "Deny Request Transfer",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "request_transfer_id",
                         "name": "id",
                         "in": "path",
                         "required": true

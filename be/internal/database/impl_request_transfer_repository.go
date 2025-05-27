@@ -22,3 +22,33 @@ func (r *PostgreSQLRequestTransferRepository) Create(requestTransfer *entity.Req
 	}
 	return requestTransfer, result.Error
 }
+
+func (r *PostgreSQLRequestTransferRepository) UpdateStatusConfirm(id int64, tx *gorm.DB) (*entity.RequestTransfer, error) {
+	request := entity.RequestTransfer{}
+	result := tx.Model(entity.RequestTransfer{}).Where("id = ?", id).Update("status", "Confirm")
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	result = tx.Model(entity.RequestTransfer{}).Where("id = ?", id).First(&request)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &request, nil
+}
+
+func (r PostgreSQLRequestTransferRepository) UpdateStatusDeny(id int64) (*entity.RequestTransfer, error) {
+	request := entity.RequestTransfer{}
+	result := r.db.Model(entity.RequestTransfer{}).Where("id = ?", id).Update("status", "Deny")
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	result = r.db.Model(entity.RequestTransfer{}).Where("id = ?", id).First(&request)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &request, nil
+}
+
+func (r *PostgreSQLRequestTransferRepository) GetDB() *gorm.DB {
+	return r.db
+}

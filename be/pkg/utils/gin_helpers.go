@@ -18,7 +18,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 	"github.com/skip2/go-qrcode"
 	"gorm.io/gorm"
@@ -363,9 +362,9 @@ func SendEmailsForWarrantyExpiry(db *gorm.DB, emailNotifier interfaces.EmailNoti
 			Type:       &typ,
 			AssetId:    &assetId,
 		}
-		result := db.Create(notify)
+		result := db.Create(&notify)
 		if result.Error != nil {
-			logrus.Infof("Happen error when create notify type %v AssetId %v", typ, assetId)
+			log.Infof("Happen error when create notify type %v AssetId %v", typ, assetId)
 		}
 	}
 }

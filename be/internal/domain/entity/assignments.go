@@ -3,7 +3,7 @@ package entity
 type Assignments struct {
 	Id           int64  `gorm:"primaryKey;autoIncrement" json:"id"`
 	UserId       *int64 `json:"userId"`
-	AssetId      int64  `gorm:"index:unique_userId_AssetId,unique" json:"assetId"`
+	AssetId      int64  `gorm:"index:unique_AssetId,unique" json:"assetId"`
 	AssignBy     int64  `json:"assetBy"`
 	DepartmentId *int64 `json:"departmentID"`
 
