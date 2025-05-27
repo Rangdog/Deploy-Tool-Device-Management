@@ -55,3 +55,12 @@ func (r *PostgreSQLAssignmentRepository) Update(assignmentId int64, AssignBy, as
 func (r *PostgreSQLAssignmentRepository) GetDB() *gorm.DB {
 	return r.db
 }
+
+func (r *PostgreSQLAssignmentRepository) GetAssignmentById(id int64) (*entity.Assignments, error) {
+	assignment := entity.Assignments{}
+	result := r.db.Model(entity.Assignments{}).Where("id = ?", id).Preload("UserAssigned").Preload("UserAssign").Preload("Asset").First(&assignment)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &assignment, nil
+}

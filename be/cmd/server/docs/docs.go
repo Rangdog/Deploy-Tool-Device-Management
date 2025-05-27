@@ -447,7 +447,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/assignment": {
+        "/api/assignments": {
             "post": {
                 "description": "Create assignment",
                 "consumes": [
@@ -474,7 +474,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/assignment/filter": {
+        "/api/assignments/filter": {
             "get": {
                 "security": [
                     {
@@ -529,7 +529,30 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/assignment/{id}": {
+        "/api/assignments/{id}": {
+            "get": {
+                "description": "Get assignment",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Assignments"
+                ],
+                "summary": "Get assignment",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
             "put": {
                 "description": "Update assignment",
                 "consumes": [

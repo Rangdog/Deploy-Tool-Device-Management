@@ -155,3 +155,28 @@ func (service *AssignmentService) Filter(userId int64, emailAssigned *string, em
 	}
 	return &data, nil
 }
+
+func (service *AssignmentService) GetAssignmentById(userId int64, id int64) (*dto.AssignmentResponse, error) {
+	assignment, err := service.repo.GetAssignmentById(id)
+	if err != nil {
+		return nil, err
+	}
+	assignResponse := dto.AssignmentResponse{}
+	assignResponse.Id = assignment.Id
+	assignResponse.UserAssigned.Id = assignment.UserAssigned.Id
+	assignResponse.UserAssigned.FirstName = assignment.UserAssigned.FirstName
+	assignResponse.UserAssigned.LastName = assignment.UserAssigned.LastName
+	assignResponse.UserAssigned.Email = assignment.UserAssigned.Email
+
+	assignResponse.UserAssign.Id = assignment.UserAssign.Id
+	assignResponse.UserAssign.FirstName = assignment.UserAssign.FirstName
+	assignResponse.UserAssign.LastName = assignment.UserAssign.LastName
+	assignResponse.UserAssign.Email = assignment.UserAssign.Email
+
+	assignResponse.Asset.Id = assignment.Asset.Id
+	assignResponse.Asset.AssetName = assignment.Asset.AssetName
+	assignResponse.Asset.Status = assignment.Asset.Status
+	assignResponse.Asset.FileAttachment = *assignment.Asset.FileAttachment
+	assignResponse.Asset.ImageUpload = *assignment.Asset.ImageUpload
+	return &assignResponse, nil
+}

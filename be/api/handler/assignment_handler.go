@@ -29,7 +29,7 @@ func NewAssignmentHandler(service *service.AssignmentService) *AssignmentHandler
 // @Accept       json
 // @Produce      json
 // @Param        assignment   body    dto.AssignmentCreateRequest   true  "Data"
-// @Router       /api/assignment [POST]
+// @Router       /api/assignments [POST]
 func (h *AssignmentHandler) Create(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)
@@ -73,7 +73,7 @@ func (h *AssignmentHandler) Create(c *gin.Context) {
 // @Produce      json
 // @Param        assignment   body    dto.AssignmentCreateRequest   true  "Data"
 // @Param		id	path		string				true	"id"
-// @Router       /api/assignment/{id} [PUT]
+// @Router       /api/assignments/{id} [PUT]
 func (h *AssignmentHandler) Update(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)
@@ -121,7 +121,7 @@ func (h *AssignmentHandler) Update(c *gin.Context) {
 // @Produce json
 // @Param        assignment   query    filter.AssignmentFilter   false  "filter assignment"
 // @param Authorization header string true "Authorization"
-// @Router /api/assignment/filter [GET]
+// @Router /api/assignments/filter [GET]
 // @securityDefinitions.apiKey token
 // @in header
 // @name Authorization
@@ -140,4 +140,29 @@ func (h *AssignmentHandler) FilterAsset(c *gin.Context) {
 		pkg.PanicExeption(constant.UnknownError, "Happened error when filter asset")
 	}
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, data))
+}
+
+// Assignment godoc
+// @Summary      Get assignment
+// @Description  Get assignment
+// @Tags         Assignments
+// @Accept       json
+// @Produce      json
+// @Param		id	path		string				true	"id"
+// @Router       /api/assignments/{id} [GET]
+func (h *AssignmentHandler) GetAssignmentById(c *gin.Context) {
+	defer pkg.PanicHandler(c)
+	userId := utils.GetUserIdFromContext(c)
+	idStr := c.Param("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		log.Error("Happened error when convert assignment id to int64. Error", err)
+		pkg.PanicExeption(constant.InvalidRequest, "Happened error when convert assignment id to int64")
+	}
+	assignment, err := h.service.GetAssignmentById(userId, id)
+	if err != nil {
+		log.Error("Happened error when get assignment. Error", err)
+		pkg.PanicExeption(constant.InvalidRequest, "Happened error when get assignment.")
+	}
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, assignment))
 }

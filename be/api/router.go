@@ -56,9 +56,10 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandle
 	api.GET("/roles", RoleHandler.GetAllRole)
 
 	//Assignment
-	api.POST("/assignment", AssignmentHandler.Create)
-	api.PUT("/assignment/:id", AssignmentHandler.Update)
-	api.GET("/assignment/filter", AssignmentHandler.FilterAsset)
+	api.POST("/assignments", AssignmentHandler.Create)
+	api.PUT("/assignments/:id", AssignmentHandler.Update)
+	api.GET("/assignments/filter", AssignmentHandler.FilterAsset)
+	api.GET("/assignments/:id", AssignmentHandler.GetAssignmentById)
 
 	//AssetsLog
 	api.GET("/assets-log/{id}", AssetLogHandler.GetLogByAssetId)
