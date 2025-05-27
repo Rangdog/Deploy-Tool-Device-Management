@@ -331,11 +331,6 @@ paths:
         name: warrantExpiry
         required: true
         type: string
-      - description: maintenance_time Float e.g. 7.5
-        in: formData
-        name: maintenance_time
-        required: true
-        type: number
       - description: Serial Number
         in: formData
         name: serialNumber
@@ -366,11 +361,6 @@ paths:
         name: image
         required: true
         type: file
-      - description: expectDayMaintenance Date (RFC3339 format, e.g. 2023-04-15T10:00:00Z)
-        in: formData
-        name: expectDayMaintenance
-        required: true
-        type: string
       produces:
       - application/json
       responses: {}

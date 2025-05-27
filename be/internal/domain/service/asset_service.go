@@ -169,7 +169,7 @@ func (service *AssetsService) SetRole(assetId int64, tx *gorm.DB, wg *sync.WaitG
 	return true
 }
 
-func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName string, purchaseDate time.Time, cost float64, warrantExpiry time.Time, serialNumber string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, categoryId int64, departmentId int64, status string, maintenance float64, expectDayMaintenance time.Time) (*entity.Assets, error) {
+func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName string, purchaseDate time.Time, cost float64, warrantExpiry time.Time, serialNumber string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, categoryId int64, departmentId int64, status string) (*entity.Assets, error) {
 	imgFile, err := image.Open()
 	if err != nil {
 		return nil, fmt.Errorf("cannot open image: %w", err)
@@ -195,19 +195,17 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 	}
 	tx := service.repo.GetDB().Begin()
 	asset := entity.Assets{
-		Id:                    assetId,
-		AssetName:             assetName,
-		PurchaseDate:          purchaseDate,
-		Cost:                  cost,
-		WarrantExpiry:         warrantExpiry,
-		SerialNumber:          serialNumber,
-		ImageUpload:           &imageUrl,
-		FileAttachment:        &fileUrl,
-		CategoryId:            categoryId,
-		DepartmentId:          departmentId,
-		ScheduleMaintenance:   &maintenance,
-		ExpectDateMaintenance: expectDayMaintenance,
-		Status:                status,
+		Id:             assetId,
+		AssetName:      assetName,
+		PurchaseDate:   purchaseDate,
+		Cost:           cost,
+		WarrantExpiry:  warrantExpiry,
+		SerialNumber:   serialNumber,
+		ImageUpload:    &imageUrl,
+		FileAttachment: &fileUrl,
+		CategoryId:     categoryId,
+		DepartmentId:   departmentId,
+		Status:         status,
 	}
 	assetUpdated, err := service.repo.UpdateAsset(&asset, tx)
 	if err != nil {
@@ -316,10 +314,6 @@ func (service *AssetsService) Filter(userId int64, assetName *string, status *st
 					LocationName: asset.Department.Location.LocationName,
 				},
 			},
-		}
-		if asset.ScheduleMaintenance != nil {
-			assetResponse.Maintenance = *asset.ScheduleMaintenance
-			assetResponse.ExpectDateMaintenance = asset.ExpectDateMaintenance.Format("2006-01-02 15:04:05")
 		}
 		if asset.OnwerUser != nil {
 			assetResponse.Owner = dto.OwnerResponse{

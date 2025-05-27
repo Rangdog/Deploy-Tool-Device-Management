@@ -416,13 +416,6 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "number",
-                        "description": "maintenance_time Float e.g. 7.5",
-                        "name": "maintenance_time",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
                         "type": "string",
                         "description": "Serial Number",
                         "name": "serialNumber",
@@ -461,13 +454,6 @@ const docTemplate = `{
                         "type": "file",
                         "description": "Image to upload",
                         "name": "image",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "expectDayMaintenance Date (RFC3339 format, e.g. 2023-04-15T10:00:00Z)",
-                        "name": "expectDayMaintenance",
                         "in": "formData",
                         "required": true
                     }

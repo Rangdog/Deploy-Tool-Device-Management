@@ -147,9 +147,6 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 			},
 		},
 	}
-	if asset.ScheduleMaintenance != nil {
-		assetResponse.Maintenance = *asset.ScheduleMaintenance
-	}
 	if asset.OnwerUser != nil {
 		assetResponse.Owner = dto.OwnerResponse{
 			ID:        asset.OnwerUser.Id,
@@ -171,14 +168,12 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 // @Param purchaseDate formData string true "Purchase Date (RFC3339 format, e.g. 2023-04-15T10:00:00Z)"
 // @Param cost formData number true "Cost"
 // @Param warrantExpiry formData string true "Warranty Expiry (RFC3339 format, e.g. 2023-12-31T23:59:59Z)"
-// @Param maintenance_time formData float64 true "maintenance_time Float e.g. 7.5"
 // @Param serialNumber formData string true "Serial Number"
 // @Param status formData string true "Serial Number"
 // @Param categoryId formData int64 true "Category ID"
 // @Param departmentId formData int64 true "Department ID"
 // @Param file formData file true "File to upload"
 // @Param image formData file true "Image to upload"
-// @Param expectDayMaintenance formData string true "expectDayMaintenance Date (RFC3339 format, e.g. 2023-04-15T10:00:00Z)"
 // @Router /api/assets/{id} [PUT]
 func (h *AssetsHandler) Update(c *gin.Context) {
 	defer pkg.PanicHandler(c)
@@ -199,8 +194,6 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 	Status := c.PostForm("status")
 	categoryIdStr := c.PostForm("categoryId")
 	departmentIdStr := c.PostForm("departmentId")
-	// maintenanceStr := c.PostForm("maintenance_time")
-	// expectDayMaintenanceStr := c.PostForm("expectDayMaintenance")
 
 	purchaseDate, err := time.Parse(time.RFC3339Nano, purchaseDateStr)
 	if err != nil {
@@ -211,11 +204,6 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 	if err != nil {
 		pkg.PanicExeption(constant.InvalidRequest, "Invalid warrant_expiry format")
 	}
-
-	// expectDate, err := time.Parse(time.RFC3339Nano, expectDayMaintenanceStr)
-	// if err != nil {
-	// 	pkg.PanicExeption(constant.InvalidRequest, "Invalid expectDate format")
-	// }
 
 	cost, err := strconv.ParseFloat(costStr, 64)
 	if err != nil {
@@ -247,10 +235,6 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 		pkg.PanicExeption(constant.InvalidRequest, "Image upload missing")
 		return
 	}
-	// maintenance, err := strconv.ParseFloat(maintenanceStr, 64)
-	// if err != nil {
-	// 	pkg.PanicExeption(constant.InvalidRequest, "Invalid maintenance format")
-	// }
 	assetUpdate, err := h.service.UpdateAsset(
 		userId,
 		assetId,
@@ -264,8 +248,6 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 		categoryId,
 		departmentId,
 		Status,
-		0,
-		time.Now(),
 	)
 	if err != nil {
 		pkg.PanicExeption(constant.InvalidRequest, "Failed to update asset")
@@ -298,10 +280,6 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 				LocationName: asset.Department.Location.LocationName,
 			},
 		},
-	}
-	if asset.ScheduleMaintenance != nil {
-		assetResponse.Maintenance = *asset.ScheduleMaintenance
-		assetResponse.ExpectDateMaintenance = asset.ExpectDateMaintenance.Format("2006-01-02 15:04:05")
 	}
 	if asset.OnwerUser != nil {
 		assetResponse.Owner = dto.OwnerResponse{
@@ -360,10 +338,6 @@ func (h *AssetsHandler) GetAssetById(c *gin.Context) {
 			},
 		},
 	}
-	if asset.ScheduleMaintenance != nil {
-		assetResponse.Maintenance = *asset.ScheduleMaintenance
-		assetResponse.ExpectDateMaintenance = asset.ExpectDateMaintenance.Format("2006-01-02 15:04:05")
-	}
 	if asset.OnwerUser != nil {
 		assetResponse.Owner = dto.OwnerResponse{
 			ID:        asset.OnwerUser.Id,
@@ -414,10 +388,6 @@ func (h *AssetsHandler) GetAllAsset(c *gin.Context) {
 					LocationName: asset.Department.Location.LocationName,
 				},
 			},
-		}
-		if asset.ScheduleMaintenance != nil {
-			assetResponse.Maintenance = *asset.ScheduleMaintenance
-			assetResponse.ExpectDateMaintenance = asset.ExpectDateMaintenance.Format("2006-01-02 15:04:05")
 		}
 		if asset.OnwerUser != nil {
 			assetResponse.Owner = dto.OwnerResponse{

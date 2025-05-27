@@ -95,9 +95,6 @@ func (r *PostgreSQLAssetsRepository) UpdateAsset(assets *entity.Assets, tx *gorm
 	if assets.ImageUpload != nil {
 		updates["image_upload"] = assets.ImageUpload
 	}
-	if assets.ScheduleMaintenance != nil {
-		updates["schedule_maintenance"] = assets.ScheduleMaintenance
-	}
 	if assets.CategoryId != 0 {
 		updates["category_id"] = assets.CategoryId
 	}
