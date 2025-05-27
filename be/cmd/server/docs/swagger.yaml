@@ -164,10 +164,6 @@ paths:
         name: cost
         required: true
         type: number
-      - description: Owner ID
-        in: formData
-        name: owner
-        type: integer
       - description: Warranty Expiry (RFC3339 format, e.g. 2023-12-31T23:59:59Z)
         in: formData
         name: warrantExpiry

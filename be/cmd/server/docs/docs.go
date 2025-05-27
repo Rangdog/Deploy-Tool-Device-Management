@@ -65,12 +65,6 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "integer",
-                        "description": "Owner ID",
-                        "name": "owner",
-                        "in": "formData"
-                    },
-                    {
                         "type": "string",
                         "description": "Warranty Expiry (RFC3339 format, e.g. 2023-12-31T23:59:59Z)",
                         "name": "warrantExpiry",
