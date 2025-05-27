@@ -166,7 +166,6 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 // @Param assetName formData string true "Asset Name"
 // @Param purchaseDate formData string true "Purchase Date (RFC3339 format, e.g. 2023-04-15T10:00:00Z)"
 // @Param cost formData number true "Cost"
-// @Param owner formData int64 false "Owner ID"
 // @Param warrantExpiry formData string true "Warranty Expiry (RFC3339 format, e.g. 2023-12-31T23:59:59Z)"
 // @Param maintenance formData string true "Maintenance (RFC3339 format, e.g. 2023-12-31T23:59:59Z)"
 // @Param serialNumber formData string true "Serial Number"
@@ -192,7 +191,6 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 	purchaseDateStr := c.PostForm("purchaseDate")
 	maintenanceStr := c.PostForm("maintenance")
 	costStr := c.PostForm("cost")
-	ownerStr := c.PostForm("owner")
 	warrantExpiryStr := c.PostForm("warrantExpiry")
 	serialNumber := c.PostForm("serialNumber")
 	Status := c.PostForm("status")
@@ -218,15 +216,6 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 	cost, err := strconv.ParseFloat(costStr, 64)
 	if err != nil {
 		pkg.PanicExeption(constant.InvalidRequest, "Invalid cost format")
-	}
-
-	var owner *int64
-	if ownerStr != "" {
-		val, err := strconv.ParseInt(ownerStr, 10, 64)
-		if err != nil {
-			pkg.PanicExeption(constant.InvalidRequest, "Invalid owner format")
-		}
-		owner = &val
 	}
 
 	categoryId, err := strconv.ParseInt(categoryIdStr, 10, 64)
@@ -264,7 +253,6 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 		assetName,
 		purchaseDate,
 		cost,
-		owner,
 		warrantExpiry,
 		serialNumber,
 		image,

@@ -90,13 +90,44 @@ var rolePermissions = []entity.RolePermission{
 	{RoleId: 4, PermissionId: 13, AccessLevel: "conditional", Created_at: time.Now()},
 }
 
-var user = entity.Users{
-	FirstName: "Admin",
-	LastName:  "Admin",
-	RoleId:    1,
-	Email:     "admin",
-	Password:  "admin",
-	IsActive:  true,
+var users = []entity.Users{{FirstName: "Admin",
+	LastName: "Admin",
+	RoleId:   1,
+	Email:    "admin",
+	Password: "$2a$10$SLuA1lS.ksOWf7LhjRcl6uvy2lAr.P8Rohb6JiiBLrDpU5qlXARIC",
+	IsActive: true},
+	{FirstName: "Manager",
+		LastName:       "asset 1",
+		RoleId:         2,
+		Email:          "ManagerAsset1",
+		Password:       "$2a$10$xJhMiiiDJN1fnZCV/InCNOZjjj6HwDB6hNQJkxFxgXfkt/E//chP6",
+		IsActive:       true,
+		DepartmentId:   1,
+		IsAssetManager: true},
+	{FirstName: "Manager",
+		LastName:       "asset 2",
+		RoleId:         2,
+		Email:          "ManagerAsset2",
+		Password:       "$2a$10$TDUpqAon2hBTmLuufSE8z.ubj7VudpipD1TNQkVuqUFPWKoPINBdC",
+		IsActive:       true,
+		DepartmentId:   2,
+		IsAssetManager: true},
+	{FirstName: "Manager",
+		LastName:       "asset 3",
+		RoleId:         2,
+		Email:          "ManagerAsset3",
+		Password:       "$2a$10$nYWx8IHTcj4NFRPcAmq84uQUhvHhDM0aH4rbzsX1cuu/l7xshUMu2",
+		IsActive:       true,
+		DepartmentId:   3,
+		IsAssetManager: true},
+	{FirstName: "Manager",
+		LastName:       "asset 4",
+		RoleId:         2,
+		Email:          "ManagerAsset4",
+		Password:       "$2a$10$bCiwXUAzrWXZ4e/CmiygCuKFcmkh9skws9T0ozMUm82OIXOkeMXc.",
+		IsActive:       true,
+		DepartmentId:   4,
+		IsAssetManager: true},
 }
 
 func ConnectToDB() *gorm.DB {
@@ -139,8 +170,9 @@ func ConnectToDB() *gorm.DB {
 		var existing entity.RolePermission
 		db.Where("role_id = ? and permission_id = ?", rolePermission.RoleId, rolePermission.PermissionId).FirstOrCreate(&existing, rolePermission)
 	}
-
-	var existing entity.Users
-	db.Where("email = ?", user.Email).FirstOrCreate(&existing, user)
+	for _, user := range users {
+		var existing entity.Users
+		db.Where("email = ?", user.Email).FirstOrCreate(&existing, user)
+	}
 	return db
 }
