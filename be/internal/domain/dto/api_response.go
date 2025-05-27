@@ -8,15 +8,15 @@ type ApiResponse[T any] struct {
 
 type ApiResponseSuccess[T any] struct {
 	Status int    `json:"status"`
-	Msg    string `json:"msg"`
+	Msg    string `json:"message"`
 	Data   T      `json:"data"`
 }
 
 type ApiResponseFail struct {
 	Status int    `json:"status"`
-	Msg    string `json:"msg"`
+	Msg    string `json:"message"`
 }
 type ApiResponseSuccessNoData struct {
 	Status int    `json:"status"`
-	Msg    string `json:"msg"`
+	Msg    string `json:"message"`
 }
