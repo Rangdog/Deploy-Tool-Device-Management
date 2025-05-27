@@ -167,7 +167,7 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 // @Param purchaseDate formData string true "Purchase Date (RFC3339 format, e.g. 2023-04-15T10:00:00Z)"
 // @Param cost formData number true "Cost"
 // @Param warrantExpiry formData string true "Warranty Expiry (RFC3339 format, e.g. 2023-12-31T23:59:59Z)"
-// @Param maintenance formData string true "Maintenance (RFC3339 format, e.g. 2023-12-31T23:59:59Z)"
+// @Param maintenance formData float64 true "schedule_maintenance Float e.g. 7.5"
 // @Param serialNumber formData string true "Serial Number"
 // @Param status formData string true "Serial Number"
 // @Param categoryId formData int64 true "Category ID"

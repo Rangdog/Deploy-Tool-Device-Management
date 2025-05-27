@@ -354,8 +354,8 @@
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "Maintenance (RFC3339 format, e.g. 2023-12-31T23:59:59Z)",
+                        "type": "number",
+                        "description": "schedule_maintenance Float e.g. 7.5",
                         "name": "maintenance",
                         "in": "formData",
                         "required": true

@@ -331,11 +331,11 @@ paths:
         name: warrantExpiry
         required: true
         type: string
-      - description: Maintenance (RFC3339 format, e.g. 2023-12-31T23:59:59Z)
+      - description: schedule_maintenance Float e.g. 7.5
         in: formData
         name: maintenance
         required: true
-        type: string
+        type: number
       - description: Serial Number
         in: formData
         name: serialNumber
