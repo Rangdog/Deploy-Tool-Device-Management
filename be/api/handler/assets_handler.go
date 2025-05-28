@@ -63,7 +63,7 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 	departmentIdStr := c.PostForm("departmentId")
 	url := c.PostForm("redirectUrl")
 
-	purchaseDate, err := time.Parse(time.RFC3339Nano, purchaseDateStr)
+	purchaseDate, err := time.Parse(time.RFC3339, purchaseDateStr)
 
 	if err != nil {
 		log.Info("Error: ", err.Error())
@@ -205,7 +205,7 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 	categoryIdStr := c.PostForm("categoryId")
 	departmentIdStr := c.PostForm("departmentId")
 
-	purchaseDate, err := time.Parse(time.RFC3339Nano, purchaseDateStr)
+	purchaseDate, err := time.Parse(time.RFC3339, purchaseDateStr)
 	if err != nil {
 		pkg.PanicExeption(constant.InvalidRequest, "Invalid purchase_date format")
 	}
@@ -534,17 +534,18 @@ func (h *AssetsHandler) FilterAssetDashboard(c *gin.Context) {
 		log.Error("Happened error when filter asset. Error", err)
 		pkg.PanicExeption(constant.UnknownError, "Happened error when filter asset")
 	}
-
-	if *filter.Export == "csv" {
-		data, _ := GenerateCSV(assets)
-		c.Header("Content-Disposition", "attachment; filename=assets.csv")
-		c.Data(http.StatusOK, "text/csv", data)
-		return
-	} else if *filter.Export == "pdf" {
-		data, _ := GeneratePDF(assets)
-		c.Header("Content-Disposition", "attachment; filename=assets.pdf")
-		c.Data(http.StatusOK, "application/pdf", data)
-		return
+	if filter.Export != nil {
+		if *filter.Export == "csv" {
+			data, _ := GenerateCSV(assets)
+			c.Header("Content-Disposition", "attachment; filename=assets.csv")
+			c.Data(http.StatusOK, "text/csv", data)
+			return
+		} else if *filter.Export == "pdf" {
+			data, _ := GeneratePDF(assets)
+			c.Header("Content-Disposition", "attachment; filename=assets.pdf")
+			c.Data(http.StatusOK, "application/pdf", data)
+			return
+		}
 	}
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, summary))
 }

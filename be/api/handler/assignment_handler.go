@@ -22,19 +22,6 @@ func NewAssignmentHandler(service *service.AssignmentService) *AssignmentHandler
 	return &AssignmentHandler{service: service}
 }
 
-// Assignment godoc
-// @Summary      Create assignment
-// @Description  Create assignment
-// @Tags         Assignments
-// @Accept       json
-// @Produce      json
-// @Param        assignment   body    dto.AssignmentCreateRequest   true  "Data"
-// @param Authorization header string true "Authorization"
-// @Router       /api/assignments [POST]
-// @securityDefinitions.apiKey token
-// @in header
-// @name Authorization
-// @Security JWT
 func (h *AssignmentHandler) Create(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)
@@ -120,6 +107,10 @@ func (h *AssignmentHandler) Update(c *gin.Context) {
 	assignResponse.Asset.Status = assignmentUpdated.Asset.Status
 	assignResponse.Asset.FileAttachment = *assignmentUpdated.Asset.FileAttachment
 	assignResponse.Asset.ImageUpload = *assignmentUpdated.Asset.ImageUpload
+	assignResponse.Department.ID = *assignmentUpdated.DepartmentId
+	assignResponse.Department.DepartmentName = assignmentUpdated.Department.DepartmentName
+	assignResponse.Department.Location.ID = assignmentUpdated.Department.LocationId
+	assignResponse.Department.Location.LocationName = assignmentUpdated.Department.Location.LocationName
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, assignResponse))
 }
 

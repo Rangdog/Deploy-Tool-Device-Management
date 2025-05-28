@@ -28,7 +28,7 @@ func NewAssetLogHandler(service *service.AssetLogService) *AssetLogHandler {
 // @Accept json
 // @Produce json
 // @Param		asset_id	path		string				true	"id"
-// @Param        asset   query    filter.AssetFilter   false  "filter asset"
+// @Param        asset   query    filter.AssetLogFilter   false  "filter asset"
 // @param Authorization header string true "Authorization"
 // @Router /api/assets-log/{asset_id} [GET]
 // @securityDefinitions.apiKey token

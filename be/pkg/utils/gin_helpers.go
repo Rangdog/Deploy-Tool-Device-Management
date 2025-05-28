@@ -8,6 +8,7 @@ import (
 	"BE_Manage_device/pkg"
 	"BE_Manage_device/pkg/interfaces"
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -15,6 +16,7 @@ import (
 	"net/http"
 	"slices"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -173,6 +175,48 @@ func (s *SupabaseUploader) UploadReader(objectPath string, reader io.Reader, con
 	// Trả về URL public (nếu bucket là public)
 	publicURL := fmt.Sprintf("https://%s.supabase.co/storage/v1/object/public/%s/%s", s.ProjectRef, s.Bucket, objectPath)
 	return publicURL, nil
+}
+
+func (s *SupabaseUploader) Delete(objectPath string) error {
+	// Chuẩn bị body (Supabase yêu cầu mảng path)
+	paths := []string{objectPath}
+	body, err := json.Marshal(map[string]interface{}{
+		"prefixes": paths,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to marshal request body: %w", err)
+	}
+
+	url := fmt.Sprintf("https://%s.supabase.co/storage/v1/object/%s", s.ProjectRef, paths[0])
+
+	req, err := http.NewRequest("DELETE", url, bytes.NewReader(body))
+	if err != nil {
+		return fmt.Errorf("failed to create request: %w", err)
+	}
+	req.Header.Set("Authorization", "Bearer "+s.ApiKey)
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to call supabase: %w", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		b, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("delete failed: %s", string(b))
+	}
+
+	return nil
+}
+
+func ExtractFilePath(url string) (string, bool) {
+	sep := "/public/"
+	idx := strings.Index(url, sep)
+	if idx != -1 {
+		return url[idx+len(sep):], true
+	}
+	return "", false
 }
 
 func GenerateAssetQR(assetID int64, urlFrontend string) (string, error) {

@@ -13,8 +13,8 @@ type Assets struct {
 	WarrantExpiry  time.Time `json:"warrantExpiry"`
 	Status         string    `gorm:"type:asset_status" json:"status"`
 	SerialNumber   string    `json:"serialNumber"`
-	FileAttachment *string   `json:"fileAttachment"`
-	ImageUpload    *string   `json:"imageUpload"`
+	FileAttachment *string   `json:"file"`
+	ImageUpload    *string   `json:"image"`
 	CategoryId     int64     `json:"categoryId"`
 	DepartmentId   int64     `json:"departmentId"`
 	QrUrl          *string   `json:"qrUrl"`

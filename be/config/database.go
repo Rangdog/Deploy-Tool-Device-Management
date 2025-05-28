@@ -90,6 +90,10 @@ var rolePermissions = []entity.RolePermission{
 	{RoleId: 4, PermissionId: 13, AccessLevel: "conditional", Created_at: time.Now()},
 }
 
+func Int64Ptr(i int64) *int64 {
+	return &i
+}
+
 var users = []entity.Users{{FirstName: "Admin",
 	LastName: "Admin",
 	RoleId:   1,
@@ -102,7 +106,7 @@ var users = []entity.Users{{FirstName: "Admin",
 		Email:          "ManagerAsset1",
 		Password:       "$2a$10$xJhMiiiDJN1fnZCV/InCNOZjjj6HwDB6hNQJkxFxgXfkt/E//chP6",
 		IsActive:       true,
-		DepartmentId:   1,
+		DepartmentId:   Int64Ptr(1),
 		IsAssetManager: true},
 	{FirstName: "Manager",
 		LastName:       "asset 2",
@@ -110,7 +114,7 @@ var users = []entity.Users{{FirstName: "Admin",
 		Email:          "ManagerAsset2",
 		Password:       "$2a$10$TDUpqAon2hBTmLuufSE8z.ubj7VudpipD1TNQkVuqUFPWKoPINBdC",
 		IsActive:       true,
-		DepartmentId:   2,
+		DepartmentId:   Int64Ptr(2),
 		IsAssetManager: true},
 	{FirstName: "Manager",
 		LastName:       "asset 3",
@@ -118,7 +122,7 @@ var users = []entity.Users{{FirstName: "Admin",
 		Email:          "ManagerAsset3",
 		Password:       "$2a$10$nYWx8IHTcj4NFRPcAmq84uQUhvHhDM0aH4rbzsX1cuu/l7xshUMu2",
 		IsActive:       true,
-		DepartmentId:   3,
+		DepartmentId:   Int64Ptr(3),
 		IsAssetManager: true},
 	{FirstName: "Manager",
 		LastName:       "asset 4",
@@ -126,7 +130,7 @@ var users = []entity.Users{{FirstName: "Admin",
 		Email:          "ManagerAsset4",
 		Password:       "$2a$10$bCiwXUAzrWXZ4e/CmiygCuKFcmkh9skws9T0ozMUm82OIXOkeMXc.",
 		IsActive:       true,
-		DepartmentId:   4,
+		DepartmentId:   Int64Ptr(4),
 		IsAssetManager: true},
 }
 

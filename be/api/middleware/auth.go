@@ -21,6 +21,10 @@ func AuthMiddleware(secretKey string, session repository.UsersSessionRepository)
 	return func(c *gin.Context) {
 		defer pkg.PanicHandler(c)
 		authHeader := c.GetHeader("Authorization")
+		if authHeader == "" {
+			pkg.PanicExeption(constant.Unauthorized, "Unauthorized Access Token")
+			c.Abort()
+		}
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {

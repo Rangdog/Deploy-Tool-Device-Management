@@ -32,7 +32,7 @@ func (service *UserService) Register(firstName, lastName, password, email, redir
 	if err != nil {
 		return nil, err
 	}
-	role := service.roleRepository.GetRoleByTile("Viewer")
+	role := service.roleRepository.GetRoleBySlug("viewer")
 	token := uuid.New().String()
 	users := &entity.Users{
 		FirstName: firstName,
@@ -143,7 +143,7 @@ func (service *UserService) CheckPasswordReset(email string, redirectUrl string)
 
 	tokenPW := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"email": email,
-		"exp":   time.Now().Add(2 * time.Minute).Unix(),
+		"exp":   time.Now().Add(10 * time.Minute).Unix(),
 	})
 	tokenPWstring, err := tokenPW.SignedString([]byte(config.PasswordSecret))
 	if err != nil {
@@ -212,8 +212,8 @@ func (service *UserService) UpdateInformation(id int64, firstName, lastName stri
 	return userUpdated, nil
 }
 
-func (service *UserService) UpdateRole(id int64, roleTitle string) (*entity.Users, error) {
-	roles := service.roleRepository.GetRoleByTile(roleTitle)
+func (service *UserService) UpdateRole(id int64, slug string) (*entity.Users, error) {
+	roles := service.roleRepository.GetRoleBySlug(slug)
 	if roles == nil {
 		return nil, errors.New("something went wrong ")
 	}

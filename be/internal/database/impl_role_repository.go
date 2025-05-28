@@ -24,24 +24,24 @@ func (r *PostgreSQLRoleRepository) GetAllUserByRoleId(roleId int64) []*entity.Us
 	return users
 }
 
-func (r *PostgreSQLRoleRepository) GetAllUserByRoleTitle(title string) []*entity.Users {
+func (r *PostgreSQLRoleRepository) GetAllUserByRoleSlug(slug string) []*entity.Users {
 	var users = []*entity.Users{}
-	result := r.db.Model(entity.Roles{}).Joins("Join users on users.role_id = roles.id").Where("roles.title = ?", title).Find(users)
+	result := r.db.Model(entity.Roles{}).Joins("Join users on users.role_id = roles.id").Where("roles.slug = ?", slug).Find(users)
 	if result.Error != nil {
 		return nil
 	}
 	return users
 }
 
-func (r *PostgreSQLRoleRepository) GetTitleByRoleId(id int64) string {
+func (r *PostgreSQLRoleRepository) GetSlugByRoleId(id int64) string {
 	role := entity.Roles{}
 	r.db.Model(entity.Roles{}).Where("id = ?", id).First(&role)
-	return role.Title
+	return role.Slug
 }
 
-func (r *PostgreSQLRoleRepository) GetRoleByTile(roleTitle string) *entity.Roles {
+func (r *PostgreSQLRoleRepository) GetRoleBySlug(slug string) *entity.Roles {
 	roles := entity.Roles{}
-	r.db.Model(entity.Roles{}).Where("title = ?", roleTitle).Find(&roles)
+	r.db.Model(entity.Roles{}).Where("slug = ?", slug).Find(&roles)
 	return &roles
 }
 

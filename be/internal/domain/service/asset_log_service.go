@@ -1,6 +1,7 @@
 package service
 
 import (
+	"BE_Manage_device/internal/domain/dto"
 	"BE_Manage_device/internal/domain/entity"
 	"BE_Manage_device/internal/domain/filter"
 	"BE_Manage_device/internal/domain/repository"
@@ -43,13 +44,34 @@ func (service *AssetLogService) Filter(userId int64, assetId int64, action, star
 	dbFilter.Count(&total)
 	offset := (filter.Page - 1) * filter.Limit
 	var asset_logs []entity.AssetLog
-	resutl := dbFilter.Offset(offset).Limit(filter.Limit).Find(&asset_logs)
-	if resutl.Error != nil {
-		return nil, resutl.Error
+	result := dbFilter.Offset(offset).Limit(filter.Limit).Find(&asset_logs)
+	if result.Error != nil {
+		return nil, result.Error
 	}
-
+	assetLogResponses := []dto.AssetLogsResponse{}
+	for _, assetLog := range asset_logs {
+		var assetLogResponse dto.AssetLogsResponse
+		assetLogResponse.Action = assetLog.Action
+		assetLogResponse.Timestamp = assetLog.Timestamp.Format("2006-01-02")
+		assetLogResponse.ChangeSummary = assetLog.ChangeSummary
+		if assetLog.DepartmentId != nil {
+			assetLogResponse.Department.ID = *assetLog.DepartmentId
+			assetLogResponse.Department.DepartmentName = assetLog.Department.DepartmentName
+			assetLogResponse.Department.Location.ID = assetLog.Department.LocationId
+			assetLogResponse.Department.Location.LocationName = assetLog.Department.Location.LocationName
+		}
+		assetLogResponse.Users.FirstName = assetLog.User.FirstName
+		assetLogResponse.Users.LastName = assetLog.User.LastName
+		assetLogResponse.Users.Email = assetLog.User.Email
+		assetLogResponse.Asset.AssetName = assetLog.Asset.AssetName
+		assetLogResponse.Asset.SerialNumber = assetLog.Asset.SerialNumber
+		assetLogResponse.Asset.FileAttachment = *assetLog.Asset.FileAttachment
+		assetLogResponse.Asset.ImageUpload = *assetLog.Asset.ImageUpload
+		assetLogResponse.Asset.QrUrl = *assetLog.Asset.QrUrl
+		assetLogResponses = append(assetLogResponses, assetLogResponse)
+	}
 	data := map[string]any{
-		"data":       resutl,
+		"data":       assetLogResponses,
 		"page":       filter.Page,
 		"limit":      filter.Limit,
 		"total":      total,

@@ -45,5 +45,25 @@ type UpdateInformationUserRequest struct {
 }
 
 type UpdateRoleUserRequest struct {
-	RoleTitle string `json:"roleTitle" binding:"required"`
+	Slug string `json:"slug" binding:"required"`
+}
+
+type UserResponse struct {
+	Id         int64  `json:"id"`
+	FirstName  string `json:"firstName"`
+	LastName   string `json:"lastName"`
+	Email      string `json:"email"`
+	IsActive   bool   `json:"isActivate"`
+	Role       UserRoleResponse
+	Department *UserDepartmentResponse `json:"departmentResponse,omitempty"`
+}
+
+type UserRoleResponse struct {
+	Id   int64  `json:"id"`
+	Slug string `json:"slug"`
+}
+
+type UserDepartmentResponse struct {
+	Id             int64  `json:"id"`
+	DepartmentName string `json:"departmentName"`
 }

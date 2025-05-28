@@ -9,7 +9,7 @@ type Users struct {
 	Email            string `gorm:"unique" json:"email"`
 	Token            string `json:"-"`
 	IsActive         bool   `json:"isActivate"`
-	DepartmentId     int64  `json:"departmentId"`
+	DepartmentId     *int64 `json:"departmentId"`
 	IsHeadDepartment bool   `json:"isHeadDepartment"`
 	IsAssetManager   bool   `json:"isAssetManager"`
 	CompanyId        int64  `json:"-"`

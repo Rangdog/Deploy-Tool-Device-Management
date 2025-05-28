@@ -144,7 +144,12 @@ func (service *AssignmentService) Filter(userId int64, emailAssigned *string, em
 		assignResponse.Asset.Status = assignment.Asset.Status
 		assignResponse.Asset.FileAttachment = *assignment.Asset.FileAttachment
 		assignResponse.Asset.ImageUpload = *assignment.Asset.ImageUpload
+		assignResponse.Department.ID = *assignment.DepartmentId
+		assignResponse.Department.DepartmentName = assignment.Department.DepartmentName
+		assignResponse.Department.Location.ID = assignment.Department.LocationId
+		assignResponse.Department.Location.LocationName = assignment.Department.Location.LocationName
 		assignmentsRes = append(assignmentsRes, assignResponse)
+
 	}
 	data := map[string]any{
 		"data":       assignmentsRes,
@@ -178,5 +183,9 @@ func (service *AssignmentService) GetAssignmentById(userId int64, id int64) (*dt
 	assignResponse.Asset.Status = assignment.Asset.Status
 	assignResponse.Asset.FileAttachment = *assignment.Asset.FileAttachment
 	assignResponse.Asset.ImageUpload = *assignment.Asset.ImageUpload
+	assignResponse.Department.ID = *assignment.DepartmentId
+	assignResponse.Department.DepartmentName = assignment.Department.DepartmentName
+	assignResponse.Department.Location.ID = assignment.Department.LocationId
+	assignResponse.Department.Location.LocationName = assignment.Department.Location.LocationName
 	return &assignResponse, nil
 }

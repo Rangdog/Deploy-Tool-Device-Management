@@ -43,7 +43,7 @@ func (h *DepartmentsHandler) Create(c *gin.Context) {
 	department, err := h.service.Create(request.DepartmentName, request.LocationId)
 	if err != nil {
 		log.Error("Happened error when create department. Error", err)
-		pkg.PanicExeption(constant.UnknownError)
+		pkg.PanicExeption(constant.UnknownError, "Happened error when create department")
 	}
 	c.JSON(http.StatusCreated, pkg.BuildReponseSuccess(http.StatusCreated, constant.Success, department))
 }

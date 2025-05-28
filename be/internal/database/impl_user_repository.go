@@ -105,7 +105,7 @@ func (r *PostgreSQLUserRepository) UpdateUser(user *entity.Users) (*entity.Users
 	}
 
 	// Trả về bản ghi sau khi cập nhật (tuỳ bạn muốn lấy lại hay không)
-	err = r.db.First(&userUpdate, user.Id).Error
+	err = r.db.Preload("Role").First(&userUpdate, user.Id).Error
 	if err != nil {
 		return nil, err
 	}

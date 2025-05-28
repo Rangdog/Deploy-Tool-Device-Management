@@ -11,6 +11,7 @@ type AssignmentResponse struct {
 	UserAssigned UsersAssignmentResponse     `json:"userAssigned"`
 	UserAssign   UsersAssignmentResponse     `json:"userAssign"`
 	Asset        UserAssignmentAssetResponse `json:"asset"`
+	Department   DepartmentResponse          `json:"department"`
 }
 
 type UsersAssignmentResponse struct {

@@ -6,6 +6,7 @@ import (
 	"BE_Manage_device/internal/domain/filter"
 	"BE_Manage_device/internal/domain/repository"
 	"BE_Manage_device/pkg/utils"
+	"errors"
 	"fmt"
 	"math"
 	"mime/multipart"
@@ -134,13 +135,13 @@ func (service *AssetsService) SetRole(assetId int64, tx *gorm.DB, wg *sync.WaitG
 	defer wg.Done()
 	users := service.userRepository.GetAllUser()
 	for _, user := range users {
-		if service.roleRepository.GetTitleByRoleId(user.RoleId) == "Department Head" && user.IsHeadDepartment {
+		if service.roleRepository.GetSlugByRoleId(user.RoleId) == "department-head" && user.IsHeadDepartment {
 			assets, err := service.repo.GetAssetById(assetId)
 			if err != nil {
 				tx.Rollback()
 				return false
 			}
-			if assets.DepartmentId == user.DepartmentId {
+			if assets.DepartmentId == *user.DepartmentId {
 				userRbac := entity.UserRbac{
 					AssetId: assetId,
 					UserId:  user.Id,
@@ -184,7 +185,28 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 	imagePath := "images/" + uniqueName
 	uniqueName = fmt.Sprintf("%d_%s", time.Now().UnixNano(), fileAttachment.Filename)
 	filePath := "files/" + uniqueName
+	oldAsset, err := service.repo.GetAssetById(assetId)
+	if err != nil {
+		return nil, fmt.Errorf("cannot find asset: %w", err)
+	}
+
 	uploader := utils.NewSupabaseUploader()
+	if oldAsset.ImageUpload != nil && *oldAsset.ImageUpload != "" {
+		oldImagePath, _ := utils.ExtractFilePath(*oldAsset.ImageUpload)
+		_ = uploader.Delete(oldImagePath)
+		// if err != nil {
+		// 	logrus.Info(err.Error())
+		// 	return nil, err
+		// }
+	}
+	if oldAsset.FileAttachment != nil && *oldAsset.FileAttachment != "" {
+		oldFilePath, _ := utils.ExtractFilePath(*oldAsset.FileAttachment)
+		_ = uploader.Delete(oldFilePath)
+		// if err != nil {
+		// 	logrus.Info(err.Error())
+		// 	return nil, err
+		// }
+	}
 	imageUrl, err := uploader.Upload(imagePath, imgFile, image.Header.Get("Content-Type"))
 	if err != nil {
 		return nil, err
@@ -252,6 +274,13 @@ func (service *AssetsService) DeleteAsset(userId int64, id int64) error {
 }
 
 func (service *AssetsService) UpdateAssetRetired(userId int64, id int64) (*entity.Assets, error) {
+	assetCheck, err := service.repo.GetAssetById(id)
+	if err != nil {
+		return nil, err
+	}
+	if assetCheck.Status == "Disposed" {
+		return nil, errors.New("can't retired asset")
+	}
 	asset, err := service.repo.UpdateAssetLifeCycleStage(id, "Retired", service.repo.GetDB())
 	if err != nil {
 		return nil, err
@@ -357,7 +386,7 @@ func CountDashboard(assets []*entity.Assets) dto.DashboardSummary {
 	s.TotalAssets = len(assets)
 	for _, a := range assets {
 		switch a.Status {
-		case "Assigned":
+		case "In Use":
 			s.Assigned++
 		case "Under Maintenance":
 			s.UnderMaintenance++

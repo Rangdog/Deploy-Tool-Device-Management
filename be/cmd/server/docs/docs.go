@@ -171,27 +171,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "name": "assetName",
+                        "name": "action",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "name": "categoryId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "cost",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "departmentId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "email",
+                        "name": "endTime",
                         "in": "query"
                     },
                     {
@@ -206,12 +191,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "name": "serialNumber",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "status",
+                        "name": "startTime",
                         "in": "query"
                     },
                     {
@@ -611,6 +591,11 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "name": "assetName",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "name": "emailAssign",
                         "in": "query"
                     },
@@ -627,11 +612,6 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "status",
                         "in": "query"
                     },
                     {
@@ -768,6 +748,11 @@ const docTemplate = `{
         },
         "/api/auth/logout": {
             "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Logout",
                 "consumes": [
                     "application/json"
@@ -779,6 +764,15 @@ const docTemplate = `{
                     "Auth"
                 ],
                 "summary": "Logout",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1979,10 +1973,10 @@ const docTemplate = `{
         "dto.UpdateRoleUserRequest": {
             "type": "object",
             "required": [
-                "roleTitle"
+                "slug"
             ],
             "properties": {
-                "roleTitle": {
+                "slug": {
                     "type": "string"
                 }
             }

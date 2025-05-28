@@ -112,10 +112,10 @@ definitions:
     type: object
   dto.UpdateRoleUserRequest:
     properties:
-      roleTitle:
+      slug:
         type: string
     required:
-    - roleTitle
+    - slug
     type: object
   dto.UserLoginRequest:
     properties:
@@ -258,19 +258,10 @@ paths:
         required: true
         type: string
       - in: query
-        name: assetName
+        name: action
         type: string
       - in: query
-        name: categoryId
-        type: string
-      - in: query
-        name: cost
-        type: string
-      - in: query
-        name: departmentId
-        type: string
-      - in: query
-        name: email
+        name: endTime
         type: string
       - in: query
         name: limit
@@ -279,10 +270,7 @@ paths:
         name: page
         type: integer
       - in: query
-        name: serialNumber
-        type: string
-      - in: query
-        name: status
+        name: startTime
         type: string
       - description: Authorization
         in: header
@@ -594,6 +582,9 @@ paths:
       description: Get all assign have permission
       parameters:
       - in: query
+        name: assetName
+        type: string
+      - in: query
         name: emailAssign
         type: string
       - in: query
@@ -605,9 +596,6 @@ paths:
       - in: query
         name: page
         type: integer
-      - in: query
-        name: status
-        type: string
       - description: Authorization
         in: header
         name: Authorization
@@ -652,6 +640,12 @@ paths:
       consumes:
       - application/json
       description: Logout
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -663,6 +657,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/dto.ApiResponseFail'
+      security:
+      - JWT: []
       summary: Logout
       tags:
       - Auth

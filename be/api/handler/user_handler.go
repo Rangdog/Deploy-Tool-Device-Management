@@ -308,9 +308,14 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 // @Tags         Auth
 // @Accept       json
 // @Produce      json
+// @param Authorization header string true "Authorization"
 // @Router       /api/auth/logout [POST]
 // @Success      200   {object}  dto.ApiResponseSuccessNoData
 // @Failure      500   {object}  dto.ApiResponseFail
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *UserHandler) Logout(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)
@@ -339,7 +344,23 @@ func (h *UserHandler) GetAllUser(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	// userId := utils.GetUserIdFromContext(c)
 	users := h.service.GetAllUser()
-	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, users))
+	usersResponses := []dto.UserResponse{}
+	for _, user := range users {
+		usersResponse := dto.UserResponse{}
+		usersResponse.Id = user.Id
+		usersResponse.FirstName = user.FirstName
+		usersResponse.LastName = user.LastName
+		usersResponse.Email = user.Email
+		usersResponse.IsActive = user.IsActive
+		usersResponse.Role.Id = user.RoleId
+		usersResponse.Role.Slug = user.Role.Slug
+		if user.DepartmentId != nil {
+			usersResponse.Department.Id = *user.DepartmentId
+			usersResponse.Department.DepartmentName = user.Department.DepartmentName
+		}
+		usersResponses = append(usersResponses, usersResponse)
+	}
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, usersResponses))
 }
 
 // User godoc
@@ -370,7 +391,19 @@ func (h *UserHandler) UpdateInformationUser(c *gin.Context) {
 		log.Error("Happened error when update information user. Error", err)
 		pkg.PanicExeption(constant.UnknownError, err.Error())
 	}
-	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, &userUpdated))
+	usersResponse := dto.UserResponse{}
+	usersResponse.Id = userUpdated.Id
+	usersResponse.FirstName = userUpdated.FirstName
+	usersResponse.LastName = userUpdated.LastName
+	usersResponse.Email = userUpdated.Email
+	usersResponse.IsActive = userUpdated.IsActive
+	usersResponse.Role.Id = userUpdated.RoleId
+	usersResponse.Role.Slug = userUpdated.Role.Slug
+	if userUpdated.DepartmentId != nil {
+		usersResponse.Department.Id = *userUpdated.DepartmentId
+		usersResponse.Department.DepartmentName = userUpdated.Department.DepartmentName
+	}
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, usersResponse))
 }
 
 // User godoc
@@ -396,10 +429,22 @@ func (h *UserHandler) UpdateRoleUser(c *gin.Context) {
 		log.Error("Happened error when mapping request from FE. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest)
 	}
-	userUpdated, err := h.service.UpdateRole(userId, request.RoleTitle)
+	userUpdated, err := h.service.UpdateRole(userId, request.Slug)
 	if err != nil {
 		log.Error("Happened error when update role user. Error", err)
 		pkg.PanicExeption(constant.UnknownError, err.Error())
 	}
-	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, &userUpdated))
+	usersResponse := dto.UserResponse{}
+	usersResponse.Id = userUpdated.Id
+	usersResponse.FirstName = userUpdated.FirstName
+	usersResponse.LastName = userUpdated.LastName
+	usersResponse.Email = userUpdated.Email
+	usersResponse.IsActive = userUpdated.IsActive
+	usersResponse.Role.Id = userUpdated.RoleId
+	usersResponse.Role.Slug = userUpdated.Role.Slug
+	if userUpdated.DepartmentId != nil {
+		usersResponse.Department.Id = *userUpdated.DepartmentId
+		usersResponse.Department.DepartmentName = userUpdated.Department.DepartmentName
+	}
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, &usersResponse))
 }

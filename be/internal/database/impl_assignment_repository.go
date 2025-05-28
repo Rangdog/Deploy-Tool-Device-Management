@@ -21,7 +21,7 @@ func (r *PostgreSQLAssignmentRepository) Create(assignment *entity.Assignments, 
 		return nil, result.Error
 	}
 	var assignmentCreated = &entity.Assignments{}
-	result = tx.Model(entity.Assignments{}).Where("id = ?", assignment.Id).Preload("UserAssigned").Preload("UserAssign").Preload("Asset").First(&assignmentCreated)
+	result = tx.Model(entity.Assignments{}).Where("id = ?", assignment.Id).Preload("UserAssigned").Preload("UserAssign").Preload("Asset").Preload("Department").First(&assignmentCreated)
 	return assignmentCreated, result.Error
 }
 
@@ -44,7 +44,7 @@ func (r *PostgreSQLAssignmentRepository) Update(assignmentId int64, AssignBy, as
 	}
 
 	// Trả về bản ghi sau khi cập nhật (tuỳ bạn muốn lấy lại hay không)
-	err = tx.Preload("UserAssigned").Preload("UserAssign").Preload("Asset").First(&assignment, assignmentId).Error
+	err = tx.Preload("UserAssigned").Preload("UserAssign").Preload("Asset").Preload("Department").Preload("Department.Location").First(&assignment, assignmentId).Error
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +58,7 @@ func (r *PostgreSQLAssignmentRepository) GetDB() *gorm.DB {
 
 func (r *PostgreSQLAssignmentRepository) GetAssignmentById(id int64) (*entity.Assignments, error) {
 	assignment := entity.Assignments{}
-	result := r.db.Model(entity.Assignments{}).Where("id = ?", id).Preload("UserAssigned").Preload("UserAssign").Preload("Asset").First(&assignment)
+	result := r.db.Model(entity.Assignments{}).Where("id = ?", id).Preload("UserAssigned").Preload("UserAssign").Preload("Asset").Preload("Department").Preload("Department.Location").First(&assignment)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -67,7 +67,7 @@ func (r *PostgreSQLAssignmentRepository) GetAssignmentById(id int64) (*entity.As
 
 func (r *PostgreSQLAssignmentRepository) GetAssignmentByAssetId(assetId int64) (*entity.Assignments, error) {
 	assignment := entity.Assignments{}
-	result := r.db.Model(entity.Assignments{}).Where("asset_id = ?", assetId).Preload("UserAssigned").Preload("UserAssign").Preload("Asset").First(&assignment)
+	result := r.db.Model(entity.Assignments{}).Where("asset_id = ?", assetId).Preload("UserAssigned").Preload("UserAssign").Preload("Asset").Preload("Department").Preload("Department.Location").First(&assignment)
 	if result.Error != nil {
 		return nil, result.Error
 	}

@@ -160,27 +160,12 @@
                     },
                     {
                         "type": "string",
-                        "name": "assetName",
+                        "name": "action",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "name": "categoryId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "cost",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "departmentId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "email",
+                        "name": "endTime",
                         "in": "query"
                     },
                     {
@@ -195,12 +180,7 @@
                     },
                     {
                         "type": "string",
-                        "name": "serialNumber",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "status",
+                        "name": "startTime",
                         "in": "query"
                     },
                     {
@@ -600,6 +580,11 @@
                 "parameters": [
                     {
                         "type": "string",
+                        "name": "assetName",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "name": "emailAssign",
                         "in": "query"
                     },
@@ -616,11 +601,6 @@
                     {
                         "type": "integer",
                         "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "status",
                         "in": "query"
                     },
                     {
@@ -757,6 +737,11 @@
         },
         "/api/auth/logout": {
             "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "Logout",
                 "consumes": [
                     "application/json"
@@ -768,6 +753,15 @@
                     "Auth"
                 ],
                 "summary": "Logout",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1968,10 +1962,10 @@
         "dto.UpdateRoleUserRequest": {
             "type": "object",
             "required": [
-                "roleTitle"
+                "slug"
             ],
             "properties": {
-                "roleTitle": {
+                "slug": {
                     "type": "string"
                 }
             }

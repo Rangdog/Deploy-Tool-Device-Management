@@ -13,57 +13,57 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandle
 	//users
 	r.Use(middleware.CORSMiddleware())
 	api := r.Group("/api")
-	api.POST("/auth/register", userHandler.Register)
-	api.POST("/auth/login", userHandler.Login)
-	api.POST("/auth/refresh", userHandler.Refresh)
-	api.GET("/activate", userHandler.Activate)
-	api.POST("/user/forget-password", userHandler.CheckPasswordReset)
-	api.PATCH("/user/password-reset", userHandler.ResetPassword)
+	api.POST("/auth/register", userHandler.Register)                  // đã check
+	api.POST("/auth/login", userHandler.Login)                        //dã check
+	api.POST("/auth/refresh", userHandler.Refresh)                    // đã check
+	api.GET("/activate", userHandler.Activate)                        // đã check
+	api.POST("/user/forget-password", userHandler.CheckPasswordReset) // đã check
+	api.PATCH("/user/password-reset", userHandler.ResetPassword)      // đã check
 	api.DELETE("/user/:email", userHandler.DeleteUser)
 
 	api.Use(middleware.AuthMiddleware(config.AccessSecret, session))
 
-	api.GET("/user/session", userHandler.Session)
-	api.POST("/auth/logout", userHandler.Logout)
-	api.GET("/users", userHandler.GetAllUser)
-	api.PATCH("users/information", userHandler.UpdateInformationUser)
-	api.PATCH("users/role", userHandler.UpdateRoleUser)
+	api.GET("/user/session", userHandler.Session)                     // đã check: nên chỉnh lại api response
+	api.POST("/auth/logout", userHandler.Logout)                      // đã check
+	api.GET("/users", userHandler.GetAllUser)                         // đã check:
+	api.PATCH("users/information", userHandler.UpdateInformationUser) // đã check
+	api.PATCH("users/role", userHandler.UpdateRoleUser)               // đã check
 	//Locations
-	api.POST("/locations", LocationHandler.Create)
-	api.GET("/locations", LocationHandler.GetAll)
-	api.DELETE("/locations/:id", LocationHandler.Delete)
+	api.POST("/locations", LocationHandler.Create)       // đã check
+	api.GET("/locations", LocationHandler.GetAll)        // đã check
+	api.DELETE("/locations/:id", LocationHandler.Delete) // đã check
 
 	//Categories
-	api.POST("/categories", CategoriesHandler.Create)
-	api.GET("/categories", CategoriesHandler.GetAll)
-	api.DELETE("/categories/:id", CategoriesHandler.Delete)
+	api.POST("/categories", CategoriesHandler.Create)       // đã check
+	api.GET("/categories", CategoriesHandler.GetAll)        // đã check
+	api.DELETE("/categories/:id", CategoriesHandler.Delete) // đã check
 
 	//Departments
-	api.POST("/departments", DepartmentsHandler.Create)
-	api.GET("/departments", DepartmentsHandler.GetAll)
-	api.DELETE("/departments/:id", DepartmentsHandler.Delete)
+	api.POST("/departments", DepartmentsHandler.Create)       // đã check
+	api.GET("/departments", DepartmentsHandler.GetAll)        // đã check
+	api.DELETE("/departments/:id", DepartmentsHandler.Delete) // đã check
 
 	//Assets
-	api.POST("/assets", AssetsHandler.Create)
-	api.GET("/assets/:id", AssetsHandler.GetAssetById)
-	api.GET("/assets", AssetsHandler.GetAllAsset)
-	api.GET("/assets/filter", AssetsHandler.FilterAsset)
-	api.PUT("/assets/:id", AssetsHandler.Update)
+	api.POST("/assets", AssetsHandler.Create)            // đã check
+	api.GET("/assets/:id", AssetsHandler.GetAssetById)   // đã check
+	api.GET("/assets", AssetsHandler.GetAllAsset)        // đã check
+	api.GET("/assets/filter", AssetsHandler.FilterAsset) // đã check
+	api.PUT("/assets/:id", AssetsHandler.Update)         // đã check
 	api.DELETE("/assets/:id", AssetsHandler.DeleteAsset)
-	api.PATCH("/assets-retired/:id", AssetsHandler.UpdateAssetRetired)
-	api.GET("/assets/filter-dashboard", AssetsHandler.FilterAssetDashboard)
+	api.PATCH("/assets-retired/:id", AssetsHandler.UpdateAssetRetired)      // đã check
+	api.GET("/assets/filter-dashboard", AssetsHandler.FilterAssetDashboard) // đã check
 
 	//Roles
-	api.GET("/roles", RoleHandler.GetAllRole)
+	api.GET("/roles", RoleHandler.GetAllRole) // đã check
 
 	//Assignment
 	api.POST("/assignments", AssignmentHandler.Create)
-	api.PUT("/assignments/:id", AssignmentHandler.Update)
-	api.GET("/assignments/filter", AssignmentHandler.FilterAsset)
-	api.GET("/assignments/:id", AssignmentHandler.GetAssignmentById)
+	api.PUT("/assignments/:id", AssignmentHandler.Update)            // đã check
+	api.GET("/assignments/filter", AssignmentHandler.FilterAsset)    // đã check
+	api.GET("/assignments/:id", AssignmentHandler.GetAssignmentById) // đã check
 
 	//AssetsLog
-	api.GET("/assets-log/{id}", AssetLogHandler.GetLogByAssetId)
+	api.GET("/assets-log/:id", AssetLogHandler.GetLogByAssetId) // đã check
 
 	//Request
 	api.POST("/request-transfer", RequestTransferHandler.Create)

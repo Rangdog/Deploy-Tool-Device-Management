@@ -2,6 +2,7 @@ package filter
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"gorm.io/gorm"
@@ -18,7 +19,7 @@ type AssetLogFilter struct {
 func (f *AssetLogFilter) ApplyFilter(db *gorm.DB, assetId int64) *gorm.DB {
 	db = db.Where("asset_id = ?", assetId)
 	if f.Action != nil {
-		str := fmt.Sprintf("%v", *f.Action)
+		str := fmt.Sprintf("%v", strings.ToLower(*f.Action))
 		str += "%"
 		db = db.Where("LOWER(action) LIKE ?", str)
 	}
@@ -30,5 +31,5 @@ func (f *AssetLogFilter) ApplyFilter(db *gorm.DB, assetId int64) *gorm.DB {
 			db = db.Where("timestamp<=?", t)
 		}
 	}
-	return db.Preload("UserAssigned").Preload("UserAssign").Preload("Asset")
+	return db.Preload("Department").Preload("Asset").Preload("User").Preload("Department.Location").Order("id ASC")
 }
