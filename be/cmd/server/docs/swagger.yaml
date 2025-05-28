@@ -1001,6 +1001,30 @@ paths:
       summary: Request Transfer
       tags:
       - RequestTransfer
+  /api/request-transfer/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get request transfer
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: Get request transfer
+      tags:
+      - RequestTransfer
   /api/request-transfer/accept/{id}:
     post:
       consumes:
@@ -1047,6 +1071,34 @@ paths:
       security:
       - JWT: []
       summary: Deny Request Transfer
+      tags:
+      - RequestTransfer
+  /api/request-transfer/filter:
+    get:
+      consumes:
+      - application/json
+      description: Get all request transfer have permission
+      parameters:
+      - in: query
+        name: limit
+        type: integer
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: status
+        type: string
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: Get all RequestTransfer with filter
       tags:
       - RequestTransfer
   /api/roles:

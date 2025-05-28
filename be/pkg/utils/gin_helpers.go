@@ -13,7 +13,9 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"slices"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -194,6 +196,12 @@ func GenerateAssetQR(assetID int64, urlFrontend string) (string, error) {
 	return qrURL, nil
 }
 
+type notificationJob struct {
+	Emails  []string
+	Subject string
+	Body    string
+}
+
 func CheckAndSenMaintenanceNotification(db *gorm.DB, emailNotifier interfaces.EmailNotifier, assetRepo repository.AssetsRepository) {
 	today := time.Now().Truncate(24 * time.Hour)
 	var schedules []entity.MaintenanceSchedules
@@ -202,6 +210,7 @@ func CheckAndSenMaintenanceNotification(db *gorm.DB, emailNotifier interfaces.Em
 		log.Printf("Error fetching maintenance schedules: %v", err)
 		return
 	}
+	var jobs []notificationJob
 	for _, s := range schedules {
 		// Check nếu đã thông báo rồi
 		var noti entity.MaintenanceNotifications
@@ -210,7 +219,7 @@ func CheckAndSenMaintenanceNotification(db *gorm.DB, emailNotifier interfaces.Em
 			log.Printf("✅ Already notified for schedule ID %d today", s.Id)
 			continue
 		}
-
+		var job notificationJob
 		// Nếu chưa có thông báo thì tiến hành
 		err = db.Transaction(func(tx *gorm.DB) error {
 			// 1. Lấy user nhận email
@@ -273,16 +282,36 @@ func CheckAndSenMaintenanceNotification(db *gorm.DB, emailNotifier interfaces.Em
 			if err := tx.Create(&notify).Error; err != nil {
 				return fmt.Errorf("error inserting notification: %w", err)
 			}
-
-			// 4. Gửi email (ngoài transaction, async)
-			go emailNotifier.SendEmails(emails, subject, body)
+			job.Emails = emails
+			job.Subject = subject
+			job.Body = body
 			return nil
 		})
-
+		if len(job.Emails) > 0 {
+			jobs = append(jobs, job)
+		}
 		if err != nil {
 			log.Printf("❌ Transaction failed for schedule %d: %v", s.Id, err)
 		}
 	}
+	const workerCount = 10
+	jobsQueue := make(chan notificationJob, len(jobs))
+	var wg sync.WaitGroup
+
+	for i := 0; i < workerCount; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for job := range jobsQueue {
+				emailNotifier.SendEmails(job.Emails, job.Subject, job.Body)
+			}
+		}()
+	}
+	for _, job := range jobs {
+		jobsQueue <- job
+	}
+	close(jobsQueue)
+	wg.Wait()
 }
 
 func UpdateStatusWhenFinishMaintenance(db *gorm.DB, assetRepo repository.AssetsRepository) {
@@ -291,7 +320,6 @@ func UpdateStatusWhenFinishMaintenance(db *gorm.DB, assetRepo repository.AssetsR
 		log.Printf("❌ Error fetching assets with status 'Under Maintenance': %v", err)
 		return
 	}
-
 	for _, a := range assets {
 		finished, err := assetRepo.CheckAssetFinishMaintenance(a.Id)
 		if err != nil {
@@ -316,16 +344,17 @@ func SendEmailsForWarrantyExpiry(db *gorm.DB, emailNotifier interfaces.EmailNoti
 		log.Printf("❌ Error fetching assets : %v", err)
 		return
 	}
-
+	var jobs []notificationJob
 	for _, a := range assets {
+		var job notificationJob
 		users, err := assetRepo.GetUserHavePermissionNotifications(a.Id)
 		if len(users) == 0 {
 			log.Printf("⚠️ No users with notification permission for asset ID %d", a.Id)
-			return
+			continue
 		}
 		if err != nil {
 			log.Printf("❌ error fetching emails %d", a.Id)
-			return
+			continue
 		}
 		var emails []string
 		for _, u := range users {
@@ -352,7 +381,6 @@ func SendEmailsForWarrantyExpiry(db *gorm.DB, emailNotifier interfaces.EmailNoti
 				</body>
 			</html>
 		`, a.AssetName, a.WarrantExpiry.Format("Jan 2, 2006"))
-		go emailNotifier.SendEmails(emails, subject, body)
 		now := time.Now()
 		typ := "Expired"
 		assetId := a.Id
@@ -366,5 +394,51 @@ func SendEmailsForWarrantyExpiry(db *gorm.DB, emailNotifier interfaces.EmailNoti
 		if result.Error != nil {
 			log.Infof("Happen error when create notify type %v AssetId %v", typ, assetId)
 		}
+		job.Emails = emails
+		job.Subject = subject
+		job.Body = body
+		if len(emails) > 0 {
+			jobs = append(jobs, job)
+		}
 	}
+	const workerCount = 10
+	jobsQueue := make(chan notificationJob, len(jobs))
+	var wg sync.WaitGroup
+
+	for i := 0; i < workerCount; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for job := range jobsQueue {
+				emailNotifier.SendEmails(job.Emails, job.Subject, job.Body)
+			}
+		}()
+	}
+	for _, job := range jobs {
+		jobsQueue <- job
+	}
+	close(jobsQueue)
+	wg.Wait()
+}
+
+func UserHasPermission(db *gorm.DB, userId int64, permSlug []string, accessLevel []*string) (bool, error) {
+	var user entity.Users
+	err := db.Preload("Role.RolePermissions.Permission").
+		First(&user, userId).Error
+	if err != nil {
+		return false, err
+	}
+
+	for _, rolePerm := range user.Role.RolePermissions {
+		if accessLevel == nil {
+			if slices.Contains(permSlug, rolePerm.Permission.Slug) && rolePerm.AccessLevel == "full" {
+				return true, nil
+			}
+		} else {
+			if slices.Contains(permSlug, rolePerm.Permission.Slug) && slices.Contains(accessLevel, &rolePerm.AccessLevel) {
+				return true, nil
+			}
+		}
+	}
+	return false, nil
 }

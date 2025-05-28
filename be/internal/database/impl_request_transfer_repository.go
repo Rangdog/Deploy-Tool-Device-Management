@@ -52,3 +52,12 @@ func (r PostgreSQLRequestTransferRepository) UpdateStatusDeny(id int64) (*entity
 func (r *PostgreSQLRequestTransferRepository) GetDB() *gorm.DB {
 	return r.db
 }
+
+func (r *PostgreSQLRequestTransferRepository) GetRequestTransferById(id int64) (*entity.RequestTransfer, error) {
+	request := entity.RequestTransfer{}
+	result := r.db.Model(entity.RequestTransfer{}).Where("id = ?", id).First(&request)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &request, nil
+}

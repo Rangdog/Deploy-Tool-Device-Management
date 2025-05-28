@@ -8,4 +8,6 @@ type RolePermission struct {
 	AccessLevel  string     `gorm:"type:VARCHAR(50);default:'full'" json:"access_level"`
 	Created_at   time.Time  `gorm:"NOT NULL" json:"created_at"`
 	Updated_at   *time.Time `json:"updated_at"`
+
+	Permission Permission `gorm:"foreignKey:PermissionId;references:Id"`
 }

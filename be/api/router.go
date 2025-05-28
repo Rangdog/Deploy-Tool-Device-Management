@@ -69,4 +69,6 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandle
 	api.POST("/request-transfer", RequestTransferHandler.Create)
 	api.POST("/request-transfer/accept/:id", RequestTransferHandler.Accept)
 	api.POST("/request-transfer/deny/:id", RequestTransferHandler.Deny)
+	api.GET("/request-transfer/:id", RequestTransferHandler.GetRequestTransferById)
+	api.GET("/request-transfer/filter", RequestTransferHandler.FilterRequestTransfer)
 }

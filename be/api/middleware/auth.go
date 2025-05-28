@@ -4,6 +4,7 @@ import (
 	"BE_Manage_device/constant"
 	"BE_Manage_device/internal/domain/repository"
 	"BE_Manage_device/pkg"
+	"BE_Manage_device/pkg/utils"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -13,6 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 )
 
 func AuthMiddleware(secretKey string, session repository.UsersSessionRepository) gin.HandlerFunc {
@@ -82,6 +84,30 @@ func CORSMiddleware() gin.HandlerFunc {
 			return
 		}
 
+		c.Next()
+	}
+}
+
+func RequirePermission(permSlug []string, accessLevel []*string, db *gorm.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		defer pkg.PanicHandler(c)
+		userId, exists := c.Get("userID")
+		if !exists {
+			pkg.PanicExeption(constant.Unauthorized, "Unauthorized Access Token")
+			c.Abort()
+			return
+		}
+		ok, err := utils.UserHasPermission(db, userId.(int64), permSlug, accessLevel)
+		if err != nil {
+			pkg.PanicExeption(constant.UnknownError, "Internal server errorn")
+			c.Abort()
+			return
+		}
+		if !ok {
+			pkg.PanicExeption(constant.StatusForbidden, "Forbidden")
+			c.Abort()
+			return
+		}
 		c.Next()
 	}
 }

@@ -3,6 +3,7 @@ package handler
 import (
 	"BE_Manage_device/constant"
 	"BE_Manage_device/internal/domain/dto"
+	"BE_Manage_device/internal/domain/filter"
 	"BE_Manage_device/internal/domain/service"
 	"BE_Manage_device/pkg"
 	"BE_Manage_device/pkg/utils"
@@ -108,4 +109,63 @@ func (h *RequestTransferHandler) Deny(c *gin.Context) {
 		pkg.PanicExeption(constant.UnknownError, "Happened error when deny request transfer")
 	}
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, requestTransfer))
+}
+
+// Request transfer godoc
+// @Summary      Get request transfer
+// @Description  Get request transfer
+// @Tags         RequestTransfer
+// @Accept       json
+// @Produce      json
+// @Param		id	path		string				true	"id"
+// @param Authorization header string true "Authorization"
+// @Router       /api/request-transfer/{id} [GET]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
+func (h *RequestTransferHandler) GetRequestTransferById(c *gin.Context) {
+	defer pkg.PanicHandler(c)
+	userId := utils.GetUserIdFromContext(c)
+	idStr := c.Param("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		log.Error("Happened error when convert id to int64. Error", err)
+		pkg.PanicExeption(constant.InvalidRequest)
+	}
+	requestTransfer, err := h.service.GetRequestTransferById(userId, id)
+	if err != nil {
+		log.Error("Happened error when get request transfer. Error", err)
+		pkg.PanicExeption(constant.UnknownError, "Happened error when get request transfer")
+	}
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, requestTransfer))
+}
+
+// Request Transfer godoc
+// @Summary Get all RequestTransfer with filter
+// @Description Get all request transfer have permission
+// @Tags RequestTransfer
+// @Accept json
+// @Produce json
+// @Param        request_transfer   query    filter.RequestTransferFilter   false  "filter request transfer"
+// @param Authorization header string true "Authorization"
+// @Router /api/request-transfer/filter [GET]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
+func (h *RequestTransferHandler) FilterRequestTransfer(c *gin.Context) {
+	defer pkg.PanicHandler(c)
+	var filter filter.RequestTransferFilter
+	userId := utils.GetUserIdFromContext(c)
+	if err := c.ShouldBindQuery(&filter); err != nil {
+		log.Error("Happened error when mapping query to filter. Error", err)
+		pkg.PanicExeption(constant.InvalidRequest, "Happened error when mapping query to filter")
+	}
+	data, err := h.service.Filter(userId, filter.Status, filter.Page, filter.Limit)
+	if err != nil {
+		log.Error("Happened error when filter request transfer. Error", err)
+		pkg.PanicExeption(constant.UnknownError, "Happened error when filter request transfer")
+	}
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, data))
 }

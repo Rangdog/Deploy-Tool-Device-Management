@@ -285,9 +285,9 @@ func (service *AssetsService) Filter(userId int64, assetName *string, status *st
 	dbFilter.Count(&total)
 	offset := (filter.Page - 1) * filter.Limit
 	var assets []entity.Assets
-	resutl := dbFilter.Offset(offset).Limit(filter.Limit).Find(&assets)
-	if resutl.Error != nil {
-		return nil, resutl.Error
+	result := dbFilter.Offset(offset).Limit(filter.Limit).Find(&assets)
+	if result.Error != nil {
+		return nil, result.Error
 	}
 	assetsResponse := []dto.AssetResponse{}
 	for _, asset := range assets {
@@ -344,9 +344,9 @@ func (service *AssetsService) ApplyFilterDashBoard(userId int64, status *string,
 	db := service.repo.GetDB()
 	dbFilter := filter.ApplyFilterDashBoard(db.Model(&entity.Assets{}), userId)
 	var assets []*entity.Assets
-	resutl := dbFilter.Find(&assets)
-	if resutl.Error != nil {
-		return nil, nil, resutl.Error
+	result := dbFilter.Find(&assets)
+	if result.Error != nil {
+		return nil, nil, result.Error
 	}
 	summary := CountDashboard(assets)
 	return &summary, assets, nil
