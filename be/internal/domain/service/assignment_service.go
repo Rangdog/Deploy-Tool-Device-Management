@@ -45,82 +45,127 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 	if err != nil {
 		return nil, err
 	}
+
 	asset, err := service.assetRepo.GetAssetById(assignment.AssetId)
 	if err != nil {
 		return nil, err
 	}
+
 	tx := service.repo.GetDB().Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
 	assignmentUpdated, err := service.repo.Update(assignmentId, userId, assignment.AssetId, userIdAssign, departmentId, tx)
 	if err != nil {
 		tx.Rollback()
 		return nil, err
 	}
-	assetLog := entity.AssetLog{}
-	assetLog.Timestamp = time.Now()
-	assetLog.Action = "Transfer"
-	assetLog.AssetId = assignment.AssetId
+
+	assetLog := entity.AssetLog{
+		Timestamp: time.Now(),
+		Action:    "Transfer",
+		AssetId:   assignment.AssetId,
+	}
+
 	oldAssetLog, err := service.assetLogRepo.GetNewLogByAssetId(assignment.AssetId)
 	if err != nil {
 		tx.Rollback()
 		return nil, err
 	}
-	if *oldAssetLog.DepartmentId == *departmentId && oldAssetLog.UserId == *userIdAssign {
+
+	// Kiểm tra nil trước khi dereference
+	if oldAssetLog != nil && departmentId != nil && userIdAssign != nil &&
+		oldAssetLog.DepartmentId != nil && *oldAssetLog.DepartmentId == *departmentId &&
+		oldAssetLog.UserId == *userIdAssign {
+		tx.Commit()
+		return assignmentUpdated, nil
+	}
+	if departmentId != nil && (*departmentId == asset.DepartmentId) && userIdAssign == nil {
+		tx.Commit()
+		return assignmentUpdated, nil
+	}
+	if userIdAssign != nil && (*userIdAssign == asset.OnwerUser.Id) && departmentId == nil {
 		tx.Commit()
 		return assignmentUpdated, nil
 	}
 	if (departmentId == nil && userIdAssign == nil) ||
-		(userIdAssign != nil && *userIdAssign == asset.OnwerUser.Id &&
-			(departmentId == nil || *departmentId == asset.DepartmentId)) {
+		(userIdAssign != nil && asset.OnwerUser != nil && *userIdAssign == asset.OnwerUser.Id &&
+			(departmentId == nil || (*departmentId == asset.DepartmentId))) {
+		tx.Rollback()
 		return nil, errors.New("invalid request: cannot assign to current owner with same department or missing info")
 	}
-	if *departmentId != asset.DepartmentId {
+
+	// Chuyển phòng ban
+	if departmentId != nil && (*departmentId != asset.DepartmentId) {
 		department, err := service.departmentRepo.GetDepartmentById(*departmentId)
 		if err != nil {
 			tx.Rollback()
 			return nil, err
 		}
 		assetLog.DepartmentId = departmentId
+		if userIdAssign != nil {
+			assetLog.UserId = *userIdAssign
+		} else {
+			user, err := service.userRepo.GetUserAssetManageOfDepartment(*departmentId)
+			if err != nil {
+				tx.Rollback()
+				return nil, err
+			}
+			assignmentUpdated, err = service.repo.Update(assignmentId, userId, assignment.AssetId, &user.Id, departmentId, tx)
+			if err != nil {
+				tx.Rollback()
+				return nil, err
+			}
+			assetLog.UserId = oldAssetLog.UserId
+		}
+		assetLog.ChangeSummary = fmt.Sprintf("Transfer from department %v to department %v\n",
+			asset.Department.DepartmentName, department.DepartmentName)
+		if _, err := service.assetRepo.UpdateAssetDepartment(assignment.AssetId, *departmentId); err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+	}
+
+	// Chuyển người dùng
+	if userIdAssign != nil && (*userIdAssign != asset.OnwerUser.Id) {
+		user, err := service.userRepo.FindByUserId(*userIdAssign)
+		if err != nil {
+			tx.Rollback()
+			return nil, err
+		}
 		assetLog.UserId = *userIdAssign
-		str := fmt.Sprintf("Transfer from department %v to department %v\n", asset.Department.DepartmentName, department.DepartmentName)
-		assetLog.ChangeSummary = str
-		_, err = service.assetRepo.UpdateAssetDepartment(assignment.AssetId, *assetLog.DepartmentId)
-		if err != nil {
+		if departmentId != nil {
+			assetLog.DepartmentId = departmentId
+		} else {
+			assetLog.DepartmentId = oldAssetLog.DepartmentId
+		}
+		assetLog.ChangeSummary += fmt.Sprintf("Transfer from user: %v to user: %v\n",
+			asset.OnwerUser.Email, user.Email)
+		if _, err := service.assetRepo.UpdateAssetOwner(assignment.AssetId, *userIdAssign); err != nil {
 			tx.Rollback()
 			return nil, err
 		}
 	}
-	if userIdAssign != nil && *userIdAssign != asset.OnwerUser.Id {
-		users, err := service.userRepo.FindByUserId(*userIdAssign)
-		if err != nil {
-			tx.Rollback()
-			return nil, err
-		}
-		assetLog.UserId = *userIdAssign
-		assetLog.DepartmentId = departmentId
-		str := fmt.Sprintf("Transfer from user: %v to user: %v\n", asset.OnwerUser.Email, users.Email)
-		assetLog.ChangeSummary += str
-		_, err = service.assetRepo.UpdateAssetOwner(assignment.AssetId, *userIdAssign)
-		if err != nil {
-			tx.Rollback()
-			return nil, err
-		}
-	}
-	_, err = service.assetLogRepo.Create(&assetLog, tx)
-	if err != nil {
+
+	if _, err := service.assetLogRepo.Create(&assetLog, tx); err != nil {
 		tx.Rollback()
 		return nil, err
 	}
-	_, err = service.assetRepo.UpdateAssetLifeCycleStage(assignment.AssetId, "In Use", tx)
-	if err != nil {
+	if _, err := service.assetRepo.UpdateAssetLifeCycleStage(assignment.AssetId, "In Use", tx); err != nil {
 		tx.Rollback()
 		return nil, err
 	}
-	err = service.assetRepo.UpdateOwner(assignment.AssetId, assetLog.UserId, tx)
-	if err != nil {
+	if err := service.assetRepo.UpdateOwner(assignment.AssetId, assetLog.UserId, tx); err != nil {
 		tx.Rollback()
 		return nil, err
 	}
-	tx.Commit()
+
+	if err := tx.Commit().Error; err != nil {
+		return nil, err
+	}
 	return assignmentUpdated, nil
 }
 
