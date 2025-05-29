@@ -133,7 +133,7 @@ func (r *PostgreSQLUserRepository) GetUserAssetManageOfDepartment(departmentId i
 
 func (r *PostgreSQLUserRepository) FindByEmailForLogin(email string) (*entity.Users, error) {
 	users := &entity.Users{}
-	result := r.db.Model(entity.Users{}).Where("email = ? and is_activate = true", email).First(&users)
+	result := r.db.Model(entity.Users{}).Where("email = ? and is_active = true", email).First(&users)
 	if result.Error != nil {
 		return nil, result.Error
 	}
