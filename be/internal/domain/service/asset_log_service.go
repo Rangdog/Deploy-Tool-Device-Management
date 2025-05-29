@@ -54,20 +54,18 @@ func (service *AssetLogService) Filter(userId int64, assetId int64, action, star
 		assetLogResponse.Action = assetLog.Action
 		assetLogResponse.Timestamp = assetLog.Timestamp.Format("2006-01-02")
 		assetLogResponse.ChangeSummary = assetLog.ChangeSummary
-		if assetLog.DepartmentAssignedId != nil {
-			assetLogResponse.Department.ID = *assetLog.DepartmentAssignedId
-			assetLogResponse.Department.DepartmentName = assetLog.Department.DepartmentName
-			assetLogResponse.Department.Location.ID = assetLog.Department.LocationId
-			assetLogResponse.Department.Location.LocationName = assetLog.Department.Location.LocationName
+		//byUser
+		assetLogResponse.ByUser.Id = assetLog.ByUserId
+		assetLogResponse.ByUser.FirstName = assetLog.ByUser.FirstName
+		assetLogResponse.ByUser.LastName = assetLog.ByUser.LastName
+		assetLogResponse.ByUser.Email = assetLog.ByUser.Email
+		//assignUser
+		if assetLog.AssignUser != nil {
+			assetLogResponse.AssignUser.Id = assetLog.AssignUser.Id
+			assetLogResponse.AssignUser.FirstName = assetLog.AssignUser.FirstName
+			assetLogResponse.AssignUser.LastName = assetLog.AssignUser.LastName
+			assetLogResponse.AssignUser.Email = assetLog.AssignUser.Email
 		}
-		assetLogResponse.Users.FirstName = assetLog.User.FirstName
-		assetLogResponse.Users.LastName = assetLog.User.LastName
-		assetLogResponse.Users.Email = assetLog.User.Email
-		assetLogResponse.Asset.AssetName = assetLog.Asset.AssetName
-		assetLogResponse.Asset.SerialNumber = assetLog.Asset.SerialNumber
-		assetLogResponse.Asset.FileAttachment = *assetLog.Asset.FileAttachment
-		assetLogResponse.Asset.ImageUpload = *assetLog.Asset.ImageUpload
-		assetLogResponse.Asset.QrUrl = *assetLog.Asset.QrUrl
 		assetLogResponses = append(assetLogResponses, assetLogResponse)
 	}
 	data := map[string]any{

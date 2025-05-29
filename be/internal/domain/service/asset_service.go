@@ -28,7 +28,7 @@ type AssetsService struct {
 }
 
 func NewAssetsService(repo repository.AssetsRepository, assertLogRepository repository.AssetsLogRepository, roleRepository repository.RoleRepository, userRBACRepository repository.UserRBACRepository, userRepository repository.UserRepository, assignRepository repository.AssignmentRepository, departmentRepository repository.DepartmentsRepository) *AssetsService {
-	return &AssetsService{repo: repo, assertLogRepository: assertLogRepository, roleRepository: roleRepository, userRBACRepository: userRBACRepository, userRepository: userRepository, assignRepository: assignRepository}
+	return &AssetsService{repo: repo, assertLogRepository: assertLogRepository, roleRepository: roleRepository, userRBACRepository: userRBACRepository, userRepository: userRepository, assignRepository: assignRepository, departmentRepository: departmentRepository}
 }
 
 func (service *AssetsService) Create(userId int64, assetName string, purchaseDate time.Time, cost float64, warrantExpiry time.Time, serialNumber string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, categoryId int64, departmentId int64, url string) (*entity.Assets, error) {
@@ -83,18 +83,18 @@ func (service *AssetsService) Create(userId int64, assetName string, purchaseDat
 		tx.Rollback()
 		return nil, err
 	}
-	// department, err := service.departmentRepository.GetDepartmentById(userAssetManager.Department.Id)
-	// if err != nil {
-	// 	tx.Rollback()
-	// 	return nil, err
-	// }
-	changeSummary := fmt.Sprintf("Create by user %v and assigned to user %v", userCreate.Email, userAssetManager.Email)
+	department, err := service.departmentRepository.GetDepartmentById(userAssetManager.Department.Id)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	changeSummary := fmt.Sprintf("Create by user %v and assigned to user %v and assigned to department %v", userCreate.Email, userAssetManager.Email, department.DepartmentName)
 	assetLog := entity.AssetLog{
-		Action:         "Create",
-		Timestamp:      time.Now(),
-		UserAssignedId: userAssetManager.Id,
-		AssetId:        assetCreate.Id,
-		ChangeSummary:  changeSummary,
+		Action:        "Create",
+		Timestamp:     time.Now(),
+		ByUserId:      userId,
+		AssignUserId:  &userAssetManager.Id,
+		ChangeSummary: changeSummary,
 	}
 	_, err = service.assertLogRepository.Create(&assetLog, tx)
 	if err != nil {
@@ -252,13 +252,12 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 		tx.Rollback()
 		return nil, err
 	}
-	changeSummary := fmt.Sprintf("Update by user %v", userUpdate.Email)
+	changeSummary := fmt.Sprintf("Update asset %v assetId %v by user %v", assetName, assetId, userUpdate.Email)
 	assetLog := entity.AssetLog{
-		Action:         "Update",
-		Timestamp:      time.Now(),
-		UserAssignedId: userId,
-		AssetId:        assetUpdated.Id,
-		ChangeSummary:  changeSummary,
+		Action:        "Update",
+		Timestamp:     time.Now(),
+		ByUserId:      userId,
+		ChangeSummary: changeSummary,
 	}
 	_, err = service.assertLogRepository.Create(&assetLog, tx)
 	if err != nil {
@@ -276,18 +275,22 @@ func (service *AssetsService) DeleteAsset(userId int64, id int64) error {
 		tx.Rollback()
 		return err
 	}
+	asset, err := service.repo.GetAssetById(id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
 	userUpdate, err := service.userRepository.FindByUserId(userId)
 	if err != nil {
 		tx.Rollback()
 		return err
 	}
-	changeSummary := fmt.Sprintf("Update by user %v", userUpdate.Email)
+	changeSummary := fmt.Sprintf("Delete asset %v assetId: %v by user %v", asset.AssetName, asset.Id, userUpdate.Email)
 	assetLog := entity.AssetLog{
-		Action:         "Delete",
-		Timestamp:      time.Now(),
-		UserAssignedId: userId,
-		AssetId:        id,
-		ChangeSummary:  changeSummary,
+		Action:        "Delete",
+		Timestamp:     time.Now(),
+		ByUserId:      userId,
+		ChangeSummary: changeSummary,
 	}
 	_, err = service.assertLogRepository.Create(&assetLog, tx)
 	if err != nil {
