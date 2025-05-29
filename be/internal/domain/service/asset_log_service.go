@@ -66,6 +66,13 @@ func (service *AssetLogService) Filter(userId int64, assetId int64, action, star
 			assetLogResponse.AssignUser.LastName = assetLog.AssignUser.LastName
 			assetLogResponse.AssignUser.Email = assetLog.AssignUser.Email
 		}
+		//asset
+		assetLogResponse.Asset.AssetName = assetLog.Asset.AssetName
+		assetLogResponse.Asset.Id = assetLog.Asset.Id
+		assetLogResponse.Asset.SerialNumber = assetLog.Asset.SerialNumber
+		assetLogResponse.Asset.ImageUpload = *assetLog.Asset.ImageUpload
+		assetLogResponse.Asset.FileAttachment = *assetLog.Asset.FileAttachment
+		assetLogResponse.Asset.QrUrl = *assetLog.Asset.QrUrl
 		assetLogResponses = append(assetLogResponses, assetLogResponse)
 	}
 	data := map[string]any{

@@ -83,7 +83,7 @@ func (service *AssetsService) Create(userId int64, assetName string, purchaseDat
 		tx.Rollback()
 		return nil, err
 	}
-	department, err := service.departmentRepository.GetDepartmentById(userAssetManager.Department.Id)
+	department, err := service.departmentRepository.GetDepartmentById(departmentId)
 	if err != nil {
 		tx.Rollback()
 		return nil, err
@@ -95,6 +95,7 @@ func (service *AssetsService) Create(userId int64, assetName string, purchaseDat
 		ByUserId:      userId,
 		AssignUserId:  &userAssetManager.Id,
 		ChangeSummary: changeSummary,
+		AssetId:       assetCreate.Id,
 	}
 	_, err = service.assertLogRepository.Create(&assetLog, tx)
 	if err != nil {
@@ -258,6 +259,7 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 		Timestamp:     time.Now(),
 		ByUserId:      userId,
 		ChangeSummary: changeSummary,
+		AssetId:       assetId,
 	}
 	_, err = service.assertLogRepository.Create(&assetLog, tx)
 	if err != nil {
@@ -291,6 +293,7 @@ func (service *AssetsService) DeleteAsset(userId int64, id int64) error {
 		Timestamp:     time.Now(),
 		ByUserId:      userId,
 		ChangeSummary: changeSummary,
+		AssetId:       asset.Id,
 	}
 	_, err = service.assertLogRepository.Create(&assetLog, tx)
 	if err != nil {
