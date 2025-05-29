@@ -48,9 +48,14 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 	if err != nil {
 		return nil, err
 	}
-	assignUser, err := service.userRepo.FindByUserId(userId)
-	if err != nil {
-		return nil, err
+	var assignUser *entity.Users
+	if userIdAssign != nil {
+		assignUser, err = service.userRepo.FindByUserId(*userIdAssign)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		assignUser = nil
 	}
 	asset, err := service.assetRepo.GetAssetById(assignment.AssetId)
 	if err != nil {
@@ -100,6 +105,11 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 			tx.Rollback()
 			return nil, err
 		}
+		if err := service.assetRepo.UpdateOwner(assignment.AssetId, assignUser.Id, tx); err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+
 	}
 
 	if _, err := service.assetLogRepo.Create(&assetLog, tx); err != nil {
@@ -110,11 +120,6 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 		tx.Rollback()
 		return nil, err
 	}
-	if err := service.assetRepo.UpdateOwner(assignment.AssetId, assignUser.Id, tx); err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-
 	if err := tx.Commit().Error; err != nil {
 		return nil, err
 	}
