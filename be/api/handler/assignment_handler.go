@@ -81,6 +81,12 @@ func (h *AssignmentHandler) Update(c *gin.Context) {
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when convert assetId to int64")
 	}
 	var request dto.AssignmentUpdateRequest
+	if (request.UserId == nil && request.DepartmentId == nil) ||
+		(request.UserId != nil && request.DepartmentId != nil) {
+		log.Error("Invalid request: must have exactly one of userId or departmentId")
+		pkg.PanicExeption(constant.InvalidRequest, "Request must contain exactly one of userId or departmentId")
+		return
+	}
 	if err := c.ShouldBindJSON(&request); err != nil {
 		log.Error("Happened error when mapping request from FE. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when mapping request from FE.")
