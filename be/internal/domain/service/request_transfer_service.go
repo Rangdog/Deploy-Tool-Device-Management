@@ -48,7 +48,7 @@ func (service *RequestTransferService) Accept(userId int64, id int64) (*entity.R
 		tx.Rollback()
 		return nil, err
 	}
-	_, err = service.assignmentService.Update(userId, request.AssetId, assignment.Id, &userAssign.Id, &request.DepartmentId)
+	_, err = service.assignmentService.Update(userId, assignment.Id, &userAssign.Id, &request.DepartmentId)
 	if err != nil {
 		tx.Rollback()
 		return nil, err
@@ -80,7 +80,7 @@ func (service *RequestTransferService) Filter(userId int64, status *string, page
 		Limit:  limit,
 	}
 	db := service.repo.GetDB()
-	dbFilter := filter.ApplyFilter(db.Model(&entity.Assets{}), userId)
+	dbFilter := filter.ApplyFilter(db.Model(&entity.RequestTransfer{}), userId)
 	if filter.Page <= 0 {
 		filter.Page = 1
 	}

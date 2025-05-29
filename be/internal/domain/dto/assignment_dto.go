@@ -6,6 +6,11 @@ type AssignmentCreateRequest struct {
 	DepartmentId *int64 `json:"departmentId"`
 }
 
+type AssignmentUpdateRequest struct {
+	UserId       int64 `json:"userId"  binding:"required"`
+	DepartmentId int64 `json:"departmentId" binding:"required"`
+}
+
 type AssignmentResponse struct {
 	Id           int64                       `json:"id"`
 	UserAssigned UsersAssignmentResponse     `json:"userAssigned"`

@@ -13,12 +13,12 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type MaintenanceschedulesHandler struct {
+type MaintenanceSchedulesHandler struct {
 	service *service.MaintenanceSchedulesService
 }
 
-func NewMaintenanceSchedulesHandler(service *service.MaintenanceSchedulesService) *MaintenanceschedulesHandler {
-	return &MaintenanceschedulesHandler{service: service}
+func NewMaintenanceSchedulesHandler(service *service.MaintenanceSchedulesService) *MaintenanceSchedulesHandler {
+	return &MaintenanceSchedulesHandler{service: service}
 }
 
 // Maintenance Schedules godoc
@@ -34,7 +34,7 @@ func NewMaintenanceSchedulesHandler(service *service.MaintenanceSchedulesService
 // @in header
 // @name Authorization
 // @Security JWT
-func (h *MaintenanceschedulesHandler) Create(c *gin.Context) {
+func (h *MaintenanceSchedulesHandler) Create(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)
 	var request dto.CreateMaintenanceSchedulesRequest
@@ -63,7 +63,7 @@ func (h *MaintenanceschedulesHandler) Create(c *gin.Context) {
 // @in header
 // @name Authorization
 // @Security JWT
-func (h *MaintenanceschedulesHandler) GetAllMaintenanceSchedulesByAssetId(c *gin.Context) {
+func (h *MaintenanceSchedulesHandler) GetAllMaintenanceSchedulesByAssetId(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)
 	idStr := c.Param("id")

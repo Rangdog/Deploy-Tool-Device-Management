@@ -21,4 +21,6 @@ type AssetsRepository interface {
 	GetAssetByStatus(string) ([]*entity.Assets, error)
 	GetAssetsWasWarrantyExpiry() ([]*entity.Assets, error)
 	UpdateOwner(id int64, ownerId int64, tx *gorm.DB) error
+	UpdateAssetDepartment(id, departmentId int64) (*entity.Assets, error)
+	UpdateAssetOwner(id, Owner int64) (*entity.Assets, error)
 }

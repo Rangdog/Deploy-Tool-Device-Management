@@ -33,6 +33,7 @@ func main() {
 	assignmentRepository := database.NewPostgreSQLAssignmentRepository(db)
 	requestTransferRepository := database.NewPostgreSQLRequestTransferRepository(db)
 	emailService := service.NewEmailService(config.SmtpPasswd)
+	maintenanceRepository := database.NewPostgreSQLMaintenanceSchedulesRepository(db)
 	//User
 	userService := service.NewUserService(userRepository, emailService, userSessionRepository, roleRepository, assetsRepository, userRBACRepository)
 	userHandler := handler.NewUserHandler(userService)
@@ -60,6 +61,9 @@ func main() {
 	//Request Transfer
 	requestTransferService := service.NewRequestTransferService(requestTransferRepository, assignmentService, userRepository)
 	requestTransferHandler := handler.NewRequestTransferHandler(requestTransferService)
+	//Maintenance
+	MaintenanceService := service.NewMaintenanceSchedulesService(maintenanceRepository)
+	maintenanceHandler := handler.NewMaintenanceSchedulesHandler(MaintenanceService)
 
 	docs.SwaggerInfo.Title = "API Tool device manage"
 	docs.SwaggerInfo.Description = "App Tool device manage"
@@ -69,7 +73,7 @@ func main() {
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
 	r := gin.Default()
-	api.SetupRoutes(r, userHandler, locationHandler, categoriesHandler, departmentHandler, assetsHandler, roleHandler, assignmentHandler, assetLogHandler, requestTransferHandler, userSessionRepository)
+	api.SetupRoutes(r, userHandler, locationHandler, categoriesHandler, departmentHandler, assetsHandler, roleHandler, assignmentHandler, assetLogHandler, requestTransferHandler, maintenanceHandler, userSessionRepository)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	c := cron.New(cron.WithLocation(time.FixedZone("Asia/Ho_Chi_Minh", 7*3600)))

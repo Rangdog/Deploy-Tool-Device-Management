@@ -187,3 +187,23 @@ func (r *PostgreSQLAssetsRepository) UpdateOwner(id int64, ownerId int64, tx *go
 	result := tx.Model(entity.Assets{}).Where("id = ?", id).Update("owner", ownerId)
 	return result.Error
 }
+
+func (r *PostgreSQLAssetsRepository) UpdateAssetDepartment(id, departmentId int64) (*entity.Assets, error) {
+	result := r.db.Model(entity.Assets{}).Where("id = ?", id).Update("department_id", departmentId)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	var asset = entity.Assets{}
+	r.db.Model(entity.Assets{}).Where("id = ?", id).Find(&asset)
+	return &asset, nil
+}
+
+func (r *PostgreSQLAssetsRepository) UpdateAssetOwner(id, ownerId int64) (*entity.Assets, error) {
+	result := r.db.Model(entity.Assets{}).Where("id = ?", id).Update("owner", ownerId)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	var asset = entity.Assets{}
+	r.db.Model(entity.Assets{}).Where("id = ?", id).Find(&asset)
+	return &asset, nil
+}

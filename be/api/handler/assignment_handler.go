@@ -63,7 +63,7 @@ func (h *AssignmentHandler) Create(c *gin.Context) {
 // @Tags         Assignments
 // @Accept       json
 // @Produce      json
-// @Param        assignment   body    dto.AssignmentCreateRequest   true  "Data"
+// @Param        assignment   body    dto.AssignmentUpdateRequest   true  "Data"
 // @Param		id	path		string				true	"id"
 // @param Authorization header string true "Authorization"
 // @Router       /api/assignments/{id} [PUT]
@@ -80,12 +80,12 @@ func (h *AssignmentHandler) Update(c *gin.Context) {
 		log.Error("Happened error when convert assetId to int64. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when convert assetId to int64")
 	}
-	var request dto.AssignmentCreateRequest
+	var request dto.AssignmentUpdateRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		log.Error("Happened error when mapping request from FE. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when mapping request from FE.")
 	}
-	assignmentUpdated, err := h.service.Update(userId, request.AssetId, assignmentId, request.UserId, request.DepartmentId)
+	assignmentUpdated, err := h.service.Update(userId, assignmentId, &request.UserId, &request.DepartmentId)
 	if err != nil {
 		log.Error("Happened error when update assignment. Error", err)
 		pkg.PanicExeption(constant.UnknownError, "Happened error when update assignment.")
