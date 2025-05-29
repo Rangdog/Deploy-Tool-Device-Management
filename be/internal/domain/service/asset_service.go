@@ -83,12 +83,12 @@ func (service *AssetsService) Create(userId int64, assetName string, purchaseDat
 		tx.Rollback()
 		return nil, err
 	}
-	department, err := service.departmentRepository.GetDepartmentById(departmentId)
-	if err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-	changeSummary := fmt.Sprintf("Create by user %v and assigned to user %v and assigned to department %v", userCreate.Email, userAssetManager.Email, department.DepartmentName)
+	// department, err := service.departmentRepository.GetDepartmentById(userAssetManager.Department.Id)
+	// if err != nil {
+	// 	tx.Rollback()
+	// 	return nil, err
+	// }
+	changeSummary := fmt.Sprintf("Create by user %v and assigned to user %v", userCreate.Email, userAssetManager.Email)
 	assetLog := entity.AssetLog{
 		Action:         "Create",
 		Timestamp:      time.Now(),
