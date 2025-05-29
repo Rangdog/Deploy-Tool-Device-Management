@@ -22,7 +22,7 @@ func (r *PostgreSQLMaintenanceSchedulesRepository) Create(maintenance *entity.Ma
 
 func (r *PostgreSQLMaintenanceSchedulesRepository) GetAllMaintenanceSchedulesByAssetId(assetId int64) ([]*entity.MaintenanceSchedules, error) {
 	maintenances := []*entity.MaintenanceSchedules{}
-	result := r.db.Model(entity.MaintenanceSchedules{}).Where("asset_id = ?", assetId).Find(maintenances)
+	result := r.db.Model(entity.MaintenanceSchedules{}).Where("asset_id = ?", assetId).Find(&maintenances)
 	if result.Error != nil {
 		return nil, result.Error
 	}

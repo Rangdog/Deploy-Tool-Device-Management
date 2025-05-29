@@ -73,6 +73,6 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandle
 	api.GET("/request-transfer/filter", RequestTransferHandler.FilterRequestTransfer) // đã check
 
 	// Schedule maintenance
-	api.POST("/maintenance", MaintenanceSchedulesHandler.Create)
-	api.GET("/maintenance/:id", MaintenanceSchedulesHandler.GetAllMaintenanceSchedulesByAssetId)
+	api.POST("/maintenance-schedules", MaintenanceSchedulesHandler.Create)
+	api.GET("/maintenance-schedules/:id", MaintenanceSchedulesHandler.GetAllMaintenanceSchedulesByAssetId)
 }
