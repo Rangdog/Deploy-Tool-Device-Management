@@ -31,5 +31,5 @@ func (f *AssetLogFilter) ApplyFilter(db *gorm.DB, assetId int64) *gorm.DB {
 			db = db.Where("timestamp<=?", t)
 		}
 	}
-	return db.Preload("Department").Preload("Asset").Preload("User").Preload("Department.Location").Order("id ASC")
+	return db.Preload("ByUser").Preload("AssignUser").Order("id ASC")
 }
