@@ -1240,7 +1240,7 @@ paths:
       - JWT: []
       summary: Update Role
       tags:
-      - roles
+      - Roles
   /api/user/session:
     get:
       consumes:

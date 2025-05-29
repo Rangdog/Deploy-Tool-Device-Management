@@ -409,7 +409,7 @@ func (h *UserHandler) UpdateInformationUser(c *gin.Context) {
 // User godoc
 // @Summary      Update Role
 // @Description   Update Role
-// @Tags         roles
+// @Tags         Roles
 // @Accept       json
 // @Produce      json
 // @Param        Role   body    dto.UpdateRoleUserRequest   true  "Data"

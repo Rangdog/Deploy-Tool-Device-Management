@@ -1608,7 +1608,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "roles"
+                    "Roles"
                 ],
                 "summary": "Update Role",
                 "parameters": [
