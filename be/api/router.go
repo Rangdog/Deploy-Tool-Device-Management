@@ -66,11 +66,11 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandle
 	api.GET("/assets-log/:id", AssetLogHandler.GetLogByAssetId) // đã check
 
 	//Request
-	api.POST("/request-transfer", RequestTransferHandler.Create)                    // đã check
-	api.POST("/request-transfer/accept/:id", RequestTransferHandler.Accept)         // đã check
-	api.POST("/request-transfer/deny/:id", RequestTransferHandler.Deny)             // đã check
-	api.GET("/request-transfer/:id", RequestTransferHandler.GetRequestTransferById) // đã check
-	api.GET("/request-transfer/filter", RequestTransferHandler.FilterRequestTransfer)
+	api.POST("/request-transfer", RequestTransferHandler.Create)                      // đã check
+	api.POST("/request-transfer/accept/:id", RequestTransferHandler.Accept)           // đã check
+	api.POST("/request-transfer/deny/:id", RequestTransferHandler.Deny)               // đã check
+	api.GET("/request-transfer/:id", RequestTransferHandler.GetRequestTransferById)   // đã check
+	api.GET("/request-transfer/filter", RequestTransferHandler.FilterRequestTransfer) // đã check
 
 	// Schedule maintenance
 	api.POST("/maintenance", MaintenanceSchedulesHandler.Create)

@@ -45,7 +45,12 @@ func (h *DepartmentsHandler) Create(c *gin.Context) {
 		log.Error("Happened error when create department. Error", err)
 		pkg.PanicExeption(constant.UnknownError, "Happened error when create department")
 	}
-	c.JSON(http.StatusCreated, pkg.BuildReponseSuccess(http.StatusCreated, constant.Success, department))
+	departmentResponse := dto.DepartmentResponse{}
+	departmentResponse.ID = department.Id
+	departmentResponse.DepartmentName = department.DepartmentName
+	departmentResponse.Location.ID = department.Location.Id
+	departmentResponse.Location.LocationName = department.Location.LocationName
+	c.JSON(http.StatusCreated, pkg.BuildReponseSuccess(http.StatusCreated, constant.Success, departmentResponse))
 }
 
 // User godoc
@@ -67,7 +72,16 @@ func (h *DepartmentsHandler) GetAll(c *gin.Context) {
 		log.Error("Happened error when get all departments. Error", err)
 		pkg.PanicExeption(constant.UnknownError, "Happened error when get all departments")
 	}
-	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, departments))
+	var departmentResponses []dto.DepartmentResponse
+	for _, department := range departments {
+		departmentResponse := dto.DepartmentResponse{}
+		departmentResponse.ID = department.Id
+		departmentResponse.DepartmentName = department.DepartmentName
+		departmentResponse.Location.ID = department.Location.Id
+		departmentResponse.Location.LocationName = department.Location.LocationName
+		departmentResponses = append(departmentResponses, departmentResponse)
+	}
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, departmentResponses))
 }
 
 // User godoc

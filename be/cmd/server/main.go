@@ -47,7 +47,7 @@ func main() {
 	departmentService := service.NewDepartmentsService(departmentRepository)
 	departmentHandler := handler.NewDepartmentsHandler(departmentService)
 	//Assets
-	assetsService := service.NewAssetsService(assetsRepository, assetsLogRepository, roleRepository, userRBACRepository, userRepository, assignmentRepository)
+	assetsService := service.NewAssetsService(assetsRepository, assetsLogRepository, roleRepository, userRBACRepository, userRepository, assignmentRepository, departmentRepository)
 	assetsHandler := handler.NewAssetsHandler(assetsService)
 	//Role
 	roleService := service.NewRoleService(roleRepository)

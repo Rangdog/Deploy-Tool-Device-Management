@@ -18,15 +18,16 @@ import (
 )
 
 type AssetsService struct {
-	repo                repository.AssetsRepository
-	assertLogRepository repository.AssetsLogRepository
-	roleRepository      repository.RoleRepository
-	userRBACRepository  repository.UserRBACRepository
-	userRepository      repository.UserRepository
-	assignRepository    repository.AssignmentRepository
+	repo                 repository.AssetsRepository
+	assertLogRepository  repository.AssetsLogRepository
+	roleRepository       repository.RoleRepository
+	userRBACRepository   repository.UserRBACRepository
+	userRepository       repository.UserRepository
+	assignRepository     repository.AssignmentRepository
+	departmentRepository repository.DepartmentsRepository
 }
 
-func NewAssetsService(repo repository.AssetsRepository, assertLogRepository repository.AssetsLogRepository, roleRepository repository.RoleRepository, userRBACRepository repository.UserRBACRepository, userRepository repository.UserRepository, assignRepository repository.AssignmentRepository) *AssetsService {
+func NewAssetsService(repo repository.AssetsRepository, assertLogRepository repository.AssetsLogRepository, roleRepository repository.RoleRepository, userRBACRepository repository.UserRBACRepository, userRepository repository.UserRepository, assignRepository repository.AssignmentRepository, departmentRepository repository.DepartmentsRepository) *AssetsService {
 	return &AssetsService{repo: repo, assertLogRepository: assertLogRepository, roleRepository: roleRepository, userRBACRepository: userRBACRepository, userRepository: userRepository, assignRepository: assignRepository}
 }
 
@@ -77,12 +78,23 @@ func (service *AssetsService) Create(userId int64, assetName string, purchaseDat
 		tx.Rollback()
 		return nil, err
 	}
+	userCreate, err := service.userRepository.FindByUserId(userId)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	department, err := service.departmentRepository.GetDepartmentById(departmentId)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	changeSummary := fmt.Sprintf("Create by user %v and assigned to user %v and assigned to department %v", userCreate.Email, userAssetManager.Email, department.DepartmentName)
 	assetLog := entity.AssetLog{
-		Action:        "Create",
-		Timestamp:     time.Now(),
-		UserId:        userId,
-		AssetId:       assetCreate.Id,
-		ChangeSummary: "Create",
+		Action:         "Create",
+		Timestamp:      time.Now(),
+		UserAssignedId: userAssetManager.Id,
+		AssetId:        assetCreate.Id,
+		ChangeSummary:  changeSummary,
 	}
 	_, err = service.assertLogRepository.Create(&assetLog, tx)
 	if err != nil {
@@ -234,12 +246,19 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 		tx.Rollback()
 		return nil, err
 	}
+
+	userUpdate, err := service.userRepository.FindByUserId(userId)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	changeSummary := fmt.Sprintf("Update by user %v", userUpdate.Email)
 	assetLog := entity.AssetLog{
-		Action:        "Update",
-		Timestamp:     time.Now(),
-		UserId:        userId,
-		AssetId:       assetUpdated.Id,
-		ChangeSummary: "Update",
+		Action:         "Update",
+		Timestamp:      time.Now(),
+		UserAssignedId: userId,
+		AssetId:        assetUpdated.Id,
+		ChangeSummary:  changeSummary,
 	}
 	_, err = service.assertLogRepository.Create(&assetLog, tx)
 	if err != nil {
@@ -257,12 +276,18 @@ func (service *AssetsService) DeleteAsset(userId int64, id int64) error {
 		tx.Rollback()
 		return err
 	}
+	userUpdate, err := service.userRepository.FindByUserId(userId)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	changeSummary := fmt.Sprintf("Update by user %v", userUpdate.Email)
 	assetLog := entity.AssetLog{
-		Action:        "Delete",
-		Timestamp:     time.Now(),
-		UserId:        userId,
-		AssetId:       id,
-		ChangeSummary: "Delete",
+		Action:         "Delete",
+		Timestamp:      time.Now(),
+		UserAssignedId: userId,
+		AssetId:        id,
+		ChangeSummary:  changeSummary,
 	}
 	_, err = service.assertLogRepository.Create(&assetLog, tx)
 	if err != nil {

@@ -54,8 +54,8 @@ func (service *AssetLogService) Filter(userId int64, assetId int64, action, star
 		assetLogResponse.Action = assetLog.Action
 		assetLogResponse.Timestamp = assetLog.Timestamp.Format("2006-01-02")
 		assetLogResponse.ChangeSummary = assetLog.ChangeSummary
-		if assetLog.DepartmentId != nil {
-			assetLogResponse.Department.ID = *assetLog.DepartmentId
+		if assetLog.DepartmentAssignedId != nil {
+			assetLogResponse.Department.ID = *assetLog.DepartmentAssignedId
 			assetLogResponse.Department.DepartmentName = assetLog.Department.DepartmentName
 			assetLogResponse.Department.Location.ID = assetLog.Department.LocationId
 			assetLogResponse.Department.Location.LocationName = assetLog.Department.Location.LocationName

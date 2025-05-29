@@ -78,8 +78,8 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 
 	// Kiểm tra nil trước khi dereference
 	if oldAssetLog != nil && departmentId != nil && userIdAssign != nil &&
-		oldAssetLog.DepartmentId != nil && *oldAssetLog.DepartmentId == *departmentId &&
-		oldAssetLog.UserId == *userIdAssign {
+		oldAssetLog.DepartmentAssignedId != nil && *oldAssetLog.DepartmentAssignedId == *departmentId &&
+		oldAssetLog.UserAssignedId == *userIdAssign {
 		tx.Commit()
 		return assignmentUpdated, nil
 	}
@@ -105,9 +105,9 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 			tx.Rollback()
 			return nil, err
 		}
-		assetLog.DepartmentId = departmentId
+		assetLog.DepartmentAssignedId = departmentId
 		if userIdAssign != nil {
-			assetLog.UserId = *userIdAssign
+			assetLog.UserAssignedId = *userIdAssign
 		} else {
 			user, err := service.userRepo.GetUserAssetManageOfDepartment(*departmentId)
 			if err != nil {
@@ -119,7 +119,7 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 				tx.Rollback()
 				return nil, err
 			}
-			assetLog.UserId = oldAssetLog.UserId
+			assetLog.UserAssignedId = oldAssetLog.UserAssignedId
 		}
 		assetLog.ChangeSummary = fmt.Sprintf("Transfer from department %v to department %v\n",
 			asset.Department.DepartmentName, department.DepartmentName)
@@ -136,11 +136,11 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 			tx.Rollback()
 			return nil, err
 		}
-		assetLog.UserId = *userIdAssign
+		assetLog.UserAssignedId = *userIdAssign
 		if departmentId != nil {
-			assetLog.DepartmentId = departmentId
+			assetLog.DepartmentAssignedId = departmentId
 		} else {
-			assetLog.DepartmentId = oldAssetLog.DepartmentId
+			assetLog.DepartmentAssignedId = oldAssetLog.DepartmentAssignedId
 		}
 		assetLog.ChangeSummary += fmt.Sprintf("Transfer from user: %v to user: %v\n",
 			asset.OnwerUser.Email, user.Email)
@@ -158,7 +158,7 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 		tx.Rollback()
 		return nil, err
 	}
-	if err := service.assetRepo.UpdateOwner(assignment.AssetId, assetLog.UserId, tx); err != nil {
+	if err := service.assetRepo.UpdateOwner(assignment.AssetId, assetLog.UserAssignedId, tx); err != nil {
 		tx.Rollback()
 		return nil, err
 	}
