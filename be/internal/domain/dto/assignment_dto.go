@@ -7,8 +7,8 @@ type AssignmentCreateRequest struct {
 }
 
 type AssignmentUpdateRequest struct {
-	UserId       int64 `json:"userId"  binding:"required"`
-	DepartmentId int64 `json:"departmentId" binding:"required"`
+	UserId       *int64 `json:"userId"`
+	DepartmentId *int64 `json:"departmentId"`
 }
 
 type AssignmentResponse struct {

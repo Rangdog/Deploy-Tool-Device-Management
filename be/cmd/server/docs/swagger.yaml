@@ -25,16 +25,12 @@ definitions:
         example: Success
         type: string
     type: object
-  dto.AssignmentCreateRequest:
+  dto.AssignmentUpdateRequest:
     properties:
-      assetId:
-        type: integer
       departmentId:
         type: integer
       userId:
         type: integer
-    required:
-    - assetId
     type: object
   dto.CheckPasswordReset:
     properties:
@@ -497,31 +493,6 @@ paths:
       summary: Get Dashboard
       tags:
       - Assets
-  /api/assignments:
-    post:
-      consumes:
-      - application/json
-      description: Create assignment
-      parameters:
-      - description: Data
-        in: body
-        name: assignment
-        required: true
-        schema:
-          $ref: '#/definitions/dto.AssignmentCreateRequest'
-      - description: Authorization
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      security:
-      - JWT: []
-      summary: Create assignment
-      tags:
-      - Assignments
   /api/assignments/{id}:
     get:
       consumes:
@@ -556,7 +527,7 @@ paths:
         name: assignment
         required: true
         schema:
-          $ref: '#/definitions/dto.AssignmentCreateRequest'
+          $ref: '#/definitions/dto.AssignmentUpdateRequest'
       - description: id
         in: path
         name: id

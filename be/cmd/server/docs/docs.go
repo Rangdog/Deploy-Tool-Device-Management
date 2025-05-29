@@ -531,45 +531,6 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/assignments": {
-            "post": {
-                "security": [
-                    {
-                        "JWT": []
-                    }
-                ],
-                "description": "Create assignment",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Assignments"
-                ],
-                "summary": "Create assignment",
-                "parameters": [
-                    {
-                        "description": "Data",
-                        "name": "assignment",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.AssignmentCreateRequest"
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
         "/api/assignments/filter": {
             "get": {
                 "security": [
@@ -685,7 +646,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.AssignmentCreateRequest"
+                            "$ref": "#/definitions/dto.AssignmentUpdateRequest"
                         }
                     },
                     {
@@ -1841,15 +1802,9 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.AssignmentCreateRequest": {
+        "dto.AssignmentUpdateRequest": {
             "type": "object",
-            "required": [
-                "assetId"
-            ],
             "properties": {
-                "assetId": {
-                    "type": "integer"
-                },
                 "departmentId": {
                     "type": "integer"
                 },

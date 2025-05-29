@@ -85,7 +85,7 @@ func (h *AssignmentHandler) Update(c *gin.Context) {
 		log.Error("Happened error when mapping request from FE. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when mapping request from FE.")
 	}
-	assignmentUpdated, err := h.service.Update(userId, assignmentId, &request.UserId, &request.DepartmentId)
+	assignmentUpdated, err := h.service.Update(userId, assignmentId, request.UserId, request.DepartmentId)
 	if err != nil {
 		log.Error("Happened error when update assignment. Error", err)
 		pkg.PanicExeption(constant.UnknownError, "Happened error when update assignment.")

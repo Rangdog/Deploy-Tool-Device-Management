@@ -4,6 +4,7 @@ import (
 	"BE_Manage_device/internal/domain/entity"
 	"BE_Manage_device/internal/domain/filter"
 	"BE_Manage_device/internal/domain/repository"
+	"errors"
 	"math"
 )
 
@@ -32,6 +33,13 @@ func (service *RequestTransferService) Create(userId int64, assetId int64, depar
 }
 
 func (service *RequestTransferService) Accept(userId int64, id int64) (*entity.RequestTransfer, error) {
+	requestCheck, err := service.repo.GetRequestTransferById(id)
+	if err != nil {
+		return nil, err
+	}
+	if requestCheck.Status == "Deny" {
+		return nil, errors.New("can't change request")
+	}
 	tx := service.repo.GetDB().Begin()
 	request, err := service.repo.UpdateStatusConfirm(id, tx)
 	if err != nil {
@@ -58,6 +66,13 @@ func (service *RequestTransferService) Accept(userId int64, id int64) (*entity.R
 }
 
 func (service *RequestTransferService) Deny(userId int64, id int64) (*entity.RequestTransfer, error) {
+	requestCheck, err := service.repo.GetRequestTransferById(id)
+	if err != nil {
+		return nil, err
+	}
+	if requestCheck.Status == "Confirm" {
+		return nil, errors.New("can't change request")
+	}
 	request, err := service.repo.UpdateStatusDeny(id)
 	if err != nil {
 		return nil, err
