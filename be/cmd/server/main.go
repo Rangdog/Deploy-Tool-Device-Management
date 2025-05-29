@@ -68,7 +68,7 @@ func main() {
 	docs.SwaggerInfo.Title = "API Tool device manage"
 	docs.SwaggerInfo.Description = "App Tool device manage"
 	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.Host = config.BASE_URL_BACKEND
+	docs.SwaggerInfo.Host = config.BASE_URL_BACKEND_FOR_SWAGGER
 	docs.SwaggerInfo.BasePath = ""
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 

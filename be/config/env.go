@@ -9,17 +9,18 @@ import (
 )
 
 var (
-	Port                 string
-	AccessSecret         string
-	RefreshSecret        string
-	PasswordSecret       string
-	SmtpPasswd           string
-	SupabaseKey          string
-	SUPABASE_PROJECT_REF string
-	BASE_URL_FRONTEND    string
-	BASE_URL_BACKEND     string
-	DB_DNS               string
-	StorageClient        *storage_go.Client
+	Port                         string
+	AccessSecret                 string
+	RefreshSecret                string
+	PasswordSecret               string
+	SmtpPasswd                   string
+	SupabaseKey                  string
+	SUPABASE_PROJECT_REF         string
+	BASE_URL_FRONTEND            string
+	BASE_URL_BACKEND             string
+	DB_DNS                       string
+	StorageClient                *storage_go.Client
+	BASE_URL_BACKEND_FOR_SWAGGER string
 )
 
 func LoadEnv() {
@@ -34,6 +35,7 @@ func LoadEnv() {
 	SmtpPasswd = os.Getenv("SMTP_PASSWORD")
 	SupabaseKey = os.Getenv("SupabaseKey")
 	SUPABASE_PROJECT_REF = os.Getenv("SUPABASE_PROJECT_REF")
+	BASE_URL_BACKEND_FOR_SWAGGER = os.Getenv("BASE_URL_BACKEND_FOR_SWAGGER")
 	BASE_URL_FRONTEND = os.Getenv("BASE_URL_FRONTEND")
 	BASE_URL_BACKEND = os.Getenv("BASE_URL_BACKEND")
 	DB_DNS = os.Getenv("DATABASE_URL")
