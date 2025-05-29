@@ -134,6 +134,16 @@ var users = []entity.Users{{FirstName: "Admin",
 		IsAssetManager: true},
 }
 
+var locations = []entity.Locations{
+	{Id: 1, LocationName: "307/12 Nguyen Van Troi,Ward 1, Tan Binh District,HCMC, Viet Nam"},
+}
+var departments = []entity.Departments{
+	{Id: 1, LocationId: 1, DepartmentName: "PG1"},
+	{Id: 2, LocationId: 1, DepartmentName: "PG2"},
+	{Id: 3, LocationId: 1, DepartmentName: "PG3"},
+	{Id: 4, LocationId: 1, DepartmentName: "PG4"},
+}
+
 func ConnectToDB() *gorm.DB {
 	db, err := gorm.Open(postgres.Open(DB_DNS), &gorm.Config{})
 	if err != nil {
@@ -173,6 +183,14 @@ func ConnectToDB() *gorm.DB {
 	for _, rolePermission := range rolePermissions {
 		var existing entity.RolePermission
 		db.Where("role_id = ? and permission_id = ?", rolePermission.RoleId, rolePermission.PermissionId).FirstOrCreate(&existing, rolePermission)
+	}
+	for _, location := range locations {
+		var existing entity.Locations
+		db.Where("location_name = ?", existing.LocationName).FirstOrCreate(&existing, location)
+	}
+	for _, department := range departments {
+		var existing entity.Departments
+		db.Where("department_name = ?", existing.DepartmentName).FirstOrCreate(&existing, department)
 	}
 	for _, user := range users {
 		var existing entity.Users

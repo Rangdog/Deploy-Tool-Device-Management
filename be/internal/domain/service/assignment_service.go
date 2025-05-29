@@ -55,6 +55,15 @@ func (service *AssignmentService) Update(userId, assetId, assignmentId int64, us
 	assetLog.Timestamp = time.Now()
 	assetLog.Action = "Transfer"
 	assetLog.AssetId = assetId
+	oldAssetLog, err := service.assetLogRepo.GetNewLogByAssetId(assetId)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	if oldAssetLog.DepartmentId == departmentId && oldAssetLog.UserId == *userIdAssign {
+		tx.Commit()
+		return assignmentUpdated, nil
+	}
 	if (departmentId == nil && userIdAssign == nil) ||
 		(userIdAssign != nil && *userIdAssign == asset.OnwerUser.Id &&
 			(departmentId == nil || *departmentId == asset.DepartmentId)) {
@@ -67,7 +76,7 @@ func (service *AssignmentService) Update(userId, assetId, assignmentId int64, us
 			return nil, err
 		}
 		assetLog.DepartmentId = departmentId
-		assetLog.UserId = userId
+		assetLog.UserId = *userIdAssign
 		str := fmt.Sprintf("Transfer from department %v to department %v\n", asset.Department.DepartmentName, department.DepartmentName)
 		assetLog.ChangeSummary = str
 	}
@@ -77,7 +86,7 @@ func (service *AssignmentService) Update(userId, assetId, assignmentId int64, us
 			tx.Rollback()
 			return nil, err
 		}
-		assetLog.UserId = userId
+		assetLog.UserId = *userIdAssign
 		str := fmt.Sprintf("Transfer from user: %v to user: %v\n", asset.OnwerUser.Email, users.Email)
 		assetLog.ChangeSummary += str
 	}

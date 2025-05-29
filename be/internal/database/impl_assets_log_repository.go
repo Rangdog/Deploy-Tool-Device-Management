@@ -32,3 +32,12 @@ func (r *PostgreSQLAssetsLogrepository) GetLogByAssetId(assetId int64) ([]*entit
 func (r *PostgreSQLAssetsLogrepository) GetDB() *gorm.DB {
 	return r.db
 }
+
+func (r *PostgreSQLAssetsLogrepository) GetNewLogByAssetId(assetId int64) (*entity.AssetLog, error) {
+	var assetLogs entity.AssetLog
+	result := r.db.Model(entity.AssetLog{}).Where("asset_id = ?", assetId).Order("timestamp DESC").First(&assetLogs)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &assetLogs, nil
+}
