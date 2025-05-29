@@ -406,21 +406,6 @@ func (h *UserHandler) UpdateInformationUser(c *gin.Context) {
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, usersResponse))
 }
 
-// User godoc
-// @Summary      Update Role
-// @Description   Update Role
-// @Tags         Roles
-// @Accept       json
-// @Produce      json
-// @Param        Role   body    dto.UpdateRoleUserRequest   true  "Data"
-// @param Authorization header string true "Authorization"
-// @Router       /api/user/role [PATCH]
-// @Success      200   {object}  dto.ApiResponseSuccessStruct
-// @Failure      500   {object}  dto.ApiResponseFail
-// @securityDefinitions.apiKey token
-// @in header
-// @name Authorization
-// @Security JWT
 func (h *UserHandler) UpdateRoleUser(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)
@@ -448,3 +433,19 @@ func (h *UserHandler) UpdateRoleUser(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, &usersResponse))
 }
+
+// User godoc
+// @Summary      Update Role
+// @Description   Update Role
+// @Tags         Roles
+// @Accept       json
+// @Produce      json
+// @Param        Role   body    dto.UpdateRoleUserRequest   true  "Data"
+// @param Authorization header string true "Authorization"
+// @Router       /api/user/role [PATCH]
+// @Success      200   {object}  dto.ApiResponseSuccessStruct
+// @Failure      500   {object}  dto.ApiResponseFail
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
