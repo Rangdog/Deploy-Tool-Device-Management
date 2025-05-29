@@ -52,7 +52,7 @@ func (service *UserService) Register(firstName, lastName, password, email, redir
 }
 
 func (service *UserService) Login(email string, password string) (*entity.Users, string, string, error) {
-	user, err := service.repo.FindByEmailForLogin(email)
+	user, err := service.repo.FindByEmail(email)
 	if err != nil {
 		return nil, "", "", errors.New("email dont; have")
 	}

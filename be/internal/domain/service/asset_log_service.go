@@ -61,6 +61,7 @@ func (service *AssetLogService) Filter(userId int64, assetId int64, action, star
 		assetLogResponse.ByUser.Email = assetLog.ByUser.Email
 		//assignUser
 		if assetLog.AssignUser != nil {
+			assetLogResponse.AssignUser = &dto.UserResponseInAssetLog{}
 			assetLogResponse.AssignUser.Id = assetLog.AssignUser.Id
 			assetLogResponse.AssignUser.FirstName = assetLog.AssignUser.FirstName
 			assetLogResponse.AssignUser.LastName = assetLog.AssignUser.LastName
