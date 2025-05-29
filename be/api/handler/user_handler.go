@@ -72,10 +72,17 @@ func (h *UserHandler) Login(c *gin.Context) {
 		log.Error("Happened error when login. Error", err)
 		pkg.PanicExeption(constant.Invalidemailorpassword)
 	}
-	dataResponese := map[string]interface{}{
-		"access_token":  accessToken,
-		"refresh_token": refreshToken,
-		"is_active":     userLogin.IsActive,
+	dataResponese := map[string]interface{}{}
+	if userLogin.IsActive {
+		dataResponese = map[string]interface{}{
+			"access_token":  accessToken,
+			"refresh_token": refreshToken,
+			"is_active":     userLogin.IsActive,
+		}
+	} else {
+		dataResponese = map[string]interface{}{
+			"is_active": userLogin.IsActive,
+		}
 	}
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, dataResponese))
 }
