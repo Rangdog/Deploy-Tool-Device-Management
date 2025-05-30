@@ -106,6 +106,16 @@ definitions:
     - firstName
     - lastName
     type: object
+  dto.UpdateRoleUserRequest:
+    properties:
+      slug:
+        type: string
+      userId:
+        type: integer
+    required:
+    - slug
+    - userId
+    type: object
   dto.UserLoginRequest:
     properties:
       email:
@@ -1201,6 +1211,39 @@ paths:
       summary: Password-reset
       tags:
       - Users
+  /api/user/role:
+    patch:
+      consumes:
+      - application/json
+      description: Update role by id
+      parameters:
+      - description: Data
+        in: body
+        name: Role
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateRoleUserRequest'
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ApiResponseSuccessStruct'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ApiResponseFail'
+      security:
+      - JWT: []
+      summary: Update role by id
+      tags:
+      - Roles
   /api/user/session:
     get:
       consumes:

@@ -212,12 +212,12 @@ func (service *UserService) UpdateInformation(id int64, firstName, lastName stri
 	return userUpdated, nil
 }
 
-func (service *UserService) UpdateRole(id int64, slug string) (*entity.Users, error) {
+func (service *UserService) UpdateRole(userId int64, setRoleUserId int64, slug string) (*entity.Users, error) {
 	roles := service.roleRepository.GetRoleBySlug(slug)
 	if roles == nil {
 		return nil, errors.New("something went wrong ")
 	}
-	user := entity.Users{Id: id, RoleId: roles.Id}
+	user := entity.Users{Id: setRoleUserId, RoleId: roles.Id}
 	userUpdated, err := service.repo.UpdateUser(&user)
 	if err != nil {
 		return nil, err

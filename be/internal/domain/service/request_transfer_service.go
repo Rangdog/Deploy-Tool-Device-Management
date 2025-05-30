@@ -1,6 +1,7 @@
 package service
 
 import (
+	"BE_Manage_device/internal/domain/dto"
 	"BE_Manage_device/internal/domain/entity"
 	"BE_Manage_device/internal/domain/filter"
 	"BE_Manage_device/internal/domain/repository"
@@ -106,13 +107,30 @@ func (service *RequestTransferService) Filter(userId int64, status *string, page
 	var total int64
 	dbFilter.Count(&total)
 	offset := (filter.Page - 1) * filter.Limit
-	var request []entity.RequestTransfer
-	result := dbFilter.Offset(offset).Limit(filter.Limit).Find(&request)
+	var requests []entity.RequestTransfer
+	result := dbFilter.Offset(offset).Limit(filter.Limit).Find(&requests)
 	if result.Error != nil {
 		return nil, result.Error
 	}
+	var requestRes []dto.RequestTransferResponse
+	for _, request := range requests {
+		requestTransferResponse := dto.RequestTransferResponse{}
+		requestTransferResponse.Id = request.Id
+		requestTransferResponse.Status = request.Status
+		requestTransferResponse.User.Id = request.User.Id
+		requestTransferResponse.User.FirstName = request.User.FirstName
+		requestTransferResponse.User.LastName = request.User.LastName
+		requestTransferResponse.User.Email = request.User.Email
+		requestTransferResponse.Asset.Id = request.Asset.Id
+		requestTransferResponse.Asset.AssetName = request.Asset.AssetName
+		requestTransferResponse.Asset.SerialNumber = request.Asset.SerialNumber
+		requestTransferResponse.Asset.ImageUpload = *request.Asset.ImageUpload
+		requestTransferResponse.Asset.FileAttachment = *request.Asset.FileAttachment
+		requestTransferResponse.Asset.QrUrl = *request.Asset.QrUrl
+		requestRes = append(requestRes, requestTransferResponse)
+	}
 	data := map[string]any{
-		"data":       request,
+		"data":       requestRes,
 		"page":       filter.Page,
 		"limit":      filter.Limit,
 		"total":      total,

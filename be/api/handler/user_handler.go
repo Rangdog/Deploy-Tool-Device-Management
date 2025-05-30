@@ -413,6 +413,21 @@ func (h *UserHandler) UpdateInformationUser(c *gin.Context) {
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, usersResponse))
 }
 
+// Role godoc
+// @Summary      Update role by id
+// @Description   Update role by id
+// @Tags         Roles
+// @Accept       json
+// @Produce      json
+// @Param        Role   body    dto.UpdateRoleUserRequest   true  "Data"
+// @param Authorization header string true "Authorization"
+// @Router       /api/user/role [PATCH]
+// @Success      200   {object}  dto.ApiResponseSuccessStruct
+// @Failure      500   {object}  dto.ApiResponseFail
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *UserHandler) UpdateRoleUser(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)
@@ -421,7 +436,7 @@ func (h *UserHandler) UpdateRoleUser(c *gin.Context) {
 		log.Error("Happened error when mapping request from FE. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest)
 	}
-	userUpdated, err := h.service.UpdateRole(userId, request.Slug)
+	userUpdated, err := h.service.UpdateRole(userId, request.Id, request.Slug)
 	if err != nil {
 		log.Error("Happened error when update role user. Error", err)
 		pkg.PanicExeption(constant.UnknownError, err.Error())
@@ -440,19 +455,3 @@ func (h *UserHandler) UpdateRoleUser(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, &usersResponse))
 }
-
-// User godoc
-// @Summary      Update Role
-// @Description   Update Role
-// @Tags         Roles
-// @Accept       json
-// @Produce      json
-// @Param        Role   body    dto.UpdateRoleUserRequest   true  "Data"
-// @param Authorization header string true "Authorization"
-// @Router       /api/user/role [PATCH]
-// @Success      200   {object}  dto.ApiResponseSuccessStruct
-// @Failure      500   {object}  dto.ApiResponseFail
-// @securityDefinitions.apiKey token
-// @in header
-// @name Authorization
-// @Security JWT

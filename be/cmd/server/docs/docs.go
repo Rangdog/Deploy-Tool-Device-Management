@@ -1593,6 +1593,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/user/role": {
+            "patch": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "Update role by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Update role by id",
+                "parameters": [
+                    {
+                        "description": "Data",
+                        "name": "Role",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateRoleUserRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseSuccessStruct"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ApiResponseFail"
+                        }
+                    }
+                }
+            }
+        },
         "/api/user/session": {
             "get": {
                 "security": [
@@ -1870,6 +1922,21 @@ const docTemplate = `{
                 },
                 "lastName": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.UpdateRoleUserRequest": {
+            "type": "object",
+            "required": [
+                "slug",
+                "userId"
+            ],
+            "properties": {
+                "slug": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "integer"
                 }
             }
         },

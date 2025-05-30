@@ -8,6 +8,7 @@ import (
 	"BE_Manage_device/pkg/utils"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -41,6 +42,15 @@ func (h *MaintenanceSchedulesHandler) Create(c *gin.Context) {
 	if err := c.ShouldBindJSON(&request); err != nil {
 		log.Error("Happened error when mapping request from FE. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when mapping request from FE.")
+	}
+	now := time.Now()
+	if !request.StartDate.After(now) {
+		log.Error("Happened error start date <= now .")
+		pkg.PanicExeption(constant.InvalidRequest, "Happened error start date can't in past.")
+	}
+	if !request.EndDate.After(request.StartDate) {
+		log.Error("Happened error start date >= end date .")
+		pkg.PanicExeption(constant.InvalidRequest, "Happened error start date > end date.")
 	}
 	maintenance, err := h.service.Create(userId, request.AssetId, request.StartDate, request.EndDate)
 	if err != nil {

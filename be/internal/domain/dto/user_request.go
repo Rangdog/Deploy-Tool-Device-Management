@@ -1,15 +1,15 @@
 package dto
 
 type UserRegisterRequest struct {
-	Password    string `json:"password" binding:"required"`
-	Email       string `json:"email" binding:"required"`
-	FirstName   string `json:"firstName" binding:"required"`
-	LastName    string `json:"lastName" binding:"required"`
+	Password    string `json:"password" binding:"required, min=6"`
+	Email       string `json:"email" binding:"required, email"`
+	FirstName   string `json:"firstName" binding:"required, min=2 ,max=30"`
+	LastName    string `json:"lastName" binding:"required, min=2 ,max=30"`
 	RedirectUrl string `json:"redirectUrl" binding:"required"`
 }
 
 type UserLoginRequest struct {
-	Email    string `json:"email" binding:"required"`
+	Email    string `json:"email" binding:"required, email"`
 	Password string `json:"password" binding:"required"`
 }
 
@@ -27,12 +27,12 @@ type UserRequestResetPassword struct {
 }
 
 type CheckPasswordReset struct {
-	Email       string `json:"email" binding:"required"`
+	Email       string `json:"email" binding:"required, email"`
 	RedirectUrl string `json:"redirectUrl" binding:"required"`
 }
 
 type DeleteUserRequest struct {
-	Email string `json:"email" binding:"required"`
+	Email string `json:"email" binding:"required, email"`
 }
 
 type RefreshRequest struct {
@@ -40,11 +40,12 @@ type RefreshRequest struct {
 }
 
 type UpdateInformationUserRequest struct {
-	FirstName string `json:"firstName" binding:"required"`
-	LastName  string `json:"lastName" binding:"required"`
+	FirstName string `json:"firstName" binding:"required, min=2 ,max=30"`
+	LastName  string `json:"lastName" binding:"required, min=2 ,max=30"`
 }
 
 type UpdateRoleUserRequest struct {
+	Id   int64  `json:"userId" binding:"required"`
 	Slug string `json:"slug" binding:"required"`
 }
 
