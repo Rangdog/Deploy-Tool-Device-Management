@@ -30,6 +30,7 @@ type AssetResponseInRequestTransfer struct {
 }
 
 type DepartmentInRequestTransfer struct {
-	Id             int64  `json:"id"`
-	DepartmentName string `json:"departmentName"`
+	Id             int64            `json:"id"`
+	DepartmentName string           `json:"departmentName"`
+	Location       LocationResponse `json:"location"`
 }

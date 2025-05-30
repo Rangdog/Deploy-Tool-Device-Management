@@ -63,6 +63,8 @@ func (h *RequestTransferHandler) Create(c *gin.Context) {
 	requestTransferResponse.Asset.QrUrl = *requestTransfer.Asset.QrUrl
 	requestTransferResponse.Department.Id = requestTransfer.DepartmentId
 	requestTransferResponse.Department.DepartmentName = requestTransfer.Department.DepartmentName
+	requestTransferResponse.Department.Location.ID = requestTransfer.Department.Location.Id
+	requestTransferResponse.Department.Location.LocationName = requestTransfer.Department.Location.LocationName
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, requestTransferResponse))
 }
 
@@ -108,7 +110,9 @@ func (h *RequestTransferHandler) Accept(c *gin.Context) {
 	requestTransferResponse.Asset.QrUrl = *requestTransfer.Asset.QrUrl
 	requestTransferResponse.Department.Id = requestTransfer.DepartmentId
 	requestTransferResponse.Department.DepartmentName = requestTransfer.Department.DepartmentName
-	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, requestTransfer))
+	requestTransferResponse.Department.Location.ID = requestTransfer.Department.Location.Id
+	requestTransferResponse.Department.Location.LocationName = requestTransfer.Department.Location.LocationName
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, requestTransferResponse))
 }
 
 // Request Transfer godoc
@@ -153,7 +157,9 @@ func (h *RequestTransferHandler) Deny(c *gin.Context) {
 	requestTransferResponse.Asset.QrUrl = *requestTransfer.Asset.QrUrl
 	requestTransferResponse.Department.Id = requestTransfer.DepartmentId
 	requestTransferResponse.Department.DepartmentName = requestTransfer.Department.DepartmentName
-	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, requestTransfer))
+	requestTransferResponse.Department.Location.ID = requestTransfer.Department.Location.Id
+	requestTransferResponse.Department.Location.LocationName = requestTransfer.Department.Location.LocationName
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, requestTransferResponse))
 }
 
 // Request transfer godoc
@@ -198,7 +204,9 @@ func (h *RequestTransferHandler) GetRequestTransferById(c *gin.Context) {
 	requestTransferResponse.Asset.QrUrl = *requestTransfer.Asset.QrUrl
 	requestTransferResponse.Department.Id = requestTransfer.DepartmentId
 	requestTransferResponse.Department.DepartmentName = requestTransfer.Department.DepartmentName
-	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, requestTransfer))
+	requestTransferResponse.Department.Location.ID = requestTransfer.Department.Location.Id
+	requestTransferResponse.Department.Location.LocationName = requestTransfer.Department.Location.LocationName
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, requestTransferResponse))
 }
 
 // Request Transfer godoc
