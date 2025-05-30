@@ -23,6 +23,7 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandle
 	api.POST("/notify/:userId", SSEHandler.SendNotificationHandler)
 	api.Use(middleware.AuthMiddleware(config.AccessSecret, session))
 
+	api.GET("/user/department/:department_id", userHandler.GetAllUserOfDepartment)
 	api.GET("/user/session", userHandler.Session)                     // đã check: nên chỉnh lại api response
 	api.POST("/auth/logout", userHandler.Logout)                      // đã check
 	api.GET("/users", userHandler.GetAllUser)                         // đã check:

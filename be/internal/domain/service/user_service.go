@@ -224,3 +224,11 @@ func (service *UserService) UpdateRole(userId int64, setRoleUserId int64, slug s
 	}
 	return userUpdated, nil
 }
+
+func (service *UserService) GetAllUserOfDepartment(departmentId int64) ([]*entity.Users, error) {
+	user, err := service.repo.GetAllUserOfDepartment(departmentId)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}

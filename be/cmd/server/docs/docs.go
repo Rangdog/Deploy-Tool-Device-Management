@@ -1440,10 +1440,77 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Socket"
+                    "Roles"
                 ],
                 "summary": "GetRole",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/sse": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "GetRole",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sockets"
+                ],
+                "summary": "GetRole",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/user/department/{department_id}": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "Get all user by department_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get all user by department_id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "department_id",
+                        "name": "department_id",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Authorization",
@@ -1919,11 +1986,13 @@ const docTemplate = `{
             "properties": {
                 "firstName": {
                     "type": "string",
-                    "maxLength": 30
+                    "maxLength": 30,
+                    "minLength": 2
                 },
                 "lastName": {
                     "type": "string",
-                    "maxLength": 30
+                    "maxLength": 30,
+                    "minLength": 2
                 }
             }
         },
@@ -1972,14 +2041,17 @@ const docTemplate = `{
                 },
                 "firstName": {
                     "type": "string",
-                    "maxLength": 30
+                    "maxLength": 30,
+                    "minLength": 2
                 },
                 "lastName": {
                     "type": "string",
-                    "maxLength": 30
+                    "maxLength": 30,
+                    "minLength": 2
                 },
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 6
                 },
                 "redirectUrl": {
                     "type": "string"

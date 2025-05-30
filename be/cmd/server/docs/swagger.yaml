@@ -100,9 +100,11 @@ definitions:
     properties:
       firstName:
         maxLength: 30
+        minLength: 2
         type: string
       lastName:
         maxLength: 30
+        minLength: 2
         type: string
     required:
     - firstName
@@ -134,11 +136,14 @@ definitions:
         type: string
       firstName:
         maxLength: 30
+        minLength: 2
         type: string
       lastName:
         maxLength: 30
+        minLength: 2
         type: string
       password:
+        minLength: 6
         type: string
       redirectUrl:
         type: string
@@ -1093,7 +1098,26 @@ paths:
       - JWT: []
       summary: GetRole
       tags:
-      - Socket
+      - Roles
+  /api/sse:
+    get:
+      consumes:
+      - application/json
+      description: GetRole
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: GetRole
+      tags:
+      - Sockets
   /api/user/{email}:
     delete:
       consumes:
@@ -1124,6 +1148,30 @@ paths:
       security:
       - JWT: []
       summary: Delete user
+      tags:
+      - Users
+  /api/user/department/{department_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get all user by department_id
+      parameters:
+      - description: department_id
+        in: path
+        name: department_id
+        required: true
+        type: string
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: Get all user by department_id
       tags:
       - Users
   /api/user/forget-password:

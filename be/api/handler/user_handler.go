@@ -8,6 +8,7 @@ import (
 	"BE_Manage_device/pkg"
 	"BE_Manage_device/pkg/utils"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -458,4 +459,33 @@ func (h *UserHandler) UpdateRoleUser(c *gin.Context) {
 		usersResponse.Department.DepartmentName = userUpdated.Department.DepartmentName
 	}
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, &usersResponse))
+}
+
+// Role godoc
+// @Summary      Get all user by department_id
+// @Description  Get all user by department_id
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param		department_id	path		string				true	"department_id"
+// @param Authorization header string true "Authorization"
+// @Router       /api/user/department/{department_id} [GET]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
+func (h *UserHandler) GetAllUserOfDepartment(c *gin.Context) {
+	defer pkg.PanicHandler(c)
+	idStr := c.Param("department_id")
+	departmentId, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		log.Error("Happened error when convert assetId to int64. Error", err)
+		pkg.PanicExeption(constant.InvalidRequest, "Happened error when convert assetId to int64")
+	}
+	user, err := h.service.GetAllUserOfDepartment(departmentId)
+	if err != nil {
+		log.Error("Happened error when get all user of department. Error", err)
+		pkg.PanicExeption(constant.UnknownError, "Happened error when get all user of department")
+	}
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, user))
 }

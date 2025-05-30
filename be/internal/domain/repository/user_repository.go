@@ -20,4 +20,5 @@ type UserRepository interface {
 	UpdateUser(user *entity.Users) (*entity.Users, error)
 	GetUserHeadDepartment(departmentId int64) (*entity.Users, error)
 	GetUserAssetManageOfDepartment(departmentId int64) (*entity.Users, error)
+	GetAllUserOfDepartment(departmentTd int64) ([]*entity.Users, error)
 }

@@ -68,8 +68,12 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 			tx.Rollback()
 		}
 	}()
-
-	assignmentUpdated, err := service.repo.Update(assignmentId, userId, assignment.AssetId, userIdAssign, departmentId, tx)
+	var assignmentUpdated *entity.Assignments
+	if departmentId != nil {
+		assignmentUpdated, err = service.repo.Update(assignmentId, userId, assignment.AssetId, userIdAssign, departmentId, tx)
+	} else {
+		assignmentUpdated, err = service.repo.Update(assignmentId, userId, assignment.AssetId, userIdAssign, assignUser.DepartmentId, tx)
+	}
 	if err != nil {
 		tx.Rollback()
 		return nil, err
@@ -109,7 +113,13 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 			tx.Rollback()
 			return nil, err
 		}
-
+		if *assignUser.DepartmentId != asset.DepartmentId {
+			_, err := service.assetRepo.UpdateAssetDepartment(asset.Id, *assignUser.DepartmentId)
+			if err != nil {
+				tx.Rollback()
+				return nil, err
+			}
+		}
 	}
 
 	if _, err := service.assetLogRepo.Create(&assetLog, tx); err != nil {
