@@ -48,3 +48,10 @@ func (ns *NotificationService) Push(userId, message string) {
 		ch <- message
 	}
 }
+
+func (ns *NotificationService) IsOnline(userId string) bool {
+	ns.mu.RLock()
+	defer ns.mu.RUnlock()
+	chans, ok := ns.clients[userId]
+	return ok && len(chans) > 0
+}

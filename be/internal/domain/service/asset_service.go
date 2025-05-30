@@ -26,9 +26,10 @@ type AssetsService struct {
 	assignRepository       repository.AssignmentRepository
 	departmentRepository   repository.DepartmentsRepository
 	notificationRepository repository.NotificationRepository
+	NotificationService    *NotificationService
 }
 
-func NewAssetsService(repo repository.AssetsRepository, assertLogRepository repository.AssetsLogRepository, roleRepository repository.RoleRepository, userRBACRepository repository.UserRBACRepository, userRepository repository.UserRepository, assignRepository repository.AssignmentRepository, departmentRepository repository.DepartmentsRepository, notificationRepository repository.NotificationRepository) *AssetsService {
+func NewAssetsService(repo repository.AssetsRepository, assertLogRepository repository.AssetsLogRepository, roleRepository repository.RoleRepository, userRBACRepository repository.UserRBACRepository, userRepository repository.UserRepository, assignRepository repository.AssignmentRepository, departmentRepository repository.DepartmentsRepository, notificationRepository repository.NotificationRepository, NotificationService *NotificationService) *AssetsService {
 	return &AssetsService{repo: repo, assertLogRepository: assertLogRepository, roleRepository: roleRepository, userRBACRepository: userRBACRepository, userRepository: userRepository, assignRepository: assignRepository, departmentRepository: departmentRepository, notificationRepository: notificationRepository}
 }
 
@@ -266,7 +267,15 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 	usersToNotifications = append(usersToNotifications, asset.OnwerUser)
 	usersToNotifications = append(usersToNotifications, userHeadDepart)
 	usersToNotifications = append(usersToNotifications, userManagerAsset)
-
+	message := fmt.Sprintf("The asset '%v' (ID: %v) has just been updated by %v", assetName, assetId, userUpdate.Email)
+	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				fmt.Println("SendNotificationToUsers panic:", r)
+			}
+		}()
+		service.SendNotificationToUsers(usersToNotifications, message, asset)
+	}()
 	return assetUpdated, nil
 }
 
@@ -428,7 +437,6 @@ func CountDashboard(assets []*entity.Assets) dto.DashboardSummary {
 	return s
 }
 
-// chưa xong
 func (service *AssetsService) SendNotificationToUsers(users []*entity.Users, message string, asset entity.Assets) error {
 	status := "Not Read"
 	typeNotify := "info"
@@ -449,6 +457,12 @@ func (service *AssetsService) SendNotificationToUsers(users []*entity.Users, mes
 		if err != nil {
 			// log lỗi, tuỳ quyết định dừng hay tiếp tục
 			fmt.Printf("Lỗi lưu notification cho user %v: %v\n", u.Id, err)
+		}
+		isOnline := service.NotificationService.IsOnline(fmt.Sprintf("%v", u.Id))
+		if isOnline {
+			service.NotificationService.Push(fmt.Sprintf("%v", u.Id), message)
+		} else {
+			fmt.Printf("User %v đang offline, chỉ lưu notification DB\n", u.Id)
 		}
 	}
 	return nil

@@ -47,8 +47,11 @@ func main() {
 	//Department
 	departmentService := service.NewDepartmentsService(departmentRepository)
 	departmentHandler := handler.NewDepartmentsHandler(departmentService)
+	//SSE
+	notificationsService := service.NewNotificationService()
+	SSeHandler := handler.NewSSEHandler(notificationsService)
 	//Assets
-	assetsService := service.NewAssetsService(assetsRepository, assetsLogRepository, roleRepository, userRBACRepository, userRepository, assignmentRepository, departmentRepository, notificationRepository)
+	assetsService := service.NewAssetsService(assetsRepository, assetsLogRepository, roleRepository, userRBACRepository, userRepository, assignmentRepository, departmentRepository, notificationRepository, notificationsService)
 	assetsHandler := handler.NewAssetsHandler(assetsService)
 	//Role
 	roleService := service.NewRoleService(roleRepository)
@@ -65,9 +68,6 @@ func main() {
 	//Maintenance
 	MaintenanceService := service.NewMaintenanceSchedulesService(maintenanceRepository)
 	maintenanceHandler := handler.NewMaintenanceSchedulesHandler(MaintenanceService)
-	//SSE
-	notificationsService := service.NewNotificationService()
-	SSeHandler := handler.NewSSEHandler(notificationsService)
 
 	docs.SwaggerInfo.Title = "API Tool device manage"
 	docs.SwaggerInfo.Description = "App Tool device manage"
