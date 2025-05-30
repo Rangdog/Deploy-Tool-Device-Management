@@ -412,8 +412,10 @@ func (h *UserHandler) UpdateInformationUser(c *gin.Context) {
 	usersResponse.Role.Id = userUpdated.RoleId
 	usersResponse.Role.Slug = userUpdated.Role.Slug
 	if userUpdated.DepartmentId != nil {
-		usersResponse.Department.Id = *userUpdated.DepartmentId
-		usersResponse.Department.DepartmentName = userUpdated.Department.DepartmentName
+		usersResponse.Department = &dto.UserDepartmentResponse{
+			Id:             *userUpdated.DepartmentId,
+			DepartmentName: userUpdated.Department.DepartmentName,
+		}
 	}
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, usersResponse))
 }
@@ -455,8 +457,10 @@ func (h *UserHandler) UpdateRoleUser(c *gin.Context) {
 	usersResponse.Role.Id = userUpdated.RoleId
 	usersResponse.Role.Slug = userUpdated.Role.Slug
 	if userUpdated.DepartmentId != nil {
-		usersResponse.Department.Id = *userUpdated.DepartmentId
-		usersResponse.Department.DepartmentName = userUpdated.Department.DepartmentName
+		usersResponse.Department = &dto.UserDepartmentResponse{
+			Id:             *userUpdated.DepartmentId,
+			DepartmentName: userUpdated.Department.DepartmentName,
+		}
 	}
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, &usersResponse))
 }
@@ -482,10 +486,28 @@ func (h *UserHandler) GetAllUserOfDepartment(c *gin.Context) {
 		log.Error("Happened error when convert assetId to int64. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when convert assetId to int64")
 	}
-	user, err := h.service.GetAllUserOfDepartment(departmentId)
+	users, err := h.service.GetAllUserOfDepartment(departmentId)
 	if err != nil {
 		log.Error("Happened error when get all user of department. Error", err)
 		pkg.PanicExeption(constant.UnknownError, "Happened error when get all user of department")
 	}
-	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, user))
+	userResponses := []dto.UserResponse{}
+	for _, user := range users {
+		usersResponse := dto.UserResponse{}
+		usersResponse.Id = user.Id
+		usersResponse.FirstName = user.FirstName
+		usersResponse.LastName = user.LastName
+		usersResponse.Email = user.Email
+		usersResponse.IsActive = user.IsActive
+		usersResponse.Role.Id = user.RoleId
+		usersResponse.Role.Slug = user.Role.Slug
+		if user.DepartmentId != nil {
+			usersResponse.Department = &dto.UserDepartmentResponse{
+				Id:             *user.DepartmentId,
+				DepartmentName: user.Department.DepartmentName,
+			}
+		}
+		userResponses = append(userResponses, usersResponse)
+	}
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, userResponses))
 }

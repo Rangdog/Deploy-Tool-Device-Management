@@ -82,6 +82,8 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 	assetLog := entity.AssetLog{
 		Timestamp: time.Now(),
 		Action:    "Transfer",
+		AssetId:   asset.Id,
+		ByUserId:  byUser.Id,
 	}
 
 	// Chuyển phòng ban
@@ -93,7 +95,7 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 		}
 		assetLog.ChangeSummary = fmt.Sprintf("Transfer from department %v to department %v by user %v\n",
 			asset.Department.DepartmentName, department.DepartmentName, byUser.Email)
-		if _, err := service.assetRepo.UpdateAssetDepartment(assignment.AssetId, *departmentId); err != nil {
+		if _, err := service.assetRepo.UpdateAssetDepartment(assignment.AssetId, *departmentId, tx); err != nil {
 			tx.Rollback()
 			return nil, err
 		}
@@ -101,11 +103,10 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 
 	// Chuyển người dùng
 	if userIdAssign != nil && (*userIdAssign != asset.OnwerUser.Id) {
-		assetLog.ByUserId = byUser.Id
 		assetLog.AssignUserId = &assignUser.Id
 		assetLog.ChangeSummary += fmt.Sprintf("Transfer from user: %v to user: %v\n",
 			byUser.Email, assignUser.Email)
-		if _, err := service.assetRepo.UpdateAssetOwner(assignment.AssetId, *userIdAssign); err != nil {
+		if _, err := service.assetRepo.UpdateAssetOwner(assignment.AssetId, *userIdAssign, tx); err != nil {
 			tx.Rollback()
 			return nil, err
 		}
@@ -114,7 +115,7 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 			return nil, err
 		}
 		if *assignUser.DepartmentId != asset.DepartmentId {
-			_, err := service.assetRepo.UpdateAssetDepartment(asset.Id, *assignUser.DepartmentId)
+			_, err := service.assetRepo.UpdateAssetDepartment(asset.Id, *assignUser.DepartmentId, tx)
 			if err != nil {
 				tx.Rollback()
 				return nil, err
