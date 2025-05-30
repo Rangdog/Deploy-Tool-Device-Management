@@ -61,6 +61,8 @@ func (h *RequestTransferHandler) Create(c *gin.Context) {
 	requestTransferResponse.Asset.ImageUpload = *requestTransfer.Asset.ImageUpload
 	requestTransferResponse.Asset.FileAttachment = *requestTransfer.Asset.FileAttachment
 	requestTransferResponse.Asset.QrUrl = *requestTransfer.Asset.QrUrl
+	requestTransferResponse.Department.Id = requestTransfer.DepartmentId
+	requestTransferResponse.Department.DepartmentName = requestTransfer.Department.DepartmentName
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, requestTransferResponse))
 }
 
@@ -104,6 +106,8 @@ func (h *RequestTransferHandler) Accept(c *gin.Context) {
 	requestTransferResponse.Asset.ImageUpload = *requestTransfer.Asset.ImageUpload
 	requestTransferResponse.Asset.FileAttachment = *requestTransfer.Asset.FileAttachment
 	requestTransferResponse.Asset.QrUrl = *requestTransfer.Asset.QrUrl
+	requestTransferResponse.Department.Id = requestTransfer.DepartmentId
+	requestTransferResponse.Department.DepartmentName = requestTransfer.Department.DepartmentName
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, requestTransfer))
 }
 
@@ -147,6 +151,8 @@ func (h *RequestTransferHandler) Deny(c *gin.Context) {
 	requestTransferResponse.Asset.ImageUpload = *requestTransfer.Asset.ImageUpload
 	requestTransferResponse.Asset.FileAttachment = *requestTransfer.Asset.FileAttachment
 	requestTransferResponse.Asset.QrUrl = *requestTransfer.Asset.QrUrl
+	requestTransferResponse.Department.Id = requestTransfer.DepartmentId
+	requestTransferResponse.Department.DepartmentName = requestTransfer.Department.DepartmentName
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, requestTransfer))
 }
 
@@ -190,6 +196,8 @@ func (h *RequestTransferHandler) GetRequestTransferById(c *gin.Context) {
 	requestTransferResponse.Asset.ImageUpload = *requestTransfer.Asset.ImageUpload
 	requestTransferResponse.Asset.FileAttachment = *requestTransfer.Asset.FileAttachment
 	requestTransferResponse.Asset.QrUrl = *requestTransfer.Asset.QrUrl
+	requestTransferResponse.Department.Id = requestTransfer.DepartmentId
+	requestTransferResponse.Department.DepartmentName = requestTransfer.Department.DepartmentName
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, requestTransfer))
 }
 

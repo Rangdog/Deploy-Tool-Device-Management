@@ -127,6 +127,8 @@ func (service *RequestTransferService) Filter(userId int64, status *string, page
 		requestTransferResponse.Asset.ImageUpload = *request.Asset.ImageUpload
 		requestTransferResponse.Asset.FileAttachment = *request.Asset.FileAttachment
 		requestTransferResponse.Asset.QrUrl = *request.Asset.QrUrl
+		requestTransferResponse.Department.Id = request.DepartmentId
+		requestTransferResponse.Department.DepartmentName = request.Department.DepartmentName
 		requestRes = append(requestRes, requestTransferResponse)
 	}
 	data := map[string]any{
