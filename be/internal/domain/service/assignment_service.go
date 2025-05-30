@@ -11,15 +11,16 @@ import (
 )
 
 type AssignmentService struct {
-	repo           repository.AssignmentRepository
-	assetLogRepo   repository.AssetsLogRepository
-	assetRepo      repository.AssetsRepository
-	departmentRepo repository.DepartmentsRepository
-	userRepo       repository.UserRepository
+	repo                repository.AssignmentRepository
+	assetLogRepo        repository.AssetsLogRepository
+	assetRepo           repository.AssetsRepository
+	departmentRepo      repository.DepartmentsRepository
+	userRepo            repository.UserRepository
+	NotificationService *NotificationService
 }
 
-func NewAssignmentService(repo repository.AssignmentRepository, assetLogRepo repository.AssetsLogRepository, assetRepo repository.AssetsRepository, departmentRepo repository.DepartmentsRepository, userRepo repository.UserRepository) *AssignmentService {
-	return &AssignmentService{repo: repo, assetLogRepo: assetLogRepo, assetRepo: assetRepo, departmentRepo: departmentRepo, userRepo: userRepo}
+func NewAssignmentService(repo repository.AssignmentRepository, assetLogRepo repository.AssetsLogRepository, assetRepo repository.AssetsRepository, departmentRepo repository.DepartmentsRepository, userRepo repository.UserRepository, NotificationService *NotificationService) *AssignmentService {
+	return &AssignmentService{repo: repo, assetLogRepo: assetLogRepo, assetRepo: assetRepo, departmentRepo: departmentRepo, userRepo: userRepo, NotificationService: NotificationService}
 }
 
 func (service *AssignmentService) Create(userIdAssign, departmentId *int64, userId, assetId int64) (*entity.Assignments, error) {
@@ -134,6 +135,21 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 	if err := tx.Commit().Error; err != nil {
 		return nil, err
 	}
+	userHeadDepart, _ := service.userRepo.GetUserHeadDepartment(assetLog.Asset.DepartmentId)
+	userManagerAsset, _ := service.userRepo.GetUserAssetManageOfDepartment(assetLog.Asset.DepartmentId)
+	usersToNotifications := []*entity.Users{}
+	usersToNotifications = append(usersToNotifications, asset.OnwerUser)
+	usersToNotifications = append(usersToNotifications, userHeadDepart)
+	usersToNotifications = append(usersToNotifications, userManagerAsset)
+	message := fmt.Sprintf("The asset '%v' (ID: %v) has just been updated by %v", asset.AssetName, asset.Id, byUser.Email)
+	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				fmt.Println("SendNotificationToUsers panic:", r)
+			}
+		}()
+		service.NotificationService.SendNotificationToUsers(usersToNotifications, message, *asset)
+	}()
 	return assignmentUpdated, nil
 }
 

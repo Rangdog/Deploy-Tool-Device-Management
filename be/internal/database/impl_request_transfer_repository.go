@@ -16,11 +16,13 @@ func NewPostgreSQLRequestTransferRepository(db *gorm.DB) repository.RequestTrans
 }
 
 func (r *PostgreSQLRequestTransferRepository) Create(requestTransfer *entity.RequestTransfer) (*entity.RequestTransfer, error) {
-	result := r.db.Model(entity.RequestTransfer{}).Create(requestTransfer)
+	result := r.db.Model(entity.RequestTransfer{}).Preload("User").Preload("Asset").Preload("Department").Create(requestTransfer)
 	if result.Error != nil {
 		return nil, result.Error
 	}
-	return requestTransfer, result.Error
+	request := entity.RequestTransfer{}
+	result = r.db.Model(entity.RequestTransfer{}).Where("id = ?", requestTransfer.Id).Preload("User").Preload("Asset").Preload("Department").First(&request)
+	return &request, result.Error
 }
 
 func (r *PostgreSQLRequestTransferRepository) UpdateStatusConfirm(id int64, tx *gorm.DB) (*entity.RequestTransfer, error) {
@@ -29,7 +31,7 @@ func (r *PostgreSQLRequestTransferRepository) UpdateStatusConfirm(id int64, tx *
 	if result.Error != nil {
 		return nil, result.Error
 	}
-	result = tx.Model(entity.RequestTransfer{}).Where("id = ?", id).First(&request)
+	result = tx.Model(entity.RequestTransfer{}).Where("id = ?", id).Preload("User").Preload("Asset").Preload("Department").First(&request)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -42,7 +44,7 @@ func (r PostgreSQLRequestTransferRepository) UpdateStatusDeny(id int64) (*entity
 	if result.Error != nil {
 		return nil, result.Error
 	}
-	result = r.db.Model(entity.RequestTransfer{}).Where("id = ?", id).First(&request)
+	result = r.db.Model(entity.RequestTransfer{}).Where("id = ?", id).Preload("User").Preload("Asset").Preload("Department").First(&request)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -55,7 +57,7 @@ func (r *PostgreSQLRequestTransferRepository) GetDB() *gorm.DB {
 
 func (r *PostgreSQLRequestTransferRepository) GetRequestTransferById(id int64) (*entity.RequestTransfer, error) {
 	request := entity.RequestTransfer{}
-	result := r.db.Model(entity.RequestTransfer{}).Where("id = ?", id).First(&request)
+	result := r.db.Model(entity.RequestTransfer{}).Where("id = ?", id).Preload("User").Preload("Asset").Preload("Department").First(&request)
 	if result.Error != nil {
 		return nil, result.Error
 	}

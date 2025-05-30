@@ -77,8 +77,8 @@ func (h *AssignmentHandler) Update(c *gin.Context) {
 	idStr := c.Param("id")
 	assignmentId, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
-		log.Error("Happened error when convert assetId to int64. Error", err)
-		pkg.PanicExeption(constant.InvalidRequest, "Happened error when convert assetId to int64")
+		log.Error("Happened error when convert assignment id to int64. Error", err)
+		pkg.PanicExeption(constant.InvalidRequest, "Happened error when convert assignment id to int64")
 	}
 	var request dto.AssignmentUpdateRequest
 	if err := c.ShouldBindJSON(&request); err != nil {

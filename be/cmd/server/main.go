@@ -48,16 +48,16 @@ func main() {
 	departmentService := service.NewDepartmentsService(departmentRepository)
 	departmentHandler := handler.NewDepartmentsHandler(departmentService)
 	//SSE
-	notificationsService := service.NewNotificationService()
+	notificationsService := service.NewNotificationService(notificationRepository)
 	SSeHandler := handler.NewSSEHandler(notificationsService)
 	//Assets
-	assetsService := service.NewAssetsService(assetsRepository, assetsLogRepository, roleRepository, userRBACRepository, userRepository, assignmentRepository, departmentRepository, notificationRepository, notificationsService)
+	assetsService := service.NewAssetsService(assetsRepository, assetsLogRepository, roleRepository, userRBACRepository, userRepository, assignmentRepository, departmentRepository, notificationsService)
 	assetsHandler := handler.NewAssetsHandler(assetsService)
 	//Role
 	roleService := service.NewRoleService(roleRepository)
 	roleHandler := handler.NewRoleHandler(roleService)
 	//Assignment
-	assignmentService := service.NewAssignmentService(assignmentRepository, assetsLogRepository, assetsRepository, departmentRepository, userRepository)
+	assignmentService := service.NewAssignmentService(assignmentRepository, assetsLogRepository, assetsRepository, departmentRepository, userRepository, notificationsService)
 	assignmentHandler := handler.NewAssignmentHandler(assignmentService)
 	//AssetLog
 	assetLogService := service.NewAssetLogService(assetsLogRepository)
@@ -69,6 +69,9 @@ func main() {
 	MaintenanceService := service.NewMaintenanceSchedulesService(maintenanceRepository)
 	maintenanceHandler := handler.NewMaintenanceSchedulesHandler(MaintenanceService)
 
+	// Notification
+	notificationsHandler := handler.NewNotificationHandler(notificationsService)
+
 	docs.SwaggerInfo.Title = "API Tool device manage"
 	docs.SwaggerInfo.Description = "App Tool device manage"
 	docs.SwaggerInfo.Version = "1.0"
@@ -77,7 +80,7 @@ func main() {
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
 	r := gin.Default()
-	api.SetupRoutes(r, userHandler, locationHandler, categoriesHandler, departmentHandler, assetsHandler, roleHandler, assignmentHandler, assetLogHandler, requestTransferHandler, maintenanceHandler, SSeHandler, userSessionRepository)
+	api.SetupRoutes(r, userHandler, locationHandler, categoriesHandler, departmentHandler, assetsHandler, roleHandler, assignmentHandler, assetLogHandler, requestTransferHandler, maintenanceHandler, SSeHandler, notificationsHandler, userSessionRepository)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	c := cron.New(cron.WithLocation(time.FixedZone("Asia/Ho_Chi_Minh", 7*3600)))

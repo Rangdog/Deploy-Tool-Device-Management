@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandler *handler.LocationHandler, CategoriesHandler *handler.CategoriesHandler, DepartmentsHandler *handler.DepartmentsHandler, AssetsHandler *handler.AssetsHandler, RoleHandler *handler.RoleHandler, AssignmentHandler *handler.AssignmentHandler, AssetLogHandler *handler.AssetLogHandler, RequestTransferHandler *handler.RequestTransferHandler, MaintenanceSchedulesHandler *handler.MaintenanceSchedulesHandler, SSEHandler *handler.SSEHandler, session repository.UsersSessionRepository) {
+func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandler *handler.LocationHandler, CategoriesHandler *handler.CategoriesHandler, DepartmentsHandler *handler.DepartmentsHandler, AssetsHandler *handler.AssetsHandler, RoleHandler *handler.RoleHandler, AssignmentHandler *handler.AssignmentHandler, AssetLogHandler *handler.AssetLogHandler, RequestTransferHandler *handler.RequestTransferHandler, MaintenanceSchedulesHandler *handler.MaintenanceSchedulesHandler, SSEHandler *handler.SSEHandler, NotificationHandler *handler.NotificationHandler, session repository.UsersSessionRepository) {
 	//users
 	r.Use(middleware.CORSMiddleware())
 	api := r.Group("/api")
@@ -79,4 +79,9 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandle
 
 	// SSE
 	api.GET("/sse", SSEHandler.SSEHandle)
+
+	//Notifications
+	api.GET("/notifications", NotificationHandler.GetNotificationsByUserId)
+	//Notifications
+	api.GET("/notifications/:id", NotificationHandler.UpdateStatusToSeen)
 }

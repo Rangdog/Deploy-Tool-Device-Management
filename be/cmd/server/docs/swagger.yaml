@@ -955,6 +955,49 @@ paths:
       summary: Get maintenanceSchedules by assetId
       tags:
       - MaintenanceScheduless
+  /api/notifications:
+    get:
+      consumes:
+      - application/json
+      description: Get notifications by user id
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: Get notifications by user id
+      tags:
+      - Notification
+  /api/notifications/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Update notification
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: Update notification
+      tags:
+      - Notification
   /api/request-transfer:
     post:
       consumes:

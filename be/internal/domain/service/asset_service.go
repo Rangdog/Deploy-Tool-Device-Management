@@ -18,19 +18,18 @@ import (
 )
 
 type AssetsService struct {
-	repo                   repository.AssetsRepository
-	assertLogRepository    repository.AssetsLogRepository
-	roleRepository         repository.RoleRepository
-	userRBACRepository     repository.UserRBACRepository
-	userRepository         repository.UserRepository
-	assignRepository       repository.AssignmentRepository
-	departmentRepository   repository.DepartmentsRepository
-	notificationRepository repository.NotificationRepository
-	NotificationService    *NotificationService
+	repo                 repository.AssetsRepository
+	assertLogRepository  repository.AssetsLogRepository
+	roleRepository       repository.RoleRepository
+	userRBACRepository   repository.UserRBACRepository
+	userRepository       repository.UserRepository
+	assignRepository     repository.AssignmentRepository
+	departmentRepository repository.DepartmentsRepository
+	NotificationService  *NotificationService
 }
 
-func NewAssetsService(repo repository.AssetsRepository, assertLogRepository repository.AssetsLogRepository, roleRepository repository.RoleRepository, userRBACRepository repository.UserRBACRepository, userRepository repository.UserRepository, assignRepository repository.AssignmentRepository, departmentRepository repository.DepartmentsRepository, notificationRepository repository.NotificationRepository, NotificationService *NotificationService) *AssetsService {
-	return &AssetsService{repo: repo, assertLogRepository: assertLogRepository, roleRepository: roleRepository, userRBACRepository: userRBACRepository, userRepository: userRepository, assignRepository: assignRepository, departmentRepository: departmentRepository, notificationRepository: notificationRepository}
+func NewAssetsService(repo repository.AssetsRepository, assertLogRepository repository.AssetsLogRepository, roleRepository repository.RoleRepository, userRBACRepository repository.UserRBACRepository, userRepository repository.UserRepository, assignRepository repository.AssignmentRepository, departmentRepository repository.DepartmentsRepository, NotificationService *NotificationService) *AssetsService {
+	return &AssetsService{repo: repo, assertLogRepository: assertLogRepository, roleRepository: roleRepository, userRBACRepository: userRBACRepository, userRepository: userRepository, assignRepository: assignRepository, departmentRepository: departmentRepository, NotificationService: NotificationService}
 }
 
 func (service *AssetsService) Create(userId int64, assetName string, purchaseDate time.Time, cost float64, warrantExpiry time.Time, serialNumber string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, categoryId int64, departmentId int64, url string) (*entity.Assets, error) {
@@ -274,7 +273,7 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 				fmt.Println("SendNotificationToUsers panic:", r)
 			}
 		}()
-		service.SendNotificationToUsers(usersToNotifications, message, asset)
+		service.NotificationService.SendNotificationToUsers(usersToNotifications, message, asset)
 	}()
 	return assetUpdated, nil
 }
@@ -435,35 +434,4 @@ func CountDashboard(assets []*entity.Assets) dto.DashboardSummary {
 		}
 	}
 	return s
-}
-
-func (service *AssetsService) SendNotificationToUsers(users []*entity.Users, message string, asset entity.Assets) error {
-	status := "Not Read"
-	typeNotify := "info"
-	timeNotify := time.Now()
-	for _, u := range users {
-		if u == nil {
-			continue
-		}
-		notify := entity.Notifications{
-			Content:    &message,
-			Status:     &status,
-			Type:       &typeNotify,
-			UserId:     &u.Id,
-			AssetId:    &asset.Id,
-			NotifyDate: &timeNotify,
-		}
-		_, err := service.notificationRepository.Create(&notify)
-		if err != nil {
-			// log lỗi, tuỳ quyết định dừng hay tiếp tục
-			fmt.Printf("Lỗi lưu notification cho user %v: %v\n", u.Id, err)
-		}
-		isOnline := service.NotificationService.IsOnline(fmt.Sprintf("%v", u.Id))
-		if isOnline {
-			service.NotificationService.Push(fmt.Sprintf("%v", u.Id), message)
-		} else {
-			fmt.Printf("User %v đang offline, chỉ lưu notification DB\n", u.Id)
-		}
-	}
-	return nil
 }
