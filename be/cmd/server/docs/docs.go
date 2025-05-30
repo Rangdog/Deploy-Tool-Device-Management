@@ -1440,7 +1440,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Roles"
+                    "Socket"
                 ],
                 "summary": "GetRole",
                 "parameters": [
@@ -1918,10 +1918,12 @@ const docTemplate = `{
             ],
             "properties": {
                 "firstName": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 30
                 },
                 "lastName": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 30
                 }
             }
         },
@@ -1969,10 +1971,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "firstName": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 30
                 },
                 "lastName": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 30
                 },
                 "password": {
                     "type": "string"

@@ -1429,7 +1429,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Roles"
+                    "Socket"
                 ],
                 "summary": "GetRole",
                 "parameters": [
@@ -1907,10 +1907,12 @@
             ],
             "properties": {
                 "firstName": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 30
                 },
                 "lastName": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 30
                 }
             }
         },
@@ -1958,10 +1960,12 @@
                     "type": "string"
                 },
                 "firstName": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 30
                 },
                 "lastName": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 30
                 },
                 "password": {
                     "type": "string"

@@ -80,7 +80,7 @@ func (r *PostgreSQLUserRepository) GetDB() *gorm.DB {
 
 func (r *PostgreSQLUserRepository) GetAllUser() []*entity.Users {
 	var users = []*entity.Users{}
-	result := r.db.Model(entity.Users{}).Preload("Role").Find(&users)
+	result := r.db.Model(entity.Users{}).Preload("Role").Preload("Department").Find(&users)
 	if result.Error != nil {
 		return nil
 	}

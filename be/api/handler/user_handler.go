@@ -362,8 +362,12 @@ func (h *UserHandler) GetAllUser(c *gin.Context) {
 		usersResponse.Role.Id = user.RoleId
 		usersResponse.Role.Slug = user.Role.Slug
 		if user.DepartmentId != nil {
-			usersResponse.Department.Id = *user.DepartmentId
-			usersResponse.Department.DepartmentName = user.Department.DepartmentName
+			if user.DepartmentId != nil {
+				usersResponse.Department = &dto.UserDepartmentResponse{
+					Id:             *user.DepartmentId,
+					DepartmentName: user.Department.DepartmentName,
+				}
+			}
 		}
 		usersResponses = append(usersResponses, usersResponse)
 	}

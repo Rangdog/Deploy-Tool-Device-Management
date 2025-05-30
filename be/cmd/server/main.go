@@ -34,6 +34,7 @@ func main() {
 	requestTransferRepository := database.NewPostgreSQLRequestTransferRepository(db)
 	emailService := service.NewEmailService(config.SmtpPasswd)
 	maintenanceRepository := database.NewPostgreSQLMaintenanceSchedulesRepository(db)
+	notificationRepository := database.NewPostgreSQLNotificationRepository(db)
 	//User
 	userService := service.NewUserService(userRepository, emailService, userSessionRepository, roleRepository, assetsRepository, userRBACRepository)
 	userHandler := handler.NewUserHandler(userService)
@@ -47,7 +48,7 @@ func main() {
 	departmentService := service.NewDepartmentsService(departmentRepository)
 	departmentHandler := handler.NewDepartmentsHandler(departmentService)
 	//Assets
-	assetsService := service.NewAssetsService(assetsRepository, assetsLogRepository, roleRepository, userRBACRepository, userRepository, assignmentRepository, departmentRepository)
+	assetsService := service.NewAssetsService(assetsRepository, assetsLogRepository, roleRepository, userRBACRepository, userRepository, assignmentRepository, departmentRepository, notificationRepository)
 	assetsHandler := handler.NewAssetsHandler(assetsService)
 	//Role
 	roleService := service.NewRoleService(roleRepository)
@@ -64,6 +65,9 @@ func main() {
 	//Maintenance
 	MaintenanceService := service.NewMaintenanceSchedulesService(maintenanceRepository)
 	maintenanceHandler := handler.NewMaintenanceSchedulesHandler(MaintenanceService)
+	//SSE
+	notificationsService := service.NewNotificationService()
+	SSeHandler := handler.NewSSEHandler(notificationsService)
 
 	docs.SwaggerInfo.Title = "API Tool device manage"
 	docs.SwaggerInfo.Description = "App Tool device manage"
@@ -73,7 +77,7 @@ func main() {
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
 	r := gin.Default()
-	api.SetupRoutes(r, userHandler, locationHandler, categoriesHandler, departmentHandler, assetsHandler, roleHandler, assignmentHandler, assetLogHandler, requestTransferHandler, maintenanceHandler, userSessionRepository)
+	api.SetupRoutes(r, userHandler, locationHandler, categoriesHandler, departmentHandler, assetsHandler, roleHandler, assignmentHandler, assetLogHandler, requestTransferHandler, maintenanceHandler, SSeHandler, userSessionRepository)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	c := cron.New(cron.WithLocation(time.FixedZone("Asia/Ho_Chi_Minh", 7*3600)))

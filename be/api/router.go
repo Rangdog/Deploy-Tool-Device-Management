@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandler *handler.LocationHandler, CategoriesHandler *handler.CategoriesHandler, DepartmentsHandler *handler.DepartmentsHandler, AssetsHandler *handler.AssetsHandler, RoleHandler *handler.RoleHandler, AssignmentHandler *handler.AssignmentHandler, AssetLogHandler *handler.AssetLogHandler, RequestTransferHandler *handler.RequestTransferHandler, MaintenanceSchedulesHandler *handler.MaintenanceSchedulesHandler, session repository.UsersSessionRepository) {
+func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandler *handler.LocationHandler, CategoriesHandler *handler.CategoriesHandler, DepartmentsHandler *handler.DepartmentsHandler, AssetsHandler *handler.AssetsHandler, RoleHandler *handler.RoleHandler, AssignmentHandler *handler.AssignmentHandler, AssetLogHandler *handler.AssetLogHandler, RequestTransferHandler *handler.RequestTransferHandler, MaintenanceSchedulesHandler *handler.MaintenanceSchedulesHandler, SSEHandler *handler.SSEHandler, session repository.UsersSessionRepository) {
 	//users
 	r.Use(middleware.CORSMiddleware())
 	api := r.Group("/api")
@@ -20,7 +20,7 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandle
 	api.POST("/user/forget-password", userHandler.CheckPasswordReset) // đã check
 	api.PATCH("/user/password-reset", userHandler.ResetPassword)      // đã check
 	api.DELETE("/user/:email", userHandler.DeleteUser)
-
+	api.POST("/notify/:userId", SSEHandler.SendNotificationHandler)
 	api.Use(middleware.AuthMiddleware(config.AccessSecret, session))
 
 	api.GET("/user/session", userHandler.Session)                     // đã check: nên chỉnh lại api response
@@ -75,4 +75,7 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandle
 	// Schedule maintenance
 	api.POST("/maintenance-schedules", MaintenanceSchedulesHandler.Create)
 	api.GET("/maintenance-schedules/:id", MaintenanceSchedulesHandler.GetAllMaintenanceSchedulesByAssetId)
+
+	// SSE
+	api.GET("/sse", SSEHandler.SSEHandle)
 }

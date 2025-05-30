@@ -99,8 +99,10 @@ definitions:
   dto.UpdateInformationUserRequest:
     properties:
       firstName:
+        maxLength: 30
         type: string
       lastName:
+        maxLength: 30
         type: string
     required:
     - firstName
@@ -131,8 +133,10 @@ definitions:
       email:
         type: string
       firstName:
+        maxLength: 30
         type: string
       lastName:
+        maxLength: 30
         type: string
       password:
         type: string
@@ -1089,7 +1093,7 @@ paths:
       - JWT: []
       summary: GetRole
       tags:
-      - Roles
+      - Socket
   /api/user/{email}:
     delete:
       consumes:
