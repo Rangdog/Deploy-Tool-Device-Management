@@ -29,6 +29,7 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandle
 	api.GET("/users", userHandler.GetAllUser)                         // đã check:
 	api.PATCH("users/information", userHandler.UpdateInformationUser) // đã check
 	api.PATCH("users/role", userHandler.UpdateRoleUser)               // đã check
+	api.PATCH("/user/department", userHandler.UpdateDepartment)
 	//Locations
 	api.POST("/locations", LocationHandler.Create)       // đã check
 	api.GET("/locations", LocationHandler.GetAll)        // đã check

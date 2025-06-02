@@ -68,3 +68,8 @@ type UserDepartmentResponse struct {
 	Id             int64  `json:"id"`
 	DepartmentName string `json:"departmentName"`
 }
+
+type UserUpdateDepartmentRequest struct {
+	UserId       int64 `json:"userId"`
+	DepartmentId int64 `json:"DepartmentId"`
+}

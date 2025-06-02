@@ -53,7 +53,7 @@ func (r *PostgreSQLUserRepository) UpdatePassword(users *entity.Users) error {
 
 func (r *PostgreSQLUserRepository) FindByEmail(email string) (*entity.Users, error) {
 	users := &entity.Users{}
-	result := r.db.Model(entity.Users{}).Where("email = ?", email).First(&users)
+	result := r.db.Model(entity.Users{}).Where("email = ?", email).Preload("Role").Preload("Department").First(&users)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -62,7 +62,7 @@ func (r *PostgreSQLUserRepository) FindByEmail(email string) (*entity.Users, err
 
 func (r *PostgreSQLUserRepository) FindByUserId(userId int64) (*entity.Users, error) {
 	users := &entity.Users{}
-	result := r.db.Model(entity.Users{}).Where("id = ?", userId).First(&users)
+	result := r.db.Model(entity.Users{}).Where("id = ?", userId).Preload("Role").Preload("Department").First(&users)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -147,4 +147,9 @@ func (r *PostgreSQLUserRepository) GetAllUserOfDepartment(departmentTd int64) ([
 		return nil, result.Error
 	}
 	return users, nil
+}
+
+func (r *PostgreSQLUserRepository) UpdateDepartment(userId int64, departmentId int64) error {
+	result := r.db.Model(entity.Users{}).Where("id = ?", userId).Update("department_id", departmentId)
+	return result.Error
 }

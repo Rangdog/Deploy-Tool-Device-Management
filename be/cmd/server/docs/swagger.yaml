@@ -171,6 +171,13 @@ definitions:
     - newPassword
     - token
     type: object
+  dto.UserUpdateDepartmentRequest:
+    properties:
+      DepartmentId:
+        type: integer
+      userId:
+        type: integer
+    type: object
 info:
   contact: {}
 paths:
@@ -1229,6 +1236,39 @@ paths:
       security:
       - JWT: []
       summary: Delete user
+      tags:
+      - Users
+  /api/user/department:
+    patch:
+      consumes:
+      - application/json
+      description: Update department by id
+      parameters:
+      - description: Data
+        in: body
+        name: department
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserUpdateDepartmentRequest'
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ApiResponseSuccessStruct'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ApiResponseFail'
+      security:
+      - JWT: []
+      summary: Update department by id
       tags:
       - Users
   /api/user/department/{department_id}:

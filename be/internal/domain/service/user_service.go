@@ -232,3 +232,8 @@ func (service *UserService) GetAllUserOfDepartment(departmentId int64) ([]*entit
 	}
 	return user, nil
 }
+
+func (service *UserService) UpdateDepartment(userId int64, departmentId int64) error {
+	err := service.repo.UpdateDepartment(userId, departmentId)
+	return err
+}

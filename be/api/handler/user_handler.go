@@ -76,13 +76,14 @@ func (h *UserHandler) Login(c *gin.Context) {
 	dataResponese := map[string]interface{}{}
 	if userLogin.IsActive {
 		dataResponese = map[string]interface{}{
-			"access_token":  accessToken,
-			"refresh_token": refreshToken,
-			"is_active":     userLogin.IsActive,
+			"accessToken":  accessToken,
+			"refreshToken": refreshToken,
+			"isActive":     userLogin.IsActive,
+			"roleSlug":     userLogin.Role.Slug,
 		}
 	} else {
 		dataResponese = map[string]interface{}{
-			"is_active": userLogin.IsActive,
+			"isActive": userLogin.IsActive,
 		}
 	}
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, dataResponese))
@@ -255,6 +256,20 @@ func (h *UserHandler) Session(c *gin.Context) {
 	if err != nil {
 		log.Error("Happened error when reset password. Error", err)
 		pkg.PanicExeption(constant.Unauthorized, err.Error())
+	}
+	usersResponse := dto.UserResponse{}
+	usersResponse.Id = user.Id
+	usersResponse.FirstName = user.FirstName
+	usersResponse.LastName = user.LastName
+	usersResponse.Email = user.Email
+	usersResponse.IsActive = user.IsActive
+	usersResponse.Role.Id = user.RoleId
+	usersResponse.Role.Slug = user.Role.Slug
+	if user.DepartmentId != nil {
+		usersResponse.Department = &dto.UserDepartmentResponse{
+			Id:             *user.DepartmentId,
+			DepartmentName: user.Department.DepartmentName,
+		}
 	}
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, user))
 }
@@ -510,4 +525,34 @@ func (h *UserHandler) GetAllUserOfDepartment(c *gin.Context) {
 		userResponses = append(userResponses, usersResponse)
 	}
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, userResponses))
+}
+
+// Role godoc
+// @Summary      Update department by id
+// @Description   Update department by id
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param        department   body    dto.UserUpdateDepartmentRequest   true  "Data"
+// @param Authorization header string true "Authorization"
+// @Router       /api/user/department [PATCH]
+// @Success      200   {object}  dto.ApiResponseSuccessStruct
+// @Failure      500   {object}  dto.ApiResponseFail
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
+func (h *UserHandler) UpdateDepartment(c *gin.Context) {
+	defer pkg.PanicHandler(c)
+	var request dto.UserUpdateDepartmentRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Error("Happened error when mapping request from FE. Error", err)
+		pkg.PanicExeption(constant.InvalidRequest)
+	}
+	err := h.service.UpdateDepartment(request.UserId, request.DepartmentId)
+	if err != nil {
+		log.Error("Happened error when get all user of department. Error", err)
+		pkg.PanicExeption(constant.UnknownError, "Happened error when get all user of department")
+	}
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccessNoData(http.StatusOK, constant.Success))
 }
