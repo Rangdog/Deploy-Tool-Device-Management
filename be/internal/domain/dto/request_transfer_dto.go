@@ -1,16 +1,16 @@
 package dto
 
 type CreateRequestTransferRequest struct {
-	AssetId      int64 `json:"assetId" binding:"required"`
-	DepartmentId int64 `json:"departmentId" binding:"required"`
+	CategoryId  int64  `json:"categoryId" binding:"required"`
+	Description string `json:"description" binding:"required"`
 }
 
 type RequestTransferResponse struct {
-	Id         int64                          `json:"id"`
-	Status     string                         `json:"status"`
-	User       UserResponseInRequestTransfer  `json:"user"`
-	Asset      AssetResponseInRequestTransfer `json:"asset"`
-	Department DepartmentInRequestTransfer    `json:"department"`
+	Id          int64                             `json:"id"`
+	Status      string                            `json:"status"`
+	User        UserResponseInRequestTransfer     `json:"user"`
+	Category    CategoryResponseInRequestTransfer `json:"category"`
+	Description string                            `json:"description"`
 }
 
 type UserResponseInRequestTransfer struct {
@@ -20,17 +20,11 @@ type UserResponseInRequestTransfer struct {
 	Email     string `json:"email"`
 }
 
-type AssetResponseInRequestTransfer struct {
-	Id             int64  `json:"id"`
-	AssetName      string `json:"assetName"`
-	SerialNumber   string `json:"serialNumber"`
-	ImageUpload    string `json:"image"`
-	FileAttachment string `json:"file"`
-	QrUrl          string `json:"qrUrl"`
+type CategoryResponseInRequestTransfer struct {
+	Id           int64  `json:"id"`
+	CategoryName string `json:"categoryName"`
 }
 
-type DepartmentInRequestTransfer struct {
-	Id             int64            `json:"id"`
-	DepartmentName string           `json:"departmentName"`
-	Location       LocationResponse `json:"location"`
+type ConfirmRequestTransferRequest struct {
+	AssetId int64 `json:"assetId" binding:"required"`
 }

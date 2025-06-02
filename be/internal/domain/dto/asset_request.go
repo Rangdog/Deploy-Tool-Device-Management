@@ -45,3 +45,8 @@ type DashboardSummary struct {
 	UnderMaintenance int `json:"under_maintenance"`
 	Retired          int `json:"retired"`
 }
+
+type GetAssetsByCateOfDepartmentRequest struct {
+	CategoryId   int64 `json:"categoryId"`
+	DepartmentId int64 `json:"departmentId"`
+}

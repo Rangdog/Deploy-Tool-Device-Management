@@ -57,7 +57,7 @@ func (h *MaintenanceSchedulesHandler) Create(c *gin.Context) {
 		log.Error("Happened error when create maintenance. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when create maintenance.")
 	}
-	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, maintenance))
+	c.JSON(http.StatusCreated, pkg.BuildReponseSuccess(http.StatusCreated, constant.Success, maintenance))
 }
 
 // Maintenance Schedules godoc

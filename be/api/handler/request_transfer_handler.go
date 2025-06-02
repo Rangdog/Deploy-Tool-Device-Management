@@ -43,7 +43,7 @@ func (h *RequestTransferHandler) Create(c *gin.Context) {
 		log.Error("Happened error when mapping request from FE. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when mapping request from FE.")
 	}
-	requestTransfer, err := h.service.Create(userId, request.AssetId, request.DepartmentId)
+	requestTransfer, err := h.service.Create(userId, request.CategoryId, request.Description)
 	if err != nil {
 		log.Error("Happened error when create request transfer. Error", err)
 		pkg.PanicExeption(constant.UnknownError, "Happened error when create request transfer")
@@ -55,17 +55,10 @@ func (h *RequestTransferHandler) Create(c *gin.Context) {
 	requestTransferResponse.User.FirstName = requestTransfer.User.FirstName
 	requestTransferResponse.User.LastName = requestTransfer.User.LastName
 	requestTransferResponse.User.Email = requestTransfer.User.Email
-	requestTransferResponse.Asset.Id = requestTransfer.Asset.Id
-	requestTransferResponse.Asset.AssetName = requestTransfer.Asset.AssetName
-	requestTransferResponse.Asset.SerialNumber = requestTransfer.Asset.SerialNumber
-	requestTransferResponse.Asset.ImageUpload = *requestTransfer.Asset.ImageUpload
-	requestTransferResponse.Asset.FileAttachment = *requestTransfer.Asset.FileAttachment
-	requestTransferResponse.Asset.QrUrl = *requestTransfer.Asset.QrUrl
-	requestTransferResponse.Department.Id = requestTransfer.DepartmentId
-	requestTransferResponse.Department.DepartmentName = requestTransfer.Department.DepartmentName
-	requestTransferResponse.Department.Location.ID = requestTransfer.Department.Location.Id
-	requestTransferResponse.Department.Location.LocationName = requestTransfer.Department.Location.LocationName
-	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, requestTransferResponse))
+	requestTransferResponse.Description = requestTransfer.Description
+	requestTransferResponse.Category.Id = requestTransfer.CategoryId
+	requestTransferResponse.Category.CategoryName = requestTransfer.Category.CategoryName
+	c.JSON(http.StatusCreated, pkg.BuildReponseSuccess(http.StatusCreated, constant.Success, requestTransferResponse))
 }
 
 // Request Transfer godoc
@@ -74,6 +67,7 @@ func (h *RequestTransferHandler) Create(c *gin.Context) {
 // @Tags         RequestTransfer
 // @Accept       json
 // @Produce      json
+// @Param        Asset   body    dto.ConfirmRequestTransferRequest   true  "Data"
 // @Param		id	path		int				true	"request_transfer_id"
 // @param Authorization header string true "Authorization"
 // @Router       /api/request-transfer/confirm/{id} [PATCH]
@@ -84,13 +78,18 @@ func (h *RequestTransferHandler) Create(c *gin.Context) {
 func (h *RequestTransferHandler) Accept(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)
+	var request dto.ConfirmRequestTransferRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Error("Happened error when mapping request from FE. Error", err)
+		pkg.PanicExeption(constant.InvalidRequest)
+	}
 	idStr := c.Param("id")
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
 		log.Error("Happened error when convert id to int64. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest)
 	}
-	requestTransfer, err := h.service.Accept(userId, id)
+	requestTransfer, err := h.service.Accept(userId, id, request.AssetId)
 	if err != nil {
 		log.Error("Happened error when accept request transfer. Error", err)
 		pkg.PanicExeption(constant.UnknownError, "Happened error when accept request transfer")
@@ -102,16 +101,9 @@ func (h *RequestTransferHandler) Accept(c *gin.Context) {
 	requestTransferResponse.User.FirstName = requestTransfer.User.FirstName
 	requestTransferResponse.User.LastName = requestTransfer.User.LastName
 	requestTransferResponse.User.Email = requestTransfer.User.Email
-	requestTransferResponse.Asset.Id = requestTransfer.Asset.Id
-	requestTransferResponse.Asset.AssetName = requestTransfer.Asset.AssetName
-	requestTransferResponse.Asset.SerialNumber = requestTransfer.Asset.SerialNumber
-	requestTransferResponse.Asset.ImageUpload = *requestTransfer.Asset.ImageUpload
-	requestTransferResponse.Asset.FileAttachment = *requestTransfer.Asset.FileAttachment
-	requestTransferResponse.Asset.QrUrl = *requestTransfer.Asset.QrUrl
-	requestTransferResponse.Department.Id = requestTransfer.DepartmentId
-	requestTransferResponse.Department.DepartmentName = requestTransfer.Department.DepartmentName
-	requestTransferResponse.Department.Location.ID = requestTransfer.Department.Location.Id
-	requestTransferResponse.Department.Location.LocationName = requestTransfer.Department.Location.LocationName
+	requestTransferResponse.Description = requestTransfer.Description
+	requestTransferResponse.Category.Id = requestTransfer.CategoryId
+	requestTransferResponse.Category.CategoryName = requestTransfer.Category.CategoryName
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, requestTransferResponse))
 }
 
@@ -149,16 +141,9 @@ func (h *RequestTransferHandler) Deny(c *gin.Context) {
 	requestTransferResponse.User.FirstName = requestTransfer.User.FirstName
 	requestTransferResponse.User.LastName = requestTransfer.User.LastName
 	requestTransferResponse.User.Email = requestTransfer.User.Email
-	requestTransferResponse.Asset.Id = requestTransfer.Asset.Id
-	requestTransferResponse.Asset.AssetName = requestTransfer.Asset.AssetName
-	requestTransferResponse.Asset.SerialNumber = requestTransfer.Asset.SerialNumber
-	requestTransferResponse.Asset.ImageUpload = *requestTransfer.Asset.ImageUpload
-	requestTransferResponse.Asset.FileAttachment = *requestTransfer.Asset.FileAttachment
-	requestTransferResponse.Asset.QrUrl = *requestTransfer.Asset.QrUrl
-	requestTransferResponse.Department.Id = requestTransfer.DepartmentId
-	requestTransferResponse.Department.DepartmentName = requestTransfer.Department.DepartmentName
-	requestTransferResponse.Department.Location.ID = requestTransfer.Department.Location.Id
-	requestTransferResponse.Department.Location.LocationName = requestTransfer.Department.Location.LocationName
+	requestTransferResponse.Description = requestTransfer.Description
+	requestTransferResponse.Category.Id = requestTransfer.CategoryId
+	requestTransferResponse.Category.CategoryName = requestTransfer.Category.CategoryName
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, requestTransferResponse))
 }
 
@@ -196,16 +181,9 @@ func (h *RequestTransferHandler) GetRequestTransferById(c *gin.Context) {
 	requestTransferResponse.User.FirstName = requestTransfer.User.FirstName
 	requestTransferResponse.User.LastName = requestTransfer.User.LastName
 	requestTransferResponse.User.Email = requestTransfer.User.Email
-	requestTransferResponse.Asset.Id = requestTransfer.Asset.Id
-	requestTransferResponse.Asset.AssetName = requestTransfer.Asset.AssetName
-	requestTransferResponse.Asset.SerialNumber = requestTransfer.Asset.SerialNumber
-	requestTransferResponse.Asset.ImageUpload = *requestTransfer.Asset.ImageUpload
-	requestTransferResponse.Asset.FileAttachment = *requestTransfer.Asset.FileAttachment
-	requestTransferResponse.Asset.QrUrl = *requestTransfer.Asset.QrUrl
-	requestTransferResponse.Department.Id = requestTransfer.DepartmentId
-	requestTransferResponse.Department.DepartmentName = requestTransfer.Department.DepartmentName
-	requestTransferResponse.Department.Location.ID = requestTransfer.Department.Location.Id
-	requestTransferResponse.Department.Location.LocationName = requestTransfer.Department.Location.LocationName
+	requestTransferResponse.Description = requestTransfer.Description
+	requestTransferResponse.Category.Id = requestTransfer.CategoryId
+	requestTransferResponse.Category.CategoryName = requestTransfer.Category.CategoryName
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, requestTransferResponse))
 }
 

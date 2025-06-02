@@ -11,8 +11,8 @@ type RequestTransferFilter struct {
 }
 
 func (f *RequestTransferFilter) ApplyFilter(db *gorm.DB, userId int64) *gorm.DB {
-	if f.Status != nil {
+	if f.Status != nil && *f.Status != "" {
 		db = db.Where("status = ?", *f.Status)
 	}
-	return db.Preload("User").Preload("Asset").Preload("Department").Preload("Department.Location").Order("request_transfers.id ASC")
+	return db.Preload("User").Preload("User.Department").Preload("Category").Order("request_transfers.id ASC")
 }

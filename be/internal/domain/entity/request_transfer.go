@@ -1,13 +1,12 @@
 package entity
 
 type RequestTransfer struct {
-	Id           int64  `gorm:"primaryKey;autoIncrement" json:"id"`
-	UserId       int64  `json:"userId"`
-	AssetId      int64  `json:"assetId"`
-	DepartmentId int64  `json:"departmentId"`
-	Status       string `json:"status"`
+	Id          int64  `gorm:"primaryKey;autoIncrement" json:"id"`
+	UserId      int64  `json:"userId"`
+	CategoryId  int64  `json:"categoryId"`
+	Status      string `json:"status"`
+	Description string `json:"description"`
 
-	User       Users       `gorm:"foreignKey:UserId;references:Id"`
-	Asset      Assets      `gorm:"foreignKey:AssetId;references:Id"`
-	Department Departments `gorm:"foreignKey:DepartmentId;references:Id"`
+	User     Users      `gorm:"foreignKey:UserId;references:Id"`
+	Category Categories `gorm:"foreignKey:CategoryId;references:Id"`
 }

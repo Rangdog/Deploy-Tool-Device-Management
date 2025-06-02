@@ -53,6 +53,7 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandle
 	api.DELETE("/assets/:id", AssetsHandler.DeleteAsset)
 	api.PATCH("/assets-retired/:id", AssetsHandler.UpdateAssetRetired)      // đã check
 	api.GET("/assets/filter-dashboard", AssetsHandler.FilterAssetDashboard) // đã check
+	api.GET("/assets/request-transfer", AssetsHandler.GetAssetsByCateOfDepartment)
 
 	//Roles
 	api.GET("/roles", RoleHandler.GetAllRole) // đã check

@@ -42,6 +42,13 @@ definitions:
     - email
     - redirectUrl
     type: object
+  dto.ConfirmRequestTransferRequest:
+    properties:
+      assetId:
+        type: integer
+    required:
+    - assetId
+    type: object
   dto.CreateCategoryRequest:
     properties:
       categoryName:
@@ -81,13 +88,20 @@ definitions:
     type: object
   dto.CreateRequestTransferRequest:
     properties:
-      assetId:
+      categoryId:
+        type: integer
+      description:
+        type: string
+    required:
+    - categoryId
+    - description
+    type: object
+  dto.GetAssetsByCateOfDepartmentRequest:
+    properties:
+      categoryId:
         type: integer
       departmentId:
         type: integer
-    required:
-    - assetId
-    - departmentId
     type: object
   dto.RefreshRequest:
     properties:
@@ -477,7 +491,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get Dashboard
+      description: Get dashboard
       parameters:
       - in: query
         name: categoryId
@@ -502,7 +516,32 @@ paths:
       responses: {}
       security:
       - JWT: []
-      summary: Get Dashboard
+      summary: Get dashboard
+      tags:
+      - Assets
+  /api/assets/request-transfer:
+    get:
+      consumes:
+      - application/json
+      description: Get asset by category of department
+      parameters:
+      - description: Data
+        in: body
+        name: Role
+        required: true
+        schema:
+          $ref: '#/definitions/dto.GetAssetsByCateOfDepartmentRequest'
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: Get asset by category of department
       tags:
       - Assets
   /api/assignments/{id}:
@@ -1053,6 +1092,12 @@ paths:
       - application/json
       description: Accept Request Transfer
       parameters:
+      - description: Data
+        in: body
+        name: Asset
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ConfirmRequestTransferRequest'
       - description: request_transfer_id
         in: path
         name: id

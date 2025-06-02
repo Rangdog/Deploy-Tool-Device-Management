@@ -19,12 +19,12 @@ func NewRequestTransferService(repo repository.RequestTransferRepository, assign
 	return &RequestTransferService{repo: repo, assignmentService: assignmentService, userRepo: userRepo}
 }
 
-func (service *RequestTransferService) Create(userId int64, assetId int64, departmentId int64) (*entity.RequestTransfer, error) {
+func (service *RequestTransferService) Create(userId int64, categoryId int64, description string) (*entity.RequestTransfer, error) {
 	requestTransfer := entity.RequestTransfer{
-		UserId:       userId,
-		AssetId:      assetId,
-		DepartmentId: departmentId,
-		Status:       "Pending",
+		UserId:      userId,
+		CategoryId:  categoryId,
+		Status:      "Pending",
+		Description: description,
 	}
 	requestTransferCreate, err := service.repo.Create(&requestTransfer)
 	if err != nil {
@@ -33,7 +33,7 @@ func (service *RequestTransferService) Create(userId int64, assetId int64, depar
 	return requestTransferCreate, err
 }
 
-func (service *RequestTransferService) Accept(userId int64, id int64) (*entity.RequestTransfer, error) {
+func (service *RequestTransferService) Accept(userId int64, id int64, assetId int64) (*entity.RequestTransfer, error) {
 	requestCheck, err := service.repo.GetRequestTransferById(id)
 	if err != nil {
 		return nil, err
@@ -47,17 +47,21 @@ func (service *RequestTransferService) Accept(userId int64, id int64) (*entity.R
 		tx.Rollback()
 		return nil, err
 	}
-	assignment, err := service.assignmentService.repo.GetAssignmentByAssetId(request.AssetId)
+	assignment, err := service.assignmentService.repo.GetAssignmentByAssetId(assetId)
 	if err != nil {
 		tx.Rollback()
 		return nil, err
 	}
-	userAssign, err := service.userRepo.GetUserAssetManageOfDepartment(request.DepartmentId)
+	if requestCheck.User.DepartmentId == nil {
+		tx.Rollback()
+		return nil, errors.New("user don't have department")
+	}
+	userAssign, err := service.userRepo.GetUserAssetManageOfDepartment(*requestCheck.User.DepartmentId)
 	if err != nil {
 		tx.Rollback()
 		return nil, err
 	}
-	_, err = service.assignmentService.Update(userId, assignment.Id, &userAssign.Id, &request.DepartmentId)
+	_, err = service.assignmentService.Update(userId, assignment.Id, &userAssign.Id, requestCheck.User.DepartmentId)
 	if err != nil {
 		tx.Rollback()
 		return nil, err
@@ -124,16 +128,9 @@ func (service *RequestTransferService) Filter(userId int64, status *string, page
 		requestTransferResponse.User.FirstName = request.User.FirstName
 		requestTransferResponse.User.LastName = request.User.LastName
 		requestTransferResponse.User.Email = request.User.Email
-		requestTransferResponse.Asset.Id = request.Asset.Id
-		requestTransferResponse.Asset.AssetName = request.Asset.AssetName
-		requestTransferResponse.Asset.SerialNumber = request.Asset.SerialNumber
-		requestTransferResponse.Asset.ImageUpload = *request.Asset.ImageUpload
-		requestTransferResponse.Asset.FileAttachment = *request.Asset.FileAttachment
-		requestTransferResponse.Asset.QrUrl = *request.Asset.QrUrl
-		requestTransferResponse.Department.Id = request.DepartmentId
-		requestTransferResponse.Department.DepartmentName = request.Department.DepartmentName
-		requestTransferResponse.Department.Location.ID = request.Department.Location.Id
-		requestTransferResponse.Department.Location.LocationName = request.Department.Location.LocationName
+		requestTransferResponse.Description = request.Description
+		requestTransferResponse.Category.Id = request.CategoryId
+		requestTransferResponse.Category.CategoryName = request.Category.CategoryName
 		requestRes = append(requestRes, requestTransferResponse)
 	}
 	data := map[string]any{

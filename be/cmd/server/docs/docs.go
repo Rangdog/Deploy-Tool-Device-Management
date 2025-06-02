@@ -317,7 +317,7 @@ const docTemplate = `{
                         "JWT": []
                     }
                 ],
-                "description": "Get Dashboard",
+                "description": "Get dashboard",
                 "consumes": [
                     "application/json"
                 ],
@@ -327,7 +327,7 @@ const docTemplate = `{
                 "tags": [
                     "Assets"
                 ],
-                "summary": "Get Dashboard",
+                "summary": "Get dashboard",
                 "parameters": [
                     {
                         "type": "string",
@@ -349,6 +349,45 @@ const docTemplate = `{
                         "type": "string",
                         "name": "status",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/assets/request-transfer": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "Get asset by category of department",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Assets"
+                ],
+                "summary": "Get asset by category of department",
+                "parameters": [
+                    {
+                        "description": "Data",
+                        "name": "Role",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.GetAssetsByCateOfDepartmentRequest"
+                        }
                     },
                     {
                         "type": "string",
@@ -1356,6 +1395,15 @@ const docTemplate = `{
                 "summary": "Accept Request Transfer",
                 "parameters": [
                     {
+                        "description": "Data",
+                        "name": "Asset",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ConfirmRequestTransferRequest"
+                        }
+                    },
+                    {
                         "type": "integer",
                         "description": "request_transfer_id",
                         "name": "id",
@@ -1962,6 +2010,17 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.ConfirmRequestTransferRequest": {
+            "type": "object",
+            "required": [
+                "assetId"
+            ],
+            "properties": {
+                "assetId": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.CreateCategoryRequest": {
             "type": "object",
             "required": [
@@ -2021,11 +2080,22 @@ const docTemplate = `{
         "dto.CreateRequestTransferRequest": {
             "type": "object",
             "required": [
-                "assetId",
-                "departmentId"
+                "categoryId",
+                "description"
             ],
             "properties": {
-                "assetId": {
+                "categoryId": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.GetAssetsByCateOfDepartmentRequest": {
+            "type": "object",
+            "properties": {
+                "categoryId": {
                     "type": "integer"
                 },
                 "departmentId": {

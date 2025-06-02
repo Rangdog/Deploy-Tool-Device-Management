@@ -23,4 +23,5 @@ type AssetsRepository interface {
 	UpdateOwner(id int64, ownerId int64, tx *gorm.DB) error
 	UpdateAssetDepartment(id, departmentId int64, tx *gorm.DB) (*entity.Assets, error)
 	UpdateAssetOwner(id, Owner int64, tx *gorm.DB) (*entity.Assets, error)
+	GetAssetsByCateOfDepartment(categoryId int64, departmentId int64) ([]*entity.Assets, error)
 }

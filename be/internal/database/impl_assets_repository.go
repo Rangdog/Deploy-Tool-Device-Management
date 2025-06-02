@@ -207,3 +207,12 @@ func (r *PostgreSQLAssetsRepository) UpdateAssetOwner(id, ownerId int64, tx *gor
 	tx.Model(entity.Assets{}).Where("id = ?", id).Find(&asset)
 	return &asset, nil
 }
+
+func (r *PostgreSQLAssetsRepository) GetAssetsByCateOfDepartment(categoryId int64, departmentId int64) ([]*entity.Assets, error) {
+	assets := []*entity.Assets{}
+	result := r.db.Model(entity.Assets{}).Where("category_id = ? and department_id = ?", categoryId, departmentId).Find(&assets)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return assets, nil
+}
