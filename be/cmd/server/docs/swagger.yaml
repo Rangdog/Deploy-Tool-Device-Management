@@ -96,13 +96,6 @@ definitions:
     - categoryId
     - description
     type: object
-  dto.GetAssetsByCateOfDepartmentRequest:
-    properties:
-      categoryId:
-        type: integer
-      departmentId:
-        type: integer
-    type: object
   dto.RefreshRequest:
     properties:
       refreshToken:
@@ -525,12 +518,12 @@ paths:
       - application/json
       description: Get asset by category of department
       parameters:
-      - description: Data
-        in: body
-        name: Role
-        required: true
-        schema:
-          $ref: '#/definitions/dto.GetAssetsByCateOfDepartmentRequest'
+      - in: query
+        name: categoryId
+        type: integer
+      - in: query
+        name: departmentId
+        type: integer
       - description: Authorization
         in: header
         name: Authorization

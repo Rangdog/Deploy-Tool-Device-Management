@@ -381,13 +381,14 @@ const docTemplate = `{
                 "summary": "Get asset by category of department",
                 "parameters": [
                     {
-                        "description": "Data",
-                        "name": "Role",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.GetAssetsByCateOfDepartmentRequest"
-                        }
+                        "type": "integer",
+                        "name": "categoryId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "departmentId",
+                        "in": "query"
                     },
                     {
                         "type": "string",
@@ -2089,17 +2090,6 @@ const docTemplate = `{
                 },
                 "description": {
                     "type": "string"
-                }
-            }
-        },
-        "dto.GetAssetsByCateOfDepartmentRequest": {
-            "type": "object",
-            "properties": {
-                "categoryId": {
-                    "type": "integer"
-                },
-                "departmentId": {
-                    "type": "integer"
                 }
             }
         },

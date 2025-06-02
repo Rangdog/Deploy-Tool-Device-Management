@@ -602,7 +602,7 @@ func GeneratePDF(assets []*entity.Assets) ([]byte, error) {
 // @Tags Assets
 // @Accept json
 // @Produce json
-// @Param        Role   body    dto.GetAssetsByCateOfDepartmentRequest   true  "Data"
+// @Param        asset   query   dto.GetAssetsByCateOfDepartmentRequest   false  "category id and department id"
 // @param Authorization header string true "Authorization"
 // @Router /api/assets/request-transfer [GET]
 // @securityDefinitions.apiKey token
@@ -613,7 +613,7 @@ func (h *AssetsHandler) GetAssetsByCateOfDepartment(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	// userId := utils.GetUserIdFromContext(c)
 	var request dto.GetAssetsByCateOfDepartmentRequest
-	if err := c.ShouldBindJSON(&request); err != nil {
+	if err := c.ShouldBindQuery(&request); err != nil {
 		log.Error("Happened error when mapping request from FE. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest)
 	}
