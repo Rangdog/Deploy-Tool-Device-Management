@@ -10,7 +10,7 @@ type RequestTransferResponse struct {
 	Status     string                         `json:"status"`
 	User       UserResponseInRequestTransfer  `json:"user"`
 	Asset      AssetResponseInRequestTransfer `json:"asset"`
-	Department DepartmentInRequestTransfer    `json:"Department"`
+	Department DepartmentInRequestTransfer    `json:"department"`
 }
 
 type UserResponseInRequestTransfer struct {
