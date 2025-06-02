@@ -76,7 +76,7 @@ func (h *RequestTransferHandler) Create(c *gin.Context) {
 // @Produce      json
 // @Param		id	path		int				true	"request_transfer_id"
 // @param Authorization header string true "Authorization"
-// @Router       /api/request-transfer/accept/{id} [POST]
+// @Router       /api/request-transfer/confirm/{id} [PATCH]
 // @securityDefinitions.apiKey token
 // @in header
 // @name Authorization
@@ -123,7 +123,7 @@ func (h *RequestTransferHandler) Accept(c *gin.Context) {
 // @Produce      json
 // @Param		id	path		int				true	"request_transfer_id"
 // @param Authorization header string true "Authorization"
-// @Router       /api/request-transfer/deny/{id} [POST]
+// @Router       /api/request-transfer/deny/{id} [PATCH]
 // @securityDefinitions.apiKey token
 // @in header
 // @name Authorization

@@ -1047,8 +1047,8 @@ paths:
       summary: Get request transfer
       tags:
       - RequestTransfer
-  /api/request-transfer/accept/{id}:
-    post:
+  /api/request-transfer/confirm/{id}:
+    patch:
       consumes:
       - application/json
       description: Accept Request Transfer
@@ -1072,7 +1072,7 @@ paths:
       tags:
       - RequestTransfer
   /api/request-transfer/deny/{id}:
-    post:
+    patch:
       consumes:
       - application/json
       description: Deny Request Transfer

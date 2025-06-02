@@ -68,8 +68,8 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandle
 
 	//Request
 	api.POST("/request-transfer", RequestTransferHandler.Create)                      // đã check
-	api.POST("/request-transfer/accept/:id", RequestTransferHandler.Accept)           // đã check
-	api.POST("/request-transfer/deny/:id", RequestTransferHandler.Deny)               // đã check
+	api.PATCH("/request-transfer/confirm/:id", RequestTransferHandler.Accept)         // đã check
+	api.PATCH("/request-transfer/deny/:id", RequestTransferHandler.Deny)              // đã check
 	api.GET("/request-transfer/:id", RequestTransferHandler.GetRequestTransferById)   // đã check
 	api.GET("/request-transfer/filter", RequestTransferHandler.FilterRequestTransfer) // đã check
 

@@ -1336,8 +1336,8 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/request-transfer/accept/{id}": {
-            "post": {
+        "/api/request-transfer/confirm/{id}": {
+            "patch": {
                 "security": [
                     {
                         "JWT": []
@@ -1374,7 +1374,7 @@ const docTemplate = `{
             }
         },
         "/api/request-transfer/deny/{id}": {
-            "post": {
+            "patch": {
                 "security": [
                     {
                         "JWT": []
