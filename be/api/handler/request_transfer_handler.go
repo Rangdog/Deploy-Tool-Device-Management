@@ -48,16 +48,7 @@ func (h *RequestTransferHandler) Create(c *gin.Context) {
 		log.Error("Happened error when create request transfer. Error", err)
 		pkg.PanicExeption(constant.UnknownError, "Happened error when create request transfer")
 	}
-	requestTransferResponse := dto.RequestTransferResponse{}
-	requestTransferResponse.Id = requestTransfer.Id
-	requestTransferResponse.Status = requestTransfer.Status
-	requestTransferResponse.User.Id = requestTransfer.User.Id
-	requestTransferResponse.User.FirstName = requestTransfer.User.FirstName
-	requestTransferResponse.User.LastName = requestTransfer.User.LastName
-	requestTransferResponse.User.Email = requestTransfer.User.Email
-	requestTransferResponse.Description = requestTransfer.Description
-	requestTransferResponse.Category.Id = requestTransfer.CategoryId
-	requestTransferResponse.Category.CategoryName = requestTransfer.Category.CategoryName
+	requestTransferResponse := utils.ConvertRequestTransferToResponse(requestTransfer)
 	c.JSON(http.StatusCreated, pkg.BuildReponseSuccess(http.StatusCreated, constant.Success, requestTransferResponse))
 }
 
@@ -94,16 +85,7 @@ func (h *RequestTransferHandler) Accept(c *gin.Context) {
 		log.Error("Happened error when accept request transfer. Error", err)
 		pkg.PanicExeption(constant.UnknownError, "Happened error when accept request transfer")
 	}
-	requestTransferResponse := dto.RequestTransferResponse{}
-	requestTransferResponse.Id = requestTransfer.Id
-	requestTransferResponse.Status = requestTransfer.Status
-	requestTransferResponse.User.Id = requestTransfer.User.Id
-	requestTransferResponse.User.FirstName = requestTransfer.User.FirstName
-	requestTransferResponse.User.LastName = requestTransfer.User.LastName
-	requestTransferResponse.User.Email = requestTransfer.User.Email
-	requestTransferResponse.Description = requestTransfer.Description
-	requestTransferResponse.Category.Id = requestTransfer.CategoryId
-	requestTransferResponse.Category.CategoryName = requestTransfer.Category.CategoryName
+	requestTransferResponse := utils.ConvertRequestTransferToResponse(requestTransfer)
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, requestTransferResponse))
 }
 
@@ -134,16 +116,7 @@ func (h *RequestTransferHandler) Deny(c *gin.Context) {
 		log.Error("Happened error when deny request transfer. Error", err)
 		pkg.PanicExeption(constant.UnknownError, "Happened error when deny request transfer")
 	}
-	requestTransferResponse := dto.RequestTransferResponse{}
-	requestTransferResponse.Id = requestTransfer.Id
-	requestTransferResponse.Status = requestTransfer.Status
-	requestTransferResponse.User.Id = requestTransfer.User.Id
-	requestTransferResponse.User.FirstName = requestTransfer.User.FirstName
-	requestTransferResponse.User.LastName = requestTransfer.User.LastName
-	requestTransferResponse.User.Email = requestTransfer.User.Email
-	requestTransferResponse.Description = requestTransfer.Description
-	requestTransferResponse.Category.Id = requestTransfer.CategoryId
-	requestTransferResponse.Category.CategoryName = requestTransfer.Category.CategoryName
+	requestTransferResponse := utils.ConvertRequestTransferToResponse(requestTransfer)
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, requestTransferResponse))
 }
 
@@ -174,16 +147,7 @@ func (h *RequestTransferHandler) GetRequestTransferById(c *gin.Context) {
 		log.Error("Happened error when get request transfer. Error", err)
 		pkg.PanicExeption(constant.UnknownError, "Happened error when get request transfer")
 	}
-	requestTransferResponse := dto.RequestTransferResponse{}
-	requestTransferResponse.Id = requestTransfer.Id
-	requestTransferResponse.Status = requestTransfer.Status
-	requestTransferResponse.User.Id = requestTransfer.User.Id
-	requestTransferResponse.User.FirstName = requestTransfer.User.FirstName
-	requestTransferResponse.User.LastName = requestTransfer.User.LastName
-	requestTransferResponse.User.Email = requestTransfer.User.Email
-	requestTransferResponse.Description = requestTransfer.Description
-	requestTransferResponse.Category.Id = requestTransfer.CategoryId
-	requestTransferResponse.Category.CategoryName = requestTransfer.Category.CategoryName
+	requestTransferResponse := utils.ConvertRequestTransferToResponse(requestTransfer)
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, requestTransferResponse))
 }
 

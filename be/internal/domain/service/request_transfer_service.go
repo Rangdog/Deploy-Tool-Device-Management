@@ -1,10 +1,10 @@
 package service
 
 import (
-	"BE_Manage_device/internal/domain/dto"
 	"BE_Manage_device/internal/domain/entity"
 	"BE_Manage_device/internal/domain/filter"
 	"BE_Manage_device/internal/domain/repository"
+	"BE_Manage_device/pkg/utils"
 	"errors"
 	"math"
 )
@@ -13,10 +13,11 @@ type RequestTransferService struct {
 	repo              repository.RequestTransferRepository
 	assignmentService *AssignmentService
 	userRepo          repository.UserRepository
+	assetRepo         repository.AssetsRepository
 }
 
-func NewRequestTransferService(repo repository.RequestTransferRepository, assignmentService *AssignmentService, userRepo repository.UserRepository) *RequestTransferService {
-	return &RequestTransferService{repo: repo, assignmentService: assignmentService, userRepo: userRepo}
+func NewRequestTransferService(repo repository.RequestTransferRepository, assignmentService *AssignmentService, userRepo repository.UserRepository, assetRepo repository.AssetsRepository) *RequestTransferService {
+	return &RequestTransferService{repo: repo, assignmentService: assignmentService, userRepo: userRepo, assetRepo: assetRepo}
 }
 
 func (service *RequestTransferService) Create(userId int64, categoryId int64, description string) (*entity.RequestTransfer, error) {
@@ -40,6 +41,13 @@ func (service *RequestTransferService) Accept(userId int64, id int64, assetId in
 	}
 	if requestCheck.Status == "Deny" {
 		return nil, errors.New("can't change request")
+	}
+	assetCheck, err := service.assetRepo.GetAssetById(assetId)
+	if err != nil {
+		return nil, err
+	}
+	if assetCheck.DepartmentId == *requestCheck.User.DepartmentId {
+		return nil, errors.New("asset department same request department")
 	}
 	tx := service.repo.GetDB().Begin()
 	request, err := service.repo.UpdateStatusConfirm(id, tx)
@@ -119,20 +127,7 @@ func (service *RequestTransferService) Filter(userId int64, status *string, page
 	if result.Error != nil {
 		return nil, result.Error
 	}
-	var requestRes []dto.RequestTransferResponse
-	for _, request := range requests {
-		requestTransferResponse := dto.RequestTransferResponse{}
-		requestTransferResponse.Id = request.Id
-		requestTransferResponse.Status = request.Status
-		requestTransferResponse.User.Id = request.User.Id
-		requestTransferResponse.User.FirstName = request.User.FirstName
-		requestTransferResponse.User.LastName = request.User.LastName
-		requestTransferResponse.User.Email = request.User.Email
-		requestTransferResponse.Description = request.Description
-		requestTransferResponse.Category.Id = request.CategoryId
-		requestTransferResponse.Category.CategoryName = request.Category.CategoryName
-		requestRes = append(requestRes, requestTransferResponse)
-	}
+	requestRes := utils.ConvertRequestTransfersToResponses(requests)
 	data := map[string]any{
 		"data":       requestRes,
 		"page":       filter.Page,

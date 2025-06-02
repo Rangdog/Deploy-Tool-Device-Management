@@ -14,10 +14,11 @@ type RequestTransferResponse struct {
 }
 
 type UserResponseInRequestTransfer struct {
-	Id        int64  `json:"id"`
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	Email     string `json:"email"`
+	Id           int64  `json:"id"`
+	FirstName    string `json:"firstName"`
+	LastName     string `json:"lastName"`
+	Email        string `json:"email"`
+	DepartmentId int64  `json:"departmentId"`
 }
 
 type CategoryResponseInRequestTransfer struct {

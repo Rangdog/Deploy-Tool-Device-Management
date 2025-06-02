@@ -63,7 +63,7 @@ func main() {
 	assetLogService := service.NewAssetLogService(assetsLogRepository)
 	assetLogHandler := handler.NewAssetLogHandler(assetLogService)
 	//Request Transfer
-	requestTransferService := service.NewRequestTransferService(requestTransferRepository, assignmentService, userRepository)
+	requestTransferService := service.NewRequestTransferService(requestTransferRepository, assignmentService, userRepository, assetsRepository)
 	requestTransferHandler := handler.NewRequestTransferHandler(requestTransferService)
 	//Maintenance
 	MaintenanceService := service.NewMaintenanceSchedulesService(maintenanceRepository)
@@ -80,7 +80,7 @@ func main() {
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
 	r := gin.Default()
-	api.SetupRoutes(r, userHandler, locationHandler, categoriesHandler, departmentHandler, assetsHandler, roleHandler, assignmentHandler, assetLogHandler, requestTransferHandler, maintenanceHandler, SSeHandler, notificationsHandler, userSessionRepository)
+	api.SetupRoutes(r, userHandler, locationHandler, categoriesHandler, departmentHandler, assetsHandler, roleHandler, assignmentHandler, assetLogHandler, requestTransferHandler, maintenanceHandler, SSeHandler, notificationsHandler, userSessionRepository, db)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	c := cron.New(cron.WithLocation(time.FixedZone("Asia/Ho_Chi_Minh", 7*3600)))
@@ -92,11 +92,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("❌ Failed to schedule cron job: %v", err)
 	}
-
 	_, err = c.AddFunc("0 8 * * *", func() {
 		log.Println("🔔 Running warranty notification check at 8:00 AM")
 		utils.SendEmailsForWarrantyExpiry(db, emailService, assetsRepository)
 	})
+	utils.SendEmailsForWarrantyExpiry(db, emailService, assetsRepository)
 	if err != nil {
 		log.Fatalf("❌ Failed to schedule cron job: %v", err)
 	}

@@ -65,7 +65,7 @@ func (ns *NotificationService) IsOnline(userId string) bool {
 
 func (service *NotificationService) SendNotificationToUsers(users []*entity.Users, message string, asset entity.Assets) error {
 	status := "pending"
-	typeNotify := "info"
+	typeNotify := "Info"
 	timeNotify := time.Now()
 	for _, u := range users {
 		if u == nil {

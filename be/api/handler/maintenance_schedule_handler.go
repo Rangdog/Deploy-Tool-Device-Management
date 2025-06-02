@@ -57,7 +57,8 @@ func (h *MaintenanceSchedulesHandler) Create(c *gin.Context) {
 		log.Error("Happened error when create maintenance. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when create maintenance.")
 	}
-	c.JSON(http.StatusCreated, pkg.BuildReponseSuccess(http.StatusCreated, constant.Success, maintenance))
+	MaintenanceScheduleRes := utils.ConvertMaintenanceSchedulesToResponses(maintenance)
+	c.JSON(http.StatusCreated, pkg.BuildReponseSuccess(http.StatusCreated, constant.Success, MaintenanceScheduleRes))
 }
 
 // Maintenance Schedules godoc
@@ -86,5 +87,6 @@ func (h *MaintenanceSchedulesHandler) GetAllMaintenanceSchedulesByAssetId(c *gin
 	if err != nil {
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when get maintenance.")
 	}
-	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, maintenances))
+	MaintenanceScheduleRes := utils.ConvertMaintenanceSchedulesToResponsesArray(maintenances)
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, MaintenanceScheduleRes))
 }

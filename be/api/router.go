@@ -7,9 +7,10 @@ import (
 	"BE_Manage_device/internal/domain/repository"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandler *handler.LocationHandler, CategoriesHandler *handler.CategoriesHandler, DepartmentsHandler *handler.DepartmentsHandler, AssetsHandler *handler.AssetsHandler, RoleHandler *handler.RoleHandler, AssignmentHandler *handler.AssignmentHandler, AssetLogHandler *handler.AssetLogHandler, RequestTransferHandler *handler.RequestTransferHandler, MaintenanceSchedulesHandler *handler.MaintenanceSchedulesHandler, SSEHandler *handler.SSEHandler, NotificationHandler *handler.NotificationHandler, session repository.UsersSessionRepository) {
+func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandler *handler.LocationHandler, CategoriesHandler *handler.CategoriesHandler, DepartmentsHandler *handler.DepartmentsHandler, AssetsHandler *handler.AssetsHandler, RoleHandler *handler.RoleHandler, AssignmentHandler *handler.AssignmentHandler, AssetLogHandler *handler.AssetLogHandler, RequestTransferHandler *handler.RequestTransferHandler, MaintenanceSchedulesHandler *handler.MaintenanceSchedulesHandler, SSEHandler *handler.SSEHandler, NotificationHandler *handler.NotificationHandler, session repository.UsersSessionRepository, db *gorm.DB) {
 	//users
 	r.Use(middleware.CORSMiddleware())
 	api := r.Group("/api")
@@ -24,12 +25,12 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandle
 	api.Use(middleware.AuthMiddleware(config.AccessSecret, session))
 
 	api.GET("/user/department/:department_id", userHandler.GetAllUserOfDepartment)
-	api.GET("/user/session", userHandler.Session)                     // đã check: nên chỉnh lại api response
-	api.POST("/auth/logout", userHandler.Logout)                      // đã check
-	api.GET("/users", userHandler.GetAllUser)                         // đã check:
-	api.PATCH("users/information", userHandler.UpdateInformationUser) // đã check
-	api.PATCH("users/role", userHandler.UpdateRoleUser)               // đã check
-	api.PATCH("/user/department", userHandler.UpdateDepartment)
+	api.GET("/user/session", userHandler.Session)                                                                           // đã check: nên chỉnh lại api response
+	api.POST("/auth/logout", userHandler.Logout)                                                                            // đã check
+	api.GET("/users", userHandler.GetAllUser)                                                                               // đã check:
+	api.PATCH("users/information", userHandler.UpdateInformationUser)                                                       // đã check
+	api.PATCH("users/role", middleware.RequirePermission([]string{"role-assignment"}, nil, db), userHandler.UpdateRoleUser) // đã check
+	api.PATCH("/user/department", middleware.RequirePermission([]string{"user-management"}, nil, db), userHandler.UpdateDepartment)
 	//Locations
 	api.POST("/locations", LocationHandler.Create)       // đã check
 	api.GET("/locations", LocationHandler.GetAll)        // đã check
@@ -52,8 +53,8 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandle
 	api.GET("/assets/filter", AssetsHandler.FilterAsset) // đã check
 	api.PUT("/assets/:id", AssetsHandler.Update)         // đã check
 	api.DELETE("/assets/:id", AssetsHandler.DeleteAsset)
-	api.PATCH("/assets-retired/:id", AssetsHandler.UpdateAssetRetired)      // đã check
-	api.GET("/assets/filter-dashboard", AssetsHandler.FilterAssetDashboard) // đã check
+	api.PATCH("/assets-retired/:id", middleware.RequirePermission([]string{"Update lifecycle"}, nil, db), AssetsHandler.UpdateAssetRetired) // đã check
+	api.GET("/assets/filter-dashboard", AssetsHandler.FilterAssetDashboard)                                                                 // đã check
 	api.GET("/assets/request-transfer", AssetsHandler.GetAssetsByCateOfDepartment)
 
 	//Roles

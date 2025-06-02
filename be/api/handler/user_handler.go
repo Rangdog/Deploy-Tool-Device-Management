@@ -257,21 +257,8 @@ func (h *UserHandler) Session(c *gin.Context) {
 		log.Error("Happened error when reset password. Error", err)
 		pkg.PanicExeption(constant.Unauthorized, err.Error())
 	}
-	usersResponse := dto.UserResponse{}
-	usersResponse.Id = user.Id
-	usersResponse.FirstName = user.FirstName
-	usersResponse.LastName = user.LastName
-	usersResponse.Email = user.Email
-	usersResponse.IsActive = user.IsActive
-	usersResponse.Role.Id = user.RoleId
-	usersResponse.Role.Slug = user.Role.Slug
-	if user.DepartmentId != nil {
-		usersResponse.Department = &dto.UserDepartmentResponse{
-			Id:             *user.DepartmentId,
-			DepartmentName: user.Department.DepartmentName,
-		}
-	}
-	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, usersResponse))
+	userResponse := utils.ConvertUserToUserResponse(user)
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, userResponse))
 }
 
 // User godoc
@@ -367,26 +354,7 @@ func (h *UserHandler) GetAllUser(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	// userId := utils.GetUserIdFromContext(c)
 	users := h.service.GetAllUser()
-	usersResponses := []dto.UserResponse{}
-	for _, user := range users {
-		usersResponse := dto.UserResponse{}
-		usersResponse.Id = user.Id
-		usersResponse.FirstName = user.FirstName
-		usersResponse.LastName = user.LastName
-		usersResponse.Email = user.Email
-		usersResponse.IsActive = user.IsActive
-		usersResponse.Role.Id = user.RoleId
-		usersResponse.Role.Slug = user.Role.Slug
-		if user.DepartmentId != nil {
-			if user.DepartmentId != nil {
-				usersResponse.Department = &dto.UserDepartmentResponse{
-					Id:             *user.DepartmentId,
-					DepartmentName: user.Department.DepartmentName,
-				}
-			}
-		}
-		usersResponses = append(usersResponses, usersResponse)
-	}
+	usersResponses := utils.ConvertUsersToUserResponses(users)
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, usersResponses))
 }
 
@@ -418,20 +386,7 @@ func (h *UserHandler) UpdateInformationUser(c *gin.Context) {
 		log.Error("Happened error when update information user. Error", err)
 		pkg.PanicExeption(constant.UnknownError, err.Error())
 	}
-	usersResponse := dto.UserResponse{}
-	usersResponse.Id = userUpdated.Id
-	usersResponse.FirstName = userUpdated.FirstName
-	usersResponse.LastName = userUpdated.LastName
-	usersResponse.Email = userUpdated.Email
-	usersResponse.IsActive = userUpdated.IsActive
-	usersResponse.Role.Id = userUpdated.RoleId
-	usersResponse.Role.Slug = userUpdated.Role.Slug
-	if userUpdated.DepartmentId != nil {
-		usersResponse.Department = &dto.UserDepartmentResponse{
-			Id:             *userUpdated.DepartmentId,
-			DepartmentName: userUpdated.Department.DepartmentName,
-		}
-	}
+	usersResponse := utils.ConvertUserToUserResponse(userUpdated)
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, usersResponse))
 }
 
@@ -463,21 +418,8 @@ func (h *UserHandler) UpdateRoleUser(c *gin.Context) {
 		log.Error("Happened error when update role user. Error", err)
 		pkg.PanicExeption(constant.UnknownError, err.Error())
 	}
-	usersResponse := dto.UserResponse{}
-	usersResponse.Id = userUpdated.Id
-	usersResponse.FirstName = userUpdated.FirstName
-	usersResponse.LastName = userUpdated.LastName
-	usersResponse.Email = userUpdated.Email
-	usersResponse.IsActive = userUpdated.IsActive
-	usersResponse.Role.Id = userUpdated.RoleId
-	usersResponse.Role.Slug = userUpdated.Role.Slug
-	if userUpdated.DepartmentId != nil {
-		usersResponse.Department = &dto.UserDepartmentResponse{
-			Id:             *userUpdated.DepartmentId,
-			DepartmentName: userUpdated.Department.DepartmentName,
-		}
-	}
-	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, &usersResponse))
+	usersResponse := utils.ConvertUserToUserResponse(userUpdated)
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, usersResponse))
 }
 
 // Role godoc
@@ -506,24 +448,7 @@ func (h *UserHandler) GetAllUserOfDepartment(c *gin.Context) {
 		log.Error("Happened error when get all user of department. Error", err)
 		pkg.PanicExeption(constant.UnknownError, "Happened error when get all user of department")
 	}
-	userResponses := []dto.UserResponse{}
-	for _, user := range users {
-		usersResponse := dto.UserResponse{}
-		usersResponse.Id = user.Id
-		usersResponse.FirstName = user.FirstName
-		usersResponse.LastName = user.LastName
-		usersResponse.Email = user.Email
-		usersResponse.IsActive = user.IsActive
-		usersResponse.Role.Id = user.RoleId
-		usersResponse.Role.Slug = user.Role.Slug
-		if user.DepartmentId != nil {
-			usersResponse.Department = &dto.UserDepartmentResponse{
-				Id:             *user.DepartmentId,
-				DepartmentName: user.Department.DepartmentName,
-			}
-		}
-		userResponses = append(userResponses, usersResponse)
-	}
+	userResponses := utils.ConvertUsersToUserResponses(users)
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, userResponses))
 }
 
