@@ -74,10 +74,13 @@ func (service *RequestTransferService) Deny(userId int64, id int64) (*entity.Req
 	if requestCheck.Status == "Confirm" {
 		return nil, errors.New("can't change request")
 	}
-	request, err := service.repo.UpdateStatusDeny(id)
+	tx := service.repo.GetDB().Begin()
+	request, err := service.repo.UpdateStatusDeny(id, tx)
 	if err != nil {
+		tx.Rollback()
 		return nil, err
 	}
+
 	return request, nil
 }
 

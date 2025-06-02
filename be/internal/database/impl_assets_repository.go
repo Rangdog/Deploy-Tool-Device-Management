@@ -199,11 +199,11 @@ func (r *PostgreSQLAssetsRepository) UpdateAssetDepartment(id, departmentId int6
 }
 
 func (r *PostgreSQLAssetsRepository) UpdateAssetOwner(id, ownerId int64, tx *gorm.DB) (*entity.Assets, error) {
-	result := r.db.Model(entity.Assets{}).Where("id = ?", id).Update("owner", ownerId)
+	result := tx.Model(entity.Assets{}).Where("id = ?", id).Update("owner", ownerId)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 	var asset = entity.Assets{}
-	r.db.Model(entity.Assets{}).Where("id = ?", id).Find(&asset)
+	tx.Model(entity.Assets{}).Where("id = ?", id).Find(&asset)
 	return &asset, nil
 }

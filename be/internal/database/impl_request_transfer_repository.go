@@ -38,7 +38,7 @@ func (r *PostgreSQLRequestTransferRepository) UpdateStatusConfirm(id int64, tx *
 	return &request, nil
 }
 
-func (r PostgreSQLRequestTransferRepository) UpdateStatusDeny(id int64) (*entity.RequestTransfer, error) {
+func (r PostgreSQLRequestTransferRepository) UpdateStatusDeny(id int64, tx *gorm.DB) (*entity.RequestTransfer, error) {
 	request := entity.RequestTransfer{}
 	result := r.db.Model(entity.RequestTransfer{}).Where("id = ?", id).Update("status", "Deny")
 	if result.Error != nil {
