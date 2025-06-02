@@ -50,12 +50,12 @@ type UpdateRoleUserRequest struct {
 }
 
 type UserResponse struct {
-	Id         int64  `json:"id"`
-	FirstName  string `json:"firstName"`
-	LastName   string `json:"lastName"`
-	Email      string `json:"email"`
-	IsActive   bool   `json:"isActivate"`
-	Role       UserRoleResponse
+	Id         int64                   `json:"id"`
+	FirstName  string                  `json:"firstName"`
+	LastName   string                  `json:"lastName"`
+	Email      string                  `json:"email"`
+	IsActive   bool                    `json:"isActivate"`
+	Role       UserRoleResponse        `json:"role"`
 	Department *UserDepartmentResponse `json:"department,omitempty"`
 }
 
@@ -71,5 +71,5 @@ type UserDepartmentResponse struct {
 
 type UserUpdateDepartmentRequest struct {
 	UserId       int64 `json:"userId"`
-	DepartmentId int64 `json:"DepartmentId"`
+	DepartmentId int64 `json:"departmentId"`
 }

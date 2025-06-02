@@ -173,7 +173,7 @@ definitions:
     type: object
   dto.UserUpdateDepartmentRequest:
     properties:
-      DepartmentId:
+      departmentId:
         type: integer
       userId:
         type: integer

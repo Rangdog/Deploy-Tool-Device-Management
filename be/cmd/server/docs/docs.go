@@ -2255,7 +2255,7 @@ const docTemplate = `{
         "dto.UserUpdateDepartmentRequest": {
             "type": "object",
             "properties": {
-                "DepartmentId": {
+                "departmentId": {
                     "type": "integer"
                 },
                 "userId": {

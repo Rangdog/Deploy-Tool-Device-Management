@@ -2244,7 +2244,7 @@
         "dto.UserUpdateDepartmentRequest": {
             "type": "object",
             "properties": {
-                "DepartmentId": {
+                "departmentId": {
                     "type": "integer"
                 },
                 "userId": {
