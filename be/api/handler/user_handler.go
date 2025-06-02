@@ -76,14 +76,14 @@ func (h *UserHandler) Login(c *gin.Context) {
 	dataResponese := map[string]interface{}{}
 	if userLogin.IsActive {
 		dataResponese = map[string]interface{}{
-			"accessToken":  accessToken,
-			"refreshToken": refreshToken,
-			"isActive":     userLogin.IsActive,
-			"roleSlug":     userLogin.Role.Slug,
+			"access_token":  accessToken,
+			"refresh_token": refreshToken,
+			"is_active":     userLogin.IsActive,
+			"roleSlug":      userLogin.Role.Slug,
 		}
 	} else {
 		dataResponese = map[string]interface{}{
-			"isActive": userLogin.IsActive,
+			"is_active": userLogin.IsActive,
 		}
 	}
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, dataResponese))
