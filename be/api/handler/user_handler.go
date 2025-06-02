@@ -271,7 +271,7 @@ func (h *UserHandler) Session(c *gin.Context) {
 			DepartmentName: user.Department.DepartmentName,
 		}
 	}
-	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, user))
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, usersResponse))
 }
 
 // User godoc
