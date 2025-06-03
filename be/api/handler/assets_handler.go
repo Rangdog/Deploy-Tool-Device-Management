@@ -620,7 +620,7 @@ func (h *AssetsHandler) GetAssetsByCateOfDepartment(c *gin.Context) {
 	assets, err := h.service.GetAssetsByCateOfDepartment(request.CategoryId, request.DepartmentId)
 	if err != nil {
 		log.Error("Happened error when get assets. Error", err)
-		pkg.PanicExeption(constant.InvalidRequest, "Happened error when get assets")
+		pkg.PanicExeption(constant.InvalidRequest, err.Error())
 	}
 	assetsResponse := []dto.AssetResponse{}
 	for _, asset := range assets {
