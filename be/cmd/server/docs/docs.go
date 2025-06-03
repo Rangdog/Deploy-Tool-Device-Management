@@ -78,8 +78,22 @@ const docTemplate = `{
                     },
                     {
                         "type": "number",
-                        "description": "Cost",
-                        "name": "cost",
+                        "description": "originalCost",
+                        "name": "originalCost",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "residualValue",
+                        "name": "residualValue",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "usefulLife",
+                        "name": "usefulLife",
                         "in": "formData",
                         "required": true
                     },
@@ -471,8 +485,22 @@ const docTemplate = `{
                     },
                     {
                         "type": "number",
-                        "description": "Cost",
-                        "name": "cost",
+                        "description": "originalCost",
+                        "name": "originalCost",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "residualValue",
+                        "name": "residualValue",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "usefulLife",
+                        "name": "usefulLife",
                         "in": "formData",
                         "required": true
                     },

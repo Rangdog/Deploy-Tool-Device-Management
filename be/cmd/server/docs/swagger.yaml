@@ -215,9 +215,19 @@ paths:
         name: purchaseDate
         required: true
         type: string
-      - description: Cost
+      - description: originalCost
         in: formData
-        name: cost
+        name: originalCost
+        required: true
+        type: number
+      - description: residualValue
+        in: formData
+        name: residualValue
+        required: true
+        type: number
+      - description: usefulLife
+        in: formData
+        name: usefulLife
         required: true
         type: number
       - description: Warranty Expiry (RFC3339 format, e.g. 2023-12-31T23:59:59Z)
@@ -388,9 +398,19 @@ paths:
         name: purchaseDate
         required: true
         type: string
-      - description: Cost
+      - description: originalCost
         in: formData
-        name: cost
+        name: originalCost
+        required: true
+        type: number
+      - description: residualValue
+        in: formData
+        name: residualValue
+        required: true
+        type: number
+      - description: usefulLife
+        in: formData
+        name: usefulLife
         required: true
         type: number
       - description: Warranty Expiry (RFC3339 format, e.g. 2023-12-31T23:59:59Z)
