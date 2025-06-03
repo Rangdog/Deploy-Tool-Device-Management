@@ -95,15 +95,24 @@ func CORSMiddleware() gin.HandlerFunc {
 func RequirePermission(permSlug []string, accessLevel []*string, db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		defer pkg.PanicHandler(c)
-		userId, exists := c.Get("userID")
+		userID, exists := c.Get("userID")
 		if !exists {
 			pkg.PanicExeption(constant.Unauthorized, "Unauthorized Access Token")
 			c.Abort()
 			return
 		}
-		ok, err := utils.UserHasPermission(db, userId.(int64), permSlug, accessLevel)
+		if exists {
+			logrus.Info("userID:", userID)
+		} else {
+			logrus.Error("Happened error when get userId from gin Context")
+			pkg.PanicExeption(constant.UnknownError)
+		}
+		str := fmt.Sprint(userID)
+
+		userIdConvert, err := strconv.ParseInt(str, 10, 64)
+		ok, err := utils.UserHasPermission(db, userIdConvert, permSlug, accessLevel)
 		if err != nil {
-			pkg.PanicExeption(constant.UnknownError, "Internal server errorn")
+			pkg.PanicExeption(constant.UnknownError, "Internal server error")
 			c.Abort()
 			return
 		}
