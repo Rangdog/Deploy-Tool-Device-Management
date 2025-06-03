@@ -398,7 +398,7 @@ func (h *UserHandler) UpdateInformationUser(c *gin.Context) {
 // @Produce      json
 // @Param        Role   body    dto.UpdateRoleUserRequest   true  "Data"
 // @param Authorization header string true "Authorization"
-// @Router       /api/user/role [PATCH]
+// @Router       /api/users/role [PATCH]
 // @Success      200   {object}  dto.ApiResponseSuccessStruct
 // @Failure      500   {object}  dto.ApiResponseFail
 // @securityDefinitions.apiKey token
