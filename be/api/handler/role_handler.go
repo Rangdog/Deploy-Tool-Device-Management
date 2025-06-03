@@ -4,6 +4,7 @@ import (
 	"BE_Manage_device/constant"
 	"BE_Manage_device/internal/domain/service"
 	"BE_Manage_device/pkg"
+	"BE_Manage_device/pkg/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -32,5 +33,6 @@ func NewRoleHandler(service *service.RoleService) *RoleHandler {
 func (h *RoleHandler) GetAllRole(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	roles := h.service.GetAllRole()
-	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, roles))
+	rolesResponse := utils.ConvertRolesToResponsesArray(roles)
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, rolesResponse))
 }

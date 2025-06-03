@@ -139,3 +139,19 @@ func ConvertMaintenanceSchedulesToResponsesArray(maintenanceSchedules []*entity.
 	}
 	return res
 }
+
+func ConvertRoleToResponse(role *entity.Roles) dto.RoleResponse {
+	return dto.RoleResponse{
+		Id:          role.Id,
+		Slug:        role.Slug,
+		Description: role.Description,
+	}
+}
+
+func ConvertRolesToResponsesArray(role []*entity.Roles) []dto.RoleResponse {
+	res := make([]dto.RoleResponse, 0, len(role))
+	for _, as := range role {
+		res = append(res, ConvertRoleToResponse(as))
+	}
+	return res
+}

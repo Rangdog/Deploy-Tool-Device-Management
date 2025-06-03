@@ -11,8 +11,8 @@ import (
 
 var roles = []entity.Roles{
 	{Id: 1, Title: "Admin", Slug: "admin", Description: "Full access to system", Activated: true, Created_at: time.Now()},
-	{Id: 2, Title: "Asset Manager", Slug: "asset-manager", Description: "Manages assets", Activated: true, Created_at: time.Now()},
-	{Id: 3, Title: "Department Head", Slug: "department-head", Description: "Oversees department", Activated: true, Created_at: time.Now()},
+	{Id: 2, Title: "Asset Manager", Slug: "assetManager", Description: "Manages assets", Activated: true, Created_at: time.Now()},
+	{Id: 3, Title: "Department Head", Slug: "departmentHead", Description: "Oversees department", Activated: true, Created_at: time.Now()},
 	{Id: 4, Title: "Viewer", Slug: "viewer", Description: "Read-only access", Activated: true, Created_at: time.Now()},
 }
 
