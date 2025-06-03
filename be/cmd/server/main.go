@@ -109,6 +109,15 @@ func main() {
 		log.Fatalf("❌ Failed to schedule cron job: %v", err)
 	}
 
+	_, err = c.AddFunc("0 8 1 * *", func() {
+		log.Println("🔔 Running maintenance notification check at 8:00 AM on the 1st day of every month")
+		utils.UpdateCost(assetsRepository)
+	})
+
+	if err != nil {
+		log.Fatalf("❌ Failed to schedule cron job: %v", err)
+	}
+
 	c.Start()
 
 	if err := r.Run(config.Port); err != nil {

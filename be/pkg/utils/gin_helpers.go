@@ -513,3 +513,21 @@ func CurrentAssetValue(
 	currentValue := math.Max(originalCost-accumulatedDepreciation, salvageValue)
 	return currentValue
 }
+
+func UpdateCost(assetRepo repository.AssetsRepository) {
+	assets, err := assetRepo.GetAllAsset()
+	if err != nil {
+		log.Info("Happen error when get all asset")
+	}
+	for _, asset := range assets {
+		if asset.Status != "New" || asset.Status != "Disposed" || asset.Status != "Retired" {
+			if asset.AcquisitionDate != nil {
+				cost := CurrentAssetValue(asset.OriginalCost, asset.ResidualValue, asset.UsefulLife, *asset.AcquisitionDate, time.Now())
+				err = assetRepo.UpdateCost(asset.Id, cost)
+				if err != nil {
+					log.Info("Happen error when update cost")
+				}
+			}
+		}
+	}
+}

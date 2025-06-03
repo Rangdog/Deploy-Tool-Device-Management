@@ -215,3 +215,13 @@ func (r *PostgreSQLAssetsRepository) GetAssetsByCateOfDepartment(categoryId int6
 	}
 	return assets, nil
 }
+
+func (r *PostgreSQLAssetsRepository) UpdateCost(id int64, cost float64) error {
+	result := r.db.Model(entity.Assets{}).Where("id = ?", id).Update("cost", cost)
+	return result.Error
+}
+
+func (r *PostgreSQLAssetsRepository) UpdateAcquisitionDate(id int64, AcquisitionDate time.Time) error {
+	result := r.db.Model(entity.Assets{}).Where("id = ?", id).Update("acquisition_date", AcquisitionDate)
+	return result.Error
+}

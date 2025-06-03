@@ -133,6 +133,11 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 		tx.Rollback()
 		return nil, err
 	}
+	err = service.assetRepo.UpdateAcquisitionDate(assignment.AssetId, time.Now())
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
 	if err := tx.Commit().Error; err != nil {
 		return nil, err
 	}
