@@ -35,7 +35,9 @@ func NewAssetsHandler(service *service.AssetsService) *AssetsHandler {
 // @Produce json
 // @Param assetName formData string true "Asset Name"
 // @Param purchaseDate formData string true "Purchase Date (RFC3339 format, e.g. 2023-04-15T10:00:00Z)"
-// @Param cost formData number true "Cost"
+// @Param originalCost formData number true "originalCost"
+// @Param residualValue formData number true "residualValue"
+// @Param usefulLife formData number true "usefulLife"
 // @Param warrantExpiry formData string true "Warranty Expiry (RFC3339 format, e.g. 2023-12-31T23:59:59Z)"
 // @Param serialNumber formData string true "Serial Number"
 // @Param categoryId formData int64 true "Category ID"
@@ -56,7 +58,9 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 
 	assetName := c.PostForm("assetName")
 	purchaseDateStr := c.PostForm("purchaseDate")
-	costStr := c.PostForm("cost")
+	originalCostStr := c.PostForm("originalCost")
+	residualValueStr := c.PostForm("residualValue")
+	usefulLifeStr := c.PostForm("usefulLife")
 	warrantExpiryStr := c.PostForm("warrantExpiry")
 	serialNumber := c.PostForm("serialNumber")
 	categoryIdStr := c.PostForm("categoryId")
@@ -75,9 +79,19 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 		pkg.PanicExeption(constant.InvalidRequest, "Invalid warrant_expiry format")
 	}
 
-	cost, err := strconv.ParseFloat(costStr, 64)
+	originalCost, err := strconv.ParseFloat(originalCostStr, 64)
 	if err != nil {
-		pkg.PanicExeption(constant.InvalidRequest, "Invalid cost format")
+		pkg.PanicExeption(constant.InvalidRequest, "Invalid original cost format")
+	}
+
+	residualValue, err := strconv.ParseFloat(residualValueStr, 64)
+	if err != nil {
+		pkg.PanicExeption(constant.InvalidRequest, "Invalid residual value format")
+	}
+
+	usefulLife, err := strconv.ParseFloat(usefulLifeStr, 64)
+	if err != nil {
+		pkg.PanicExeption(constant.InvalidRequest, "Invalid useful life format")
 	}
 
 	categoryId, err := strconv.ParseInt(categoryIdStr, 10, 64)
@@ -110,7 +124,6 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 		userId,
 		assetName,
 		purchaseDate,
-		cost,
 		warrantExpiry,
 		serialNumber,
 		image,
@@ -118,6 +131,9 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 		categoryId,
 		departmentId,
 		url,
+		originalCost,
+		residualValue,
+		usefulLife,
 	)
 
 	if err != nil {
@@ -199,6 +215,9 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 	assetName := c.PostForm("assetName")
 	purchaseDateStr := c.PostForm("purchaseDate")
 	costStr := c.PostForm("cost")
+	originalCostStr := c.PostForm("originalCost")
+	residualValueStr := c.PostForm("residualValue")
+	usefulLifeStr := c.PostForm("usefulLife")
 	warrantExpiryStr := c.PostForm("warrantExpiry")
 	serialNumber := c.PostForm("serialNumber")
 	Status := c.PostForm("status")
@@ -218,6 +237,21 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 	cost, err := strconv.ParseFloat(costStr, 64)
 	if err != nil {
 		pkg.PanicExeption(constant.InvalidRequest, "Invalid cost format")
+	}
+
+	originalCost, err := strconv.ParseFloat(originalCostStr, 64)
+	if err != nil {
+		pkg.PanicExeption(constant.InvalidRequest, "Invalid original cost format")
+	}
+
+	residualValue, err := strconv.ParseFloat(residualValueStr, 64)
+	if err != nil {
+		pkg.PanicExeption(constant.InvalidRequest, "Invalid residual value format")
+	}
+
+	usefulLife, err := strconv.ParseFloat(usefulLifeStr, 64)
+	if err != nil {
+		pkg.PanicExeption(constant.InvalidRequest, "Invalid useful life format")
 	}
 
 	categoryId, err := strconv.ParseInt(categoryIdStr, 10, 64)

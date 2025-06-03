@@ -32,7 +32,7 @@ func NewAssetsService(repo repository.AssetsRepository, assertLogRepository repo
 	return &AssetsService{repo: repo, assertLogRepository: assertLogRepository, roleRepository: roleRepository, userRBACRepository: userRBACRepository, userRepository: userRepository, assignRepository: assignRepository, departmentRepository: departmentRepository, NotificationService: NotificationService}
 }
 
-func (service *AssetsService) Create(userId int64, assetName string, purchaseDate time.Time, cost float64, warrantExpiry time.Time, serialNumber string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, categoryId int64, departmentId int64, url string) (*entity.Assets, error) {
+func (service *AssetsService) Create(userId int64, assetName string, purchaseDate time.Time, warrantExpiry time.Time, serialNumber string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, categoryId int64, departmentId int64, url string, OriginalCost float64, ResidualValue float64, UsefulLife float64) (*entity.Assets, error) {
 	imgFile, err := image.Open()
 	if err != nil {
 		return nil, fmt.Errorf("cannot open image: %w", err)
@@ -64,7 +64,7 @@ func (service *AssetsService) Create(userId int64, assetName string, purchaseDat
 	asset := entity.Assets{
 		AssetName:      assetName,
 		PurchaseDate:   purchaseDate,
-		Cost:           cost,
+		Cost:           OriginalCost,
 		WarrantExpiry:  warrantExpiry,
 		Status:         "New",
 		SerialNumber:   serialNumber,
@@ -73,6 +73,9 @@ func (service *AssetsService) Create(userId int64, assetName string, purchaseDat
 		CategoryId:     categoryId,
 		DepartmentId:   departmentId,
 		Owner:          &userAssetManager.Id,
+		OriginalCost:   OriginalCost,
+		ResidualValue:  ResidualValue,
+		UsefulLife:     UsefulLife,
 	}
 	assetCreate, err := service.repo.Create(&asset, tx)
 	if err != nil {
@@ -184,7 +187,8 @@ func (service *AssetsService) SetRole(assetId int64, tx *gorm.DB, wg *sync.WaitG
 	return true
 }
 
-func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName string, purchaseDate time.Time, cost float64, warrantExpiry time.Time, serialNumber string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, categoryId int64, departmentId int64, status string) (*entity.Assets, error) {
+func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName string, purchaseDate time.Time, warrantExpiry time.Time, serialNumber string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, categoryId int64, departmentId int64, status string, OriginalCost float64, ResidualValue float64, UsefulLife float64) (*entity.Assets, error) {
+	var cost float64
 	imgFile, err := image.Open()
 	if err != nil {
 		return nil, fmt.Errorf("cannot open image: %w", err)
@@ -221,6 +225,15 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 	if err != nil {
 		return nil, err
 	}
+	assetCheck, err := service.repo.GetAssetById(assetId)
+	if err != nil {
+		return nil, err
+	}
+	if assetCheck.AcquisitionDate == nil {
+		cost = OriginalCost
+	} else {
+		cost = utils.CurrentAssetValue(OriginalCost, ResidualValue, UsefulLife, *assetCheck.AcquisitionDate, time.Now())
+	}
 	tx := service.repo.GetDB().Begin()
 	asset := entity.Assets{
 		Id:             assetId,
@@ -234,6 +247,9 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 		CategoryId:     categoryId,
 		DepartmentId:   departmentId,
 		Status:         status,
+		OriginalCost:   OriginalCost,
+		ResidualValue:  ResidualValue,
+		UsefulLife:     UsefulLife,
 	}
 	assetUpdated, err := service.repo.UpdateAsset(&asset, tx)
 	if err != nil {
