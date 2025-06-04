@@ -78,22 +78,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "number",
-                        "description": "originalCost",
-                        "name": "originalCost",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "number",
-                        "description": "residualValue",
-                        "name": "residualValue",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "number",
-                        "description": "usefulLife",
-                        "name": "usefulLife",
+                        "description": "Cost",
+                        "name": "cost",
                         "in": "formData",
                         "required": true
                     },
@@ -194,16 +180,6 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "type": "integer",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
                         "type": "string",
                         "name": "startTime",
                         "in": "query"
@@ -238,6 +214,15 @@ const docTemplate = `{
                 ],
                 "summary": "Retired assets",
                 "parameters": [
+                    {
+                        "description": "Data",
+                        "name": "ResidualValue",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RetiredAssetRequest"
+                        }
+                    },
                     {
                         "type": "string",
                         "description": "id",
@@ -291,16 +276,6 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "name": "email",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "name": "page",
                         "in": "query"
                     },
                     {
@@ -485,22 +460,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "number",
-                        "description": "originalCost",
-                        "name": "originalCost",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "number",
-                        "description": "residualValue",
-                        "name": "residualValue",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "number",
-                        "description": "usefulLife",
-                        "name": "usefulLife",
+                        "description": "Cost",
+                        "name": "cost",
                         "in": "formData",
                         "required": true
                     },
@@ -631,16 +592,6 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "name": "emailAssigned",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "name": "page",
                         "in": "query"
                     },
                     {
@@ -1507,16 +1458,6 @@ const docTemplate = `{
                 "summary": "Get all RequestTransfer with filter",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
                         "type": "string",
                         "name": "status",
                         "in": "query"
@@ -2181,6 +2122,17 @@ const docTemplate = `{
             "properties": {
                 "refreshToken": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.RetiredAssetRequest": {
+            "type": "object",
+            "required": [
+                "residualValue"
+            ],
+            "properties": {
+                "residualValue": {
+                    "type": "number"
                 }
             }
         },

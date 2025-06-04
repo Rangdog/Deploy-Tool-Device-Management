@@ -1,12 +1,12 @@
 package service
 
 import (
+	"BE_Manage_device/internal/domain/dto"
 	"BE_Manage_device/internal/domain/entity"
 	"BE_Manage_device/internal/domain/filter"
 	"BE_Manage_device/internal/domain/repository"
 	"BE_Manage_device/pkg/utils"
 	"errors"
-	"math"
 )
 
 type RequestTransferService struct {
@@ -104,36 +104,18 @@ func (service *RequestTransferService) GetRequestTransferById(userId int64, id i
 	return request, nil
 }
 
-func (service *RequestTransferService) Filter(userId int64, status *string, page int, limit int) (*map[string]any, error) {
+func (service *RequestTransferService) Filter(userId int64, status *string) ([]dto.RequestTransferResponse, error) {
 	var filter = filter.RequestTransferFilter{
 		Status: status,
-		Page:   page,
-		Limit:  limit,
 	}
 	db := service.repo.GetDB()
 	dbFilter := filter.ApplyFilter(db.Model(&entity.RequestTransfer{}), userId)
-	if filter.Page <= 0 {
-		filter.Page = 1
-	}
-
-	if filter.Limit <= 0 {
-		filter.Limit = 10
-	}
-	var total int64
-	dbFilter.Count(&total)
-	offset := (filter.Page - 1) * filter.Limit
 	var requests []entity.RequestTransfer
-	result := dbFilter.Offset(offset).Limit(filter.Limit).Find(&requests)
+	result := dbFilter.Find(&requests)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 	requestRes := utils.ConvertRequestTransfersToResponses(requests)
-	data := map[string]any{
-		"data":       requestRes,
-		"page":       filter.Page,
-		"limit":      filter.Limit,
-		"total":      total,
-		"total_page": int(math.Ceil(float64(total) / float64(filter.Limit))),
-	}
-	return &data, nil
+
+	return requestRes, nil
 }

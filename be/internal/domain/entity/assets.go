@@ -20,11 +20,10 @@ type Assets struct {
 	QrUrl                *string    `json:"qrUrl"`
 	RetiredOrDisposeTime *time.Time `json:"-"`
 
-	// Thuộc tính hỗ trợ cho Depreciation calculation
-	OriginalCost    float64    `json:"originalCost"`    //Nguyên giá tài sản
-	ResidualValue   float64    `json:"residualValue"`   //Giá trị thu hồi dự kiến
-	UsefulLife      float64    `json:"usefulLife"`      //Thời gian sử dụng dự kiến
-	AcquisitionDate *time.Time `json:"acquisitionDate"` //Ngày bắt đầu sử dụng
+	AnnualDepreciation *float64   `json:"annualDepreciation"` //Nguyên giá tài sản
+	ResidualValue      *float64   `json:"residualValue"`      //Giá trị thu hồi dự kiến
+	UsefulLife         *float64   `json:"usefulLife"`         //Thời gian sử dụng dự kiến
+	AcquisitionDate    *time.Time `json:"acquisitionDate"`    //Ngày bắt đầu sử dụng
 
 	Category   Categories  `gorm:"foreignKey:CategoryId;references:Id"`
 	Department Departments `gorm:"foreignKey:DepartmentId;references:Id"`

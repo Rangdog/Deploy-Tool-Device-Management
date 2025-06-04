@@ -50,3 +50,7 @@ type GetAssetsByCateOfDepartmentRequest struct {
 	CategoryId   int64 `form:"categoryId"`
 	DepartmentId int64 `form:"departmentId"`
 }
+
+type RetiredAssetRequest struct {
+	ResidualValue float64 `json:"residualValue" binding:"required"`
+}

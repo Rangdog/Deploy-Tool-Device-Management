@@ -11,8 +11,6 @@ type AssignmentFilter struct {
 	EmailAssigned *string `form:"emailAssigned" json:"emailAssigned"`
 	EmailAssign   *string `form:"emailAssign" json:"emailAssign"`
 	AssetName     *string `form:"assetName" json:"assetName"`
-	Page          int     `form:"page" json:"page"`
-	Limit         int     `form:"limit" json:"limit"`
 }
 
 func (f *AssignmentFilter) ApplyFilter(db *gorm.DB, userId int64) *gorm.DB {

@@ -103,6 +103,13 @@ definitions:
     required:
     - refreshToken
     type: object
+  dto.RetiredAssetRequest:
+    properties:
+      residualValue:
+        type: number
+    required:
+    - residualValue
+    type: object
   dto.UpdateInformationUserRequest:
     properties:
       firstName:
@@ -215,19 +222,9 @@ paths:
         name: purchaseDate
         required: true
         type: string
-      - description: originalCost
+      - description: Cost
         in: formData
-        name: originalCost
-        required: true
-        type: number
-      - description: residualValue
-        in: formData
-        name: residualValue
-        required: true
-        type: number
-      - description: usefulLife
-        in: formData
-        name: usefulLife
+        name: cost
         required: true
         type: number
       - description: Warranty Expiry (RFC3339 format, e.g. 2023-12-31T23:59:59Z)
@@ -296,12 +293,6 @@ paths:
         name: endTime
         type: string
       - in: query
-        name: limit
-        type: integer
-      - in: query
-        name: page
-        type: integer
-      - in: query
         name: startTime
         type: string
       - description: Authorization
@@ -323,6 +314,12 @@ paths:
       - application/json
       description: Retired assets
       parameters:
+      - description: Data
+        in: body
+        name: ResidualValue
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RetiredAssetRequest'
       - description: id
         in: path
         name: id
@@ -398,19 +395,9 @@ paths:
         name: purchaseDate
         required: true
         type: string
-      - description: originalCost
+      - description: Cost
         in: formData
-        name: originalCost
-        required: true
-        type: number
-      - description: residualValue
-        in: formData
-        name: residualValue
-        required: true
-        type: number
-      - description: usefulLife
-        in: formData
-        name: usefulLife
+        name: cost
         required: true
         type: number
       - description: Warranty Expiry (RFC3339 format, e.g. 2023-12-31T23:59:59Z)
@@ -482,12 +469,6 @@ paths:
       - in: query
         name: email
         type: string
-      - in: query
-        name: limit
-        type: integer
-      - in: query
-        name: page
-        type: integer
       - in: query
         name: serialNumber
         type: string
@@ -632,12 +613,6 @@ paths:
       - in: query
         name: emailAssigned
         type: string
-      - in: query
-        name: limit
-        type: integer
-      - in: query
-        name: page
-        type: integer
       - description: Authorization
         in: header
         name: Authorization
@@ -1166,12 +1141,6 @@ paths:
       - application/json
       description: Get all request transfer have permission
       parameters:
-      - in: query
-        name: limit
-        type: integer
-      - in: query
-        name: page
-        type: integer
       - in: query
         name: status
         type: string

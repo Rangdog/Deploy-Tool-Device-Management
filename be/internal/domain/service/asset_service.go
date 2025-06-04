@@ -8,7 +8,6 @@ import (
 	"BE_Manage_device/pkg/utils"
 	"errors"
 	"fmt"
-	"math"
 	"mime/multipart"
 	"sync"
 	"time"
@@ -32,7 +31,7 @@ func NewAssetsService(repo repository.AssetsRepository, assertLogRepository repo
 	return &AssetsService{repo: repo, assertLogRepository: assertLogRepository, roleRepository: roleRepository, userRBACRepository: userRBACRepository, userRepository: userRepository, assignRepository: assignRepository, departmentRepository: departmentRepository, NotificationService: NotificationService}
 }
 
-func (service *AssetsService) Create(userId int64, assetName string, purchaseDate time.Time, warrantExpiry time.Time, serialNumber string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, categoryId int64, departmentId int64, url string, OriginalCost float64, ResidualValue float64, UsefulLife float64) (*entity.Assets, error) {
+func (service *AssetsService) Create(userId int64, assetName string, purchaseDate time.Time, warrantExpiry time.Time, serialNumber string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, categoryId int64, departmentId int64, url string, cost float64) (*entity.Assets, error) {
 	imgFile, err := image.Open()
 	if err != nil {
 		return nil, fmt.Errorf("cannot open image: %w", err)
@@ -64,7 +63,7 @@ func (service *AssetsService) Create(userId int64, assetName string, purchaseDat
 	asset := entity.Assets{
 		AssetName:      assetName,
 		PurchaseDate:   purchaseDate,
-		Cost:           OriginalCost,
+		Cost:           cost,
 		WarrantExpiry:  warrantExpiry,
 		Status:         "New",
 		SerialNumber:   serialNumber,
@@ -73,9 +72,6 @@ func (service *AssetsService) Create(userId int64, assetName string, purchaseDat
 		CategoryId:     categoryId,
 		DepartmentId:   departmentId,
 		Owner:          &userAssetManager.Id,
-		OriginalCost:   OriginalCost,
-		ResidualValue:  ResidualValue,
-		UsefulLife:     UsefulLife,
 	}
 	assetCreate, err := service.repo.Create(&asset, tx)
 	if err != nil {
@@ -187,8 +183,7 @@ func (service *AssetsService) SetRole(assetId int64, tx *gorm.DB, wg *sync.WaitG
 	return true
 }
 
-func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName string, purchaseDate time.Time, warrantExpiry time.Time, serialNumber string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, categoryId int64, departmentId int64, status string, OriginalCost float64, ResidualValue float64, UsefulLife float64) (*entity.Assets, error) {
-	var cost float64
+func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName string, purchaseDate time.Time, warrantExpiry time.Time, serialNumber string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, categoryId int64, departmentId int64, status string, cost float64) (*entity.Assets, error) {
 	imgFile, err := image.Open()
 	if err != nil {
 		return nil, fmt.Errorf("cannot open image: %w", err)
@@ -225,15 +220,6 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 	if err != nil {
 		return nil, err
 	}
-	assetCheck, err := service.repo.GetAssetById(assetId)
-	if err != nil {
-		return nil, err
-	}
-	if assetCheck.AcquisitionDate == nil {
-		cost = OriginalCost
-	} else {
-		cost = utils.CurrentAssetValue(OriginalCost, ResidualValue, UsefulLife, *assetCheck.AcquisitionDate, time.Now())
-	}
 	tx := service.repo.GetDB().Begin()
 	asset := entity.Assets{
 		Id:             assetId,
@@ -247,9 +233,6 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 		CategoryId:     categoryId,
 		DepartmentId:   departmentId,
 		Status:         status,
-		OriginalCost:   OriginalCost,
-		ResidualValue:  ResidualValue,
-		UsefulLife:     UsefulLife,
 	}
 	assetUpdated, err := service.repo.UpdateAsset(&asset, tx)
 	if err != nil {
@@ -328,7 +311,7 @@ func (service *AssetsService) DeleteAsset(userId int64, id int64) error {
 	return nil
 }
 
-func (service *AssetsService) UpdateAssetRetired(userId int64, id int64) (*entity.Assets, error) {
+func (service *AssetsService) UpdateAssetRetired(userId int64, id int64, ResidualValue float64) (*entity.Assets, error) {
 	assetCheck, err := service.repo.GetAssetById(id)
 	if err != nil {
 		return nil, err
@@ -336,15 +319,38 @@ func (service *AssetsService) UpdateAssetRetired(userId int64, id int64) (*entit
 	if assetCheck.Status == "Disposed" {
 		return nil, errors.New("can't retired asset")
 	}
-	asset, err := service.repo.UpdateAssetLifeCycleStage(id, "Retired", service.repo.GetDB())
+	tx := service.repo.GetDB().Begin()
+	asset, err := service.repo.UpdateAssetLifeCycleStage(id, "Retired", tx)
 	if err != nil {
+		tx.Rollback()
 		return nil, err
 	}
+	now := time.Now()
+	asset.AcquisitionDate = &now
+	asset.ResidualValue = &ResidualValue
+	yearsUsed := now.Year() - asset.AcquisitionDate.Year()
+	if now.YearDay() < asset.AcquisitionDate.YearDay() {
+		yearsUsed--
+	}
+	if yearsUsed <= 0 {
+		tx.Rollback()
+		fmt.Println("Asset not in use for a full year.")
+		return nil, errors.New("a")
+	}
+	// Tính khấu hao hàng năm
+	annualDepreciation := (asset.Cost - *asset.ResidualValue) / float64(yearsUsed)
+	asset.AnnualDepreciation = &annualDepreciation
+	asset, err = service.repo.UpdateAsset(asset, tx)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	tx.Commit()
 	return asset, nil
 
 }
 
-func (service *AssetsService) Filter(userId int64, assetName *string, status *string, categoryId *string, cost *string, serialNumber *string, email *string, departmentId *string, page int, limit int) (*map[string]any, error) {
+func (service *AssetsService) Filter(userId int64, assetName *string, status *string, categoryId *string, cost *string, serialNumber *string, email *string, departmentId *string) ([]dto.AssetResponse, error) {
 	var filter = filter.AssetFilter{
 		AssetName:    assetName,
 		CategoryId:   categoryId,
@@ -353,23 +359,13 @@ func (service *AssetsService) Filter(userId int64, assetName *string, status *st
 		Email:        email,
 		DepartmentId: departmentId,
 		Status:       status,
-		Page:         page,
-		Limit:        limit,
 	}
 	db := service.repo.GetDB()
 	dbFilter := filter.ApplyFilter(db.Model(&entity.Assets{}), userId)
-	if filter.Page <= 0 {
-		filter.Page = 1
-	}
-
-	if filter.Limit <= 0 {
-		filter.Limit = 10
-	}
 	var total int64
 	dbFilter.Count(&total)
-	offset := (filter.Page - 1) * filter.Limit
 	var assets []entity.Assets
-	result := dbFilter.Offset(offset).Limit(filter.Limit).Find(&assets)
+	result := dbFilter.Find(&assets)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -409,14 +405,7 @@ func (service *AssetsService) Filter(userId int64, assetName *string, status *st
 		}
 		assetsResponse = append(assetsResponse, assetResponse)
 	}
-	data := map[string]any{
-		"data":       assetsResponse,
-		"page":       filter.Page,
-		"limit":      filter.Limit,
-		"total":      total,
-		"total_page": int(math.Ceil(float64(total) / float64(filter.Limit))),
-	}
-	return &data, nil
+	return assetsResponse, nil
 }
 
 func (service *AssetsService) ApplyFilterDashBoard(userId int64, status *string, categoryId *string, departmentId *string, export *string) (*dto.DashboardSummary, []*entity.Assets, error) {

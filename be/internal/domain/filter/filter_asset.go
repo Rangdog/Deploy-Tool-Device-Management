@@ -15,8 +15,6 @@ type AssetFilter struct {
 	SerialNumber *string `form:"serialNumber" json:"serialNumber"`
 	Email        *string `form:"email" json:"email"`
 	DepartmentId *string `form:"departmentId" json:"departmentId"`
-	Page         int     `form:"page" json:"page"`
-	Limit        int     `form:"limit" json:"limit"`
 }
 
 type AssetFilterDashboard struct {

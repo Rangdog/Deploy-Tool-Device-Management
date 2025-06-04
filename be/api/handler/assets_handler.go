@@ -35,9 +35,7 @@ func NewAssetsHandler(service *service.AssetsService) *AssetsHandler {
 // @Produce json
 // @Param assetName formData string true "Asset Name"
 // @Param purchaseDate formData string true "Purchase Date (RFC3339 format, e.g. 2023-04-15T10:00:00Z)"
-// @Param originalCost formData number true "originalCost"
-// @Param residualValue formData number true "residualValue"
-// @Param usefulLife formData number true "usefulLife"
+// @Param cost formData number true "Cost"
 // @Param warrantExpiry formData string true "Warranty Expiry (RFC3339 format, e.g. 2023-12-31T23:59:59Z)"
 // @Param serialNumber formData string true "Serial Number"
 // @Param categoryId formData int64 true "Category ID"
@@ -58,9 +56,7 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 
 	assetName := c.PostForm("assetName")
 	purchaseDateStr := c.PostForm("purchaseDate")
-	originalCostStr := c.PostForm("originalCost")
-	residualValueStr := c.PostForm("residualValue")
-	usefulLifeStr := c.PostForm("usefulLife")
+	costStr := c.PostForm("cost")
 	warrantExpiryStr := c.PostForm("warrantExpiry")
 	serialNumber := c.PostForm("serialNumber")
 	categoryIdStr := c.PostForm("categoryId")
@@ -78,22 +74,10 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 	if err != nil {
 		pkg.PanicExeption(constant.InvalidRequest, "Invalid warrant_expiry format")
 	}
-
-	originalCost, err := strconv.ParseFloat(originalCostStr, 64)
+	cost, err := strconv.ParseFloat(costStr, 64)
 	if err != nil {
-		pkg.PanicExeption(constant.InvalidRequest, "Invalid original cost format")
+		pkg.PanicExeption(constant.InvalidRequest, "Invalid cost format")
 	}
-
-	residualValue, err := strconv.ParseFloat(residualValueStr, 64)
-	if err != nil {
-		pkg.PanicExeption(constant.InvalidRequest, "Invalid residual value format")
-	}
-
-	usefulLife, err := strconv.ParseFloat(usefulLifeStr, 64)
-	if err != nil {
-		pkg.PanicExeption(constant.InvalidRequest, "Invalid useful life format")
-	}
-
 	categoryId, err := strconv.ParseInt(categoryIdStr, 10, 64)
 	if err != nil {
 		pkg.PanicExeption(constant.InvalidRequest, "Invalid category_id format")
@@ -131,9 +115,7 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 		categoryId,
 		departmentId,
 		url,
-		originalCost,
-		residualValue,
-		usefulLife,
+		cost,
 	)
 
 	if err != nil {
@@ -187,9 +169,7 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 // @Produce json
 // @Param assetName formData string true "Asset Name"
 // @Param purchaseDate formData string true "Purchase Date (RFC3339 format, e.g. 2023-04-15T10:00:00Z)"
-// @Param originalCost formData number true "originalCost"
-// @Param residualValue formData number true "residualValue"
-// @Param usefulLife formData number true "usefulLife"
+// @Param cost formData number true "Cost"
 // @Param warrantExpiry formData string true "Warranty Expiry (RFC3339 format, e.g. 2023-12-31T23:59:59Z)"
 // @Param serialNumber formData string true "Serial Number"
 // @Param status formData string true "Serial Number"
@@ -216,9 +196,7 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 
 	assetName := c.PostForm("assetName")
 	purchaseDateStr := c.PostForm("purchaseDate")
-	originalCostStr := c.PostForm("originalCost")
-	residualValueStr := c.PostForm("residualValue")
-	usefulLifeStr := c.PostForm("usefulLife")
+	costStr := c.PostForm("cost")
 	warrantExpiryStr := c.PostForm("warrantExpiry")
 	serialNumber := c.PostForm("serialNumber")
 	Status := c.PostForm("status")
@@ -235,19 +213,9 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 		pkg.PanicExeption(constant.InvalidRequest, "Invalid warrant_expiry format")
 	}
 
-	originalCost, err := strconv.ParseFloat(originalCostStr, 64)
+	cost, err := strconv.ParseFloat(costStr, 64)
 	if err != nil {
-		pkg.PanicExeption(constant.InvalidRequest, "Invalid original cost format")
-	}
-
-	residualValue, err := strconv.ParseFloat(residualValueStr, 64)
-	if err != nil {
-		pkg.PanicExeption(constant.InvalidRequest, "Invalid residual value format")
-	}
-
-	usefulLife, err := strconv.ParseFloat(usefulLifeStr, 64)
-	if err != nil {
-		pkg.PanicExeption(constant.InvalidRequest, "Invalid useful life format")
+		pkg.PanicExeption(constant.InvalidRequest, "Invalid cost format")
 	}
 
 	categoryId, err := strconv.ParseInt(categoryIdStr, 10, 64)
@@ -287,9 +255,7 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 		categoryId,
 		departmentId,
 		Status,
-		originalCost,
-		residualValue,
-		usefulLife,
+		cost,
 	)
 	if err != nil {
 		pkg.PanicExeption(constant.InvalidRequest, "Failed to update asset")
@@ -489,6 +455,7 @@ func (h *AssetsHandler) DeleteAsset(c *gin.Context) {
 // @Tags Assets
 // @Accept json
 // @Produce json
+// @Param        ResidualValue   body    dto.RetiredAssetRequest   true  "Data"
 // @Param		id	path		string				true	"id"
 // @Router /api/assets-retired/{id} [PATCH]
 // @securityDefinitions.apiKey token
@@ -504,7 +471,12 @@ func (h *AssetsHandler) UpdateAssetRetired(c *gin.Context) {
 		log.Error("Happened error when convert assetId to int64. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when convert assetId to int64")
 	}
-	asset, err := h.service.UpdateAssetRetired(userId, assetId)
+	var request dto.RetiredAssetRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Error("Happened error when mapping request from FE. Error", err)
+		pkg.PanicExeption(constant.InvalidRequest)
+	}
+	asset, err := h.service.UpdateAssetRetired(userId, assetId, request.ResidualValue)
 	if err != nil {
 		pkg.PanicExeption(constant.UnknownError, "Happened error when retired assets")
 	}
@@ -532,7 +504,7 @@ func (h *AssetsHandler) FilterAsset(c *gin.Context) {
 		log.Error("Happened error when mapping query to filter. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when mapping query to filter")
 	}
-	data, err := h.service.Filter(userId, filter.AssetName, filter.Status, filter.CategoryId, filter.Cost, filter.SerialNumber, filter.Email, filter.DepartmentId, filter.Page, filter.Limit)
+	data, err := h.service.Filter(userId, filter.AssetName, filter.Status, filter.CategoryId, filter.Cost, filter.SerialNumber, filter.Email, filter.DepartmentId)
 	if err != nil {
 		log.Error("Happened error when filter asset. Error", err)
 		pkg.PanicExeption(constant.UnknownError, "Happened error when filter asset")
