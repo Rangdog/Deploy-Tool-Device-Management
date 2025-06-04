@@ -1390,6 +1390,30 @@ paths:
       summary: Email reset password
       tags:
       - Users
+  /api/user/head-department/{user_id}:
+    patch:
+      consumes:
+      - application/json
+      description: GUpdate head department by userId
+      parameters:
+      - description: user_id
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: Update head department by userId
+      tags:
+      - Users
   /api/user/information:
     patch:
       consumes:
@@ -1421,6 +1445,30 @@ paths:
       security:
       - JWT: []
       summary: Update Information
+      tags:
+      - Users
+  /api/user/manager-department/{user_id}:
+    patch:
+      consumes:
+      - application/json
+      description: GUpdate head department by userId
+      parameters:
+      - description: user_id
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: Update head department by userId
       tags:
       - Users
   /api/user/password-reset:
@@ -1485,6 +1533,12 @@ paths:
       consumes:
       - application/json
       description: Get all user
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1492,6 +1546,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.ApiResponseSuccessStruct'
+      security:
+      - JWT: []
       summary: Get all user
       tags:
       - Users

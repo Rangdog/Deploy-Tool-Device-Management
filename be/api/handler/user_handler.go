@@ -348,8 +348,13 @@ func (h *UserHandler) Logout(c *gin.Context) {
 // @Tags         Users
 // @Accept       json
 // @Produce      json
+// @param Authorization header string true "Authorization"
 // @Router       /api/users [GET]
 // @Success      200   {object}  dto.ApiResponseSuccessStruct
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
 func (h *UserHandler) GetAllUser(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	// userId := utils.GetUserIdFromContext(c)
@@ -478,6 +483,64 @@ func (h *UserHandler) UpdateDepartment(c *gin.Context) {
 	if err != nil {
 		log.Error("Happened error when get all user of department. Error", err)
 		pkg.PanicExeption(constant.UnknownError, "Happened error when get all user of department")
+	}
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccessNoData(http.StatusOK, constant.Success))
+}
+
+// User godoc
+// @Summary      Update head department by userId
+// @Description  GUpdate head department by userId
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param		user_id	path		string				true	"user_id"
+// @param Authorization header string true "Authorization"
+// @Router       /api/user/head-department/{user_id} [PATCH]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
+func (h *UserHandler) UpdateHeadDep(c *gin.Context) {
+	defer pkg.PanicHandler(c)
+	idStr := c.Param("department_id")
+	userId, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		log.Error("Happened error when convert userId to int64. Error", err)
+		pkg.PanicExeption(constant.InvalidRequest, "Happened error when convert userId to int64")
+	}
+	err = h.service.UpdateHeadDep(userId)
+	if err != nil {
+		log.Error("Happened error when update user is head department. Error", err)
+		pkg.PanicExeption(constant.UnknownError, "Happened error when update user is head department")
+	}
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccessNoData(http.StatusOK, constant.Success))
+}
+
+// User godoc
+// @Summary      Update head department by userId
+// @Description  GUpdate head department by userId
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param		user_id	path		string				true	"user_id"
+// @param Authorization header string true "Authorization"
+// @Router       /api/user/manager-department/{user_id} [PATCH]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
+func (h *UserHandler) UpdateManagerDep(c *gin.Context) {
+	defer pkg.PanicHandler(c)
+	idStr := c.Param("department_id")
+	userId, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		log.Error("Happened error when convert userId to int64. Error", err)
+		pkg.PanicExeption(constant.InvalidRequest, "Happened error when convert userId to int64")
+	}
+	err = h.service.UpdateManagerDep(userId)
+	if err != nil {
+		log.Error("Happened error when update user is manager department. Error", err)
+		pkg.PanicExeption(constant.UnknownError, "Happened error when update user is manager department")
 	}
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccessNoData(http.StatusOK, constant.Success))
 }

@@ -153,3 +153,35 @@ func (r *PostgreSQLUserRepository) UpdateDepartment(userId int64, departmentId i
 	result := r.db.Model(entity.Users{}).Where("id = ?", userId).Update("department_id", departmentId)
 	return result.Error
 }
+
+func (r *PostgreSQLUserRepository) CheckHeadDep(depId int64) error {
+	var count int64
+	r.db.Model(&entity.Users{}).
+		Where("department_id = ? AND is_head_department = ?", depId, true).
+		Count(&count)
+	if count > 0 {
+		return errors.New("the department already has a head of department")
+	}
+	return nil
+}
+
+func (r *PostgreSQLUserRepository) CheckManagerDep(depId int64) error {
+	var count int64
+	r.db.Model(&entity.Users{}).
+		Where("department_id = ? AND is_asset_manager = ?", depId, true).
+		Count(&count)
+	if count > 0 {
+		return errors.New("the department already has a manager asset of department")
+	}
+	return nil
+}
+
+func (r *PostgreSQLUserRepository) UpdateHeadDep(id int64, isHead bool) error {
+	result := r.db.Model(entity.Users{}).Where("id = ?", id).Update("is_head_department", isHead)
+	return result.Error
+}
+
+func (r *PostgreSQLUserRepository) UpdateManagerDep(id int64, isManager bool) error {
+	result := r.db.Model(entity.Users{}).Where("id = ?", id).Update("is_asset_manager", isManager)
+	return result.Error
+}

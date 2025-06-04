@@ -241,3 +241,45 @@ func (service *UserService) UpdateDepartment(userId int64, departmentId int64) e
 	go service.assetRepo.DeleteOwnerAssetOfOwnerId(userId)
 	return err
 }
+
+func (service *UserService) UpdateHeadDep(id int64) error {
+	user, err := service.repo.FindByUserId(id)
+	if err != nil {
+		return err
+	}
+	if user.IsHeadDepartment {
+		err := service.repo.UpdateHeadDep(id, !user.IsHeadDepartment)
+		return err
+	} else {
+		if user.DepartmentId == nil {
+			return errors.New("user don't have department")
+		}
+		err := service.repo.CheckHeadDep(*user.DepartmentId)
+		if err != nil {
+			return err
+		}
+		err = service.repo.UpdateHeadDep(id, !user.IsHeadDepartment)
+		return err
+	}
+}
+
+func (service *UserService) UpdateManagerDep(id int64) error {
+	user, err := service.repo.FindByUserId(id)
+	if err != nil {
+		return err
+	}
+	if user.IsAssetManager {
+		err := service.repo.UpdateManagerDep(id, !user.IsHeadDepartment)
+		return err
+	} else {
+		if user.DepartmentId == nil {
+			return errors.New("user don't have department")
+		}
+		err := service.repo.CheckManagerDep(*user.DepartmentId)
+		if err != nil {
+			return err
+		}
+		err = service.repo.UpdateManagerDep(id, !user.IsHeadDepartment)
+		return err
+	}
+}

@@ -31,6 +31,8 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandle
 	api.PATCH("users/information", userHandler.UpdateInformationUser)                                                       // đã check
 	api.PATCH("users/role", middleware.RequirePermission([]string{"role-assignment"}, nil, db), userHandler.UpdateRoleUser) // đã check
 	api.PATCH("/user/department", middleware.RequirePermission([]string{"user-management"}, nil, db), userHandler.UpdateDepartment)
+	api.PATCH("api/user/head-department/:user_id", userHandler.UpdateHeadDep)
+	api.PATCH("api/user/manager-department/:user_id", userHandler.UpdateManagerDep)
 	//Locations
 	api.POST("/locations", LocationHandler.Create)       // đã check
 	api.GET("/locations", LocationHandler.GetAll)        // đã check
@@ -53,7 +55,7 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandle
 	api.GET("/assets/filter", AssetsHandler.FilterAsset) // đã check
 	api.PUT("/assets/:id", AssetsHandler.Update)         // đã check
 	api.DELETE("/assets/:id", AssetsHandler.DeleteAsset)
-	api.PATCH("/assets-retired/:id", middleware.RequirePermission([]string{"Update lifecycle"}, nil, db), AssetsHandler.UpdateAssetRetired) // đã check
+	api.PATCH("/assets-retired/:id", middleware.RequirePermission([]string{"lifecycle-update"}, nil, db), AssetsHandler.UpdateAssetRetired) // đã check
 	api.GET("/assets/filter-dashboard", AssetsHandler.FilterAssetDashboard)                                                                 // đã check
 	api.GET("/assets/request-transfer", AssetsHandler.GetAssetsByCateOfDepartment)
 
