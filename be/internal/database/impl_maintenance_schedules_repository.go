@@ -58,7 +58,7 @@ func (r PostgreSQLMaintenanceSchedulesRepository) GetMaintenanceSchedulesById(id
 
 func (r PostgreSQLMaintenanceSchedulesRepository) GetAllMaintenanceSchedules() ([]*entity.MaintenanceSchedules, error) {
 	maintenances := []*entity.MaintenanceSchedules{}
-	result := r.db.Model(entity.MaintenanceSchedules{}).Preload("Asset").Find(&maintenances)
+	result := r.db.Model(entity.MaintenanceSchedules{}).Joins("join assets on assets.id = maintenance_schedules.asset_id").Where("assets.status IN (?)", []string{"In Use", "New"}).Preload("Asset").Find(&maintenances)
 	if result.Error != nil {
 		return nil, result.Error
 	}
