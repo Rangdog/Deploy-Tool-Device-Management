@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"mime/multipart"
+	"strings"
 	"sync"
 	"time"
 
@@ -78,17 +79,7 @@ func (service *AssetsService) Create(userId int64, assetName string, purchaseDat
 		tx.Rollback()
 		return nil, err
 	}
-	userCreate, err := service.userRepository.FindByUserId(userId)
-	if err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-	department, err := service.departmentRepository.GetDepartmentById(departmentId)
-	if err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-	changeSummary := fmt.Sprintf("Create by user %v and assigned to user %v and assigned to department %v", userCreate.Email, userAssetManager.Email, department.DepartmentName)
+	changeSummary := "Create asset chair"
 	assetLog := entity.AssetLog{
 		Action:        "Create",
 		Timestamp:     time.Now(),
@@ -183,7 +174,7 @@ func (service *AssetsService) SetRole(assetId int64, tx *gorm.DB, wg *sync.WaitG
 	return true
 }
 
-func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName string, purchaseDate time.Time, warrantExpiry time.Time, serialNumber string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, categoryId int64, departmentId int64, status string, cost float64) (*entity.Assets, error) {
+func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName string, purchaseDate time.Time, warrantExpiry time.Time, serialNumber string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, categoryId int64, cost float64) (*entity.Assets, error) {
 	imgFile, err := image.Open()
 	if err != nil {
 		return nil, fmt.Errorf("cannot open image: %w", err)
@@ -202,15 +193,17 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 	if err != nil {
 		return nil, fmt.Errorf("cannot find asset: %w", err)
 	}
-
+	var filedUpdate []string
 	uploader := utils.NewSupabaseUploader()
 	if oldAsset.ImageUpload != nil && *oldAsset.ImageUpload != "" {
 		oldImagePath, _ := utils.ExtractFilePath(*oldAsset.ImageUpload)
 		_ = uploader.Delete(oldImagePath)
+		filedUpdate = append(filedUpdate, "image")
 	}
 	if oldAsset.FileAttachment != nil && *oldAsset.FileAttachment != "" {
 		oldFilePath, _ := utils.ExtractFilePath(*oldAsset.FileAttachment)
 		_ = uploader.Delete(oldFilePath)
+		filedUpdate = append(filedUpdate, "file")
 	}
 	imageUrl, err := uploader.Upload(imagePath, imgFile, image.Header.Get("Content-Type"))
 	if err != nil {
@@ -219,6 +212,24 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 	fileUrl, err := uploader.Upload(filePath, fileFile, fileAttachment.Header.Get("Content-Type"))
 	if err != nil {
 		return nil, err
+	}
+	if oldAsset.AssetName != assetName {
+		filedUpdate = append(filedUpdate, "asset name")
+	}
+	if oldAsset.PurchaseDate != purchaseDate {
+		filedUpdate = append(filedUpdate, "purchase date")
+	}
+	if oldAsset.Cost != cost {
+		filedUpdate = append(filedUpdate, "cost")
+	}
+	if oldAsset.WarrantExpiry != warrantExpiry {
+		filedUpdate = append(filedUpdate, "warrant expiry")
+	}
+	if oldAsset.SerialNumber != serialNumber {
+		filedUpdate = append(filedUpdate, "serial number")
+	}
+	if oldAsset.CategoryId != categoryId {
+		filedUpdate = append(filedUpdate, "category")
 	}
 	tx := service.repo.GetDB().Begin()
 	asset := entity.Assets{
@@ -231,8 +242,6 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 		ImageUpload:    &imageUrl,
 		FileAttachment: &fileUrl,
 		CategoryId:     categoryId,
-		DepartmentId:   departmentId,
-		Status:         status,
 	}
 	assetUpdated, err := service.repo.UpdateAsset(&asset, tx)
 	if err != nil {
@@ -245,7 +254,12 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 		tx.Rollback()
 		return nil, err
 	}
-	changeSummary := fmt.Sprintf("Update asset %v assetId %v by user %v", assetName, assetId, userUpdate.Email)
+	changeSummary := ""
+	if len(filedUpdate) > 0 {
+		changeSummary = "Update fields: " + strings.Join(filedUpdate, ", ")
+	} else {
+		changeSummary = "no changes"
+	}
 	assetLog := entity.AssetLog{
 		Action:        "Update",
 		Timestamp:     time.Now(),
@@ -259,8 +273,8 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 		return nil, err
 	}
 	tx.Commit()
-	userHeadDepart, _ := service.userRepository.GetUserHeadDepartment(departmentId)
-	userManagerAsset, _ := service.userRepository.GetUserAssetManageOfDepartment(departmentId)
+	userHeadDepart, _ := service.userRepository.GetUserHeadDepartment(assetUpdated.DepartmentId)
+	userManagerAsset, _ := service.userRepository.GetUserAssetManageOfDepartment(assetUpdated.DepartmentId)
 	usersToNotifications := []*entity.Users{}
 	usersToNotifications = append(usersToNotifications, asset.OnwerUser)
 	usersToNotifications = append(usersToNotifications, userHeadDepart)
@@ -289,12 +303,7 @@ func (service *AssetsService) DeleteAsset(userId int64, id int64) error {
 		tx.Rollback()
 		return err
 	}
-	userUpdate, err := service.userRepository.FindByUserId(userId)
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-	changeSummary := fmt.Sprintf("Delete asset %v assetId: %v by user %v", asset.AssetName, asset.Id, userUpdate.Email)
+	changeSummary := "Delete asset chair"
 	assetLog := entity.AssetLog{
 		Action:        "Delete",
 		Timestamp:     time.Now(),
@@ -341,6 +350,19 @@ func (service *AssetsService) UpdateAssetRetired(userId int64, id int64, Residua
 	annualDepreciation := (asset.Cost - *asset.ResidualValue) / float64(yearsUsed)
 	asset.AnnualDepreciation = &annualDepreciation
 	asset, err = service.repo.UpdateAsset(asset, tx)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	changeSummary := "Retired asset"
+	assetLog := entity.AssetLog{
+		Action:        "Update",
+		Timestamp:     time.Now(),
+		ByUserId:      userId,
+		ChangeSummary: changeSummary,
+		AssetId:       asset.Id,
+	}
+	_, err = service.assertLogRepository.Create(&assetLog, tx)
 	if err != nil {
 		tx.Rollback()
 		return nil, err

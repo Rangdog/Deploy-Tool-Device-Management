@@ -420,19 +420,9 @@ paths:
         name: serialNumber
         required: true
         type: string
-      - description: Serial Number
-        in: formData
-        name: status
-        required: true
-        type: string
       - description: Category ID
         in: formData
         name: categoryId
-        required: true
-        type: integer
-      - description: Department ID
-        in: formData
-        name: departmentId
         required: true
         type: integer
       - description: File to upload

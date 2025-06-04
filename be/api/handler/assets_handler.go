@@ -172,9 +172,7 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 // @Param cost formData number true "Cost"
 // @Param warrantExpiry formData string true "Warranty Expiry (RFC3339 format, e.g. 2023-12-31T23:59:59Z)"
 // @Param serialNumber formData string true "Serial Number"
-// @Param status formData string true "Serial Number"
 // @Param categoryId formData int64 true "Category ID"
-// @Param departmentId formData int64 true "Department ID"
 // @Param file formData file true "File to upload"
 // @Param image formData file true "Image to upload"
 // @param Authorization header string true "Authorization"
@@ -199,9 +197,7 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 	costStr := c.PostForm("cost")
 	warrantExpiryStr := c.PostForm("warrantExpiry")
 	serialNumber := c.PostForm("serialNumber")
-	Status := c.PostForm("status")
 	categoryIdStr := c.PostForm("categoryId")
-	departmentIdStr := c.PostForm("departmentId")
 
 	purchaseDate, err := time.Parse(time.RFC3339, purchaseDateStr)
 	if err != nil {
@@ -221,15 +217,6 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 	categoryId, err := strconv.ParseInt(categoryIdStr, 10, 64)
 	if err != nil {
 		pkg.PanicExeption(constant.InvalidRequest, "Invalid category_id format")
-	}
-
-	var departmentId int64
-	if departmentIdStr != "" {
-		val, err := strconv.ParseInt(departmentIdStr, 10, 64)
-		if err != nil {
-			pkg.PanicExeption(constant.InvalidRequest, "Invalid department_id format")
-		}
-		departmentId = val
 	}
 
 	file, err := c.FormFile("file")
@@ -253,8 +240,6 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 		image,
 		file,
 		categoryId,
-		departmentId,
-		Status,
 		cost,
 	)
 	if err != nil {
