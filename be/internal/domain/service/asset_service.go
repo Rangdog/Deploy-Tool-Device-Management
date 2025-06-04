@@ -10,11 +10,9 @@ import (
 	"fmt"
 	"mime/multipart"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/sirupsen/logrus"
-	"gorm.io/gorm"
 )
 
 type AssetsService struct {
@@ -104,10 +102,10 @@ func (service *AssetsService) Create(userId int64, assetName string, purchaseDat
 		tx.Rollback()
 		return nil, err
 	}
-	var wg sync.WaitGroup
-	wg.Add(1)
-	go service.SetRole(assetCreate.Id, tx, &wg) // commit ở đây
-	wg.Wait()
+	if err := tx.Commit().Error; err != nil {
+		return nil, err
+	}
+	go service.SetRole(assetCreate.Id) // commit ở đây
 	qrUrl, err := utils.GenerateAssetQR(assetCreate.Id, url)
 	if err != nil {
 		logrus.Info("Error when create qrurl")
@@ -135,26 +133,24 @@ func (service *AssetsService) GetAllAsset() ([]*entity.Assets, error) {
 	return assets, err
 }
 
-func (service *AssetsService) SetRole(assetId int64, tx *gorm.DB, wg *sync.WaitGroup) bool {
-	defer wg.Done()
+func (service *AssetsService) SetRole(assetId int64) error {
+	db := service.repo.GetDB()
 	users := service.userRepository.GetAllUser()
+	assets, err := service.repo.GetAssetById(assetId)
+	if err != nil {
+		return err
+	}
 	for _, user := range users {
 		if service.roleRepository.GetSlugByRoleId(user.RoleId) == "department-head" && user.IsHeadDepartment {
-			assets, err := service.repo.GetAssetById(assetId)
-			if err != nil {
-				tx.Rollback()
-				return false
-			}
 			if assets.DepartmentId == *user.DepartmentId {
 				userRbac := entity.UserRbac{
 					AssetId: assetId,
 					UserId:  user.Id,
 					RoleId:  user.RoleId,
 				}
-				err := service.userRBACRepository.Create(&userRbac, tx)
+				err := service.userRBACRepository.Create(&userRbac, db)
 				if err != nil {
-					tx.Rollback()
-					return false
+					return err
 				}
 			}
 		} else {
@@ -163,15 +159,13 @@ func (service *AssetsService) SetRole(assetId int64, tx *gorm.DB, wg *sync.WaitG
 				UserId:  user.Id,
 				RoleId:  user.RoleId,
 			}
-			err := service.userRBACRepository.Create(&userRbac, tx)
+			err := service.userRBACRepository.Create(&userRbac, db)
 			if err != nil {
-				tx.Rollback()
-				return false
+				return err
 			}
 		}
 	}
-	tx.Commit()
-	return true
+	return nil
 }
 
 func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName string, purchaseDate time.Time, warrantExpiry time.Time, serialNumber string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, categoryId int64, cost float64) (*entity.Assets, error) {
