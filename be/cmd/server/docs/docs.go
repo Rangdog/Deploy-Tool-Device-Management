@@ -1174,6 +1174,34 @@ const docTemplate = `{
             }
         },
         "/api/maintenance-schedules": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "Get maintenanceSchedules",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MaintenanceSchedules"
+                ],
+                "summary": "Get maintenanceSchedules",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
             "post": {
                 "security": [
                     {
@@ -1188,7 +1216,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "MaintenanceScheduless"
+                    "MaintenanceSchedules"
                 ],
                 "summary": "Create maintenanceSchedules",
                 "parameters": [
@@ -1227,13 +1255,92 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "MaintenanceScheduless"
+                    "MaintenanceSchedules"
                 ],
                 "summary": "Get maintenanceSchedules by assetId",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "asset_id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "Delete maintenanceSchedules by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MaintenanceSchedules"
+                ],
+                "summary": "Delete maintenanceSchedules by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "maintenance_id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "patch": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "Update maintenanceSchedules by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MaintenanceSchedules"
+                ],
+                "summary": "Update maintenanceSchedules by id",
+                "parameters": [
+                    {
+                        "description": "Data",
+                        "name": "MaintenanceSchedules",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateMaintenanceSchedulesRequest"
+                        }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "maintenance_id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -2152,6 +2259,21 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 30,
                     "minLength": 2
+                }
+            }
+        },
+        "dto.UpdateMaintenanceSchedulesRequest": {
+            "type": "object",
+            "required": [
+                "endDate",
+                "startDate"
+            ],
+            "properties": {
+                "endDate": {
+                    "type": "string"
+                },
+                "startDate": {
+                    "type": "string"
                 }
             }
         },

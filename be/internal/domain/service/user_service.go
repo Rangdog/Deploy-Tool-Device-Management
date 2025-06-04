@@ -235,5 +235,9 @@ func (service *UserService) GetAllUserOfDepartment(departmentId int64) ([]*entit
 
 func (service *UserService) UpdateDepartment(userId int64, departmentId int64) error {
 	err := service.repo.UpdateDepartment(userId, departmentId)
+	if err != nil {
+		return err
+	}
+	go service.assetRepo.DeleteOwnerAssetOfOwnerId(userId)
 	return err
 }

@@ -8,6 +8,11 @@ type CreateMaintenanceSchedulesRequest struct {
 	EndDate   time.Time `json:"endDate" binding:"required"`
 }
 
+type UpdateMaintenanceSchedulesRequest struct {
+	StartDate time.Time `json:"startDate" binding:"required"`
+	EndDate   time.Time `json:"endDate" binding:"required"`
+}
+
 type MaintenanceSchedulesResponse struct {
 	Id        int64                               `json:"id"`
 	StartDate string                              `json:"startDate"`

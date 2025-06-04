@@ -225,3 +225,10 @@ func (r *PostgreSQLAssetsRepository) UpdateAcquisitionDate(id int64, Acquisition
 	result := r.db.Model(entity.Assets{}).Where("id = ?", id).Update("acquisition_date", AcquisitionDate)
 	return result.Error
 }
+
+func (r *PostgreSQLAssetsRepository) DeleteOwnerAssetOfOwnerId(ownerId int64) error {
+	err := r.db.Model(&entity.Assets{}).
+		Where("owner = ?", ownerId).
+		Update("owner", nil).Error
+	return err
+}

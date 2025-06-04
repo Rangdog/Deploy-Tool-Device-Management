@@ -27,4 +27,5 @@ type AssetsRepository interface {
 	GetAssetsByCateOfDepartment(categoryId int64, departmentId int64) ([]*entity.Assets, error)
 	UpdateCost(id int64, cost float64) error
 	UpdateAcquisitionDate(id int64, AcquisitionDate time.Time) error
+	DeleteOwnerAssetOfOwnerId(ownerId int64) error
 }

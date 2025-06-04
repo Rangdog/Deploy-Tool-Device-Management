@@ -124,6 +124,16 @@ definitions:
     - firstName
     - lastName
     type: object
+  dto.UpdateMaintenanceSchedulesRequest:
+    properties:
+      endDate:
+        type: string
+      startDate:
+        type: string
+    required:
+    - endDate
+    - startDate
+    type: object
   dto.UpdateRoleUserRequest:
     properties:
       slug:
@@ -941,6 +951,24 @@ paths:
       tags:
       - Locations
   /api/maintenance-schedules:
+    get:
+      consumes:
+      - application/json
+      description: Get maintenanceSchedules
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: Get maintenanceSchedules
+      tags:
+      - MaintenanceSchedules
     post:
       consumes:
       - application/json
@@ -964,8 +992,31 @@ paths:
       - JWT: []
       summary: Create maintenanceSchedules
       tags:
-      - MaintenanceScheduless
+      - MaintenanceSchedules
   /api/maintenance-schedules/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete maintenanceSchedules by id
+      parameters:
+      - description: maintenance_id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: Delete maintenanceSchedules by id
+      tags:
+      - MaintenanceSchedules
     get:
       consumes:
       - application/json
@@ -988,7 +1039,36 @@ paths:
       - JWT: []
       summary: Get maintenanceSchedules by assetId
       tags:
-      - MaintenanceScheduless
+      - MaintenanceSchedules
+    patch:
+      consumes:
+      - application/json
+      description: Update maintenanceSchedules by id
+      parameters:
+      - description: Data
+        in: body
+        name: MaintenanceSchedules
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateMaintenanceSchedulesRequest'
+      - description: maintenance_id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: Update maintenanceSchedules by id
+      tags:
+      - MaintenanceSchedules
   /api/notifications:
     get:
       consumes:

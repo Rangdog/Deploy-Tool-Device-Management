@@ -96,7 +96,6 @@ func main() {
 		log.Println("🔔 Running warranty notification check at 8:00 AM")
 		utils.SendEmailsForWarrantyExpiry(db, emailService, assetsRepository)
 	})
-	utils.SendEmailsForWarrantyExpiry(db, emailService, assetsRepository)
 	if err != nil {
 		log.Fatalf("❌ Failed to schedule cron job: %v", err)
 	}

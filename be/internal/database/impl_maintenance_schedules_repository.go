@@ -3,6 +3,7 @@ package database
 import (
 	"BE_Manage_device/internal/domain/entity"
 	"BE_Manage_device/internal/domain/repository"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -23,6 +24,41 @@ func (r *PostgreSQLMaintenanceSchedulesRepository) Create(maintenance *entity.Ma
 func (r *PostgreSQLMaintenanceSchedulesRepository) GetAllMaintenanceSchedulesByAssetId(assetId int64) ([]*entity.MaintenanceSchedules, error) {
 	maintenances := []*entity.MaintenanceSchedules{}
 	result := r.db.Model(entity.MaintenanceSchedules{}).Where("asset_id = ?", assetId).Preload("Asset").Find(&maintenances)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return maintenances, result.Error
+}
+
+func (r *PostgreSQLMaintenanceSchedulesRepository) Update(id int64, startDate time.Time, endDate time.Time) (*entity.MaintenanceSchedules, error) {
+	maintenance := entity.MaintenanceSchedules{}
+	result := r.db.Model(entity.MaintenanceSchedules{}).Where("id = ?", id).Update("start_date", startDate).Update("end_date", endDate)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	r.db.Model(entity.MaintenanceSchedules{}).Where("id = ?", id).Preload("Asset").First(&maintenance)
+	return &maintenance, nil
+}
+
+func (r PostgreSQLMaintenanceSchedulesRepository) Delete(id int64) error {
+	if err := r.db.Delete(&entity.MaintenanceSchedules{}, id).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r PostgreSQLMaintenanceSchedulesRepository) GetMaintenanceSchedulesById(id int64) (*entity.MaintenanceSchedules, error) {
+	maintenance := entity.MaintenanceSchedules{}
+	result := r.db.Model(entity.MaintenanceSchedules{}).Where("id = ?", id).Preload("Asset").First(&maintenance)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &maintenance, nil
+}
+
+func (r PostgreSQLMaintenanceSchedulesRepository) GetAllMaintenanceSchedules() ([]*entity.MaintenanceSchedules, error) {
+	maintenances := []*entity.MaintenanceSchedules{}
+	result := r.db.Model(entity.MaintenanceSchedules{}).Preload("Asset").Find(&maintenances)
 	if result.Error != nil {
 		return nil, result.Error
 	}

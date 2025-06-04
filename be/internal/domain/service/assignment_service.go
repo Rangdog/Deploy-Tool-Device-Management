@@ -100,6 +100,10 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 			tx.Rollback()
 			return nil, err
 		}
+		if _, err := service.assetLogRepo.Create(&assetLog, tx); err != nil {
+			tx.Rollback()
+			return nil, err
+		}
 	}
 
 	// Chuyển người dùng
@@ -122,12 +126,12 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 				return nil, err
 			}
 		}
+		if _, err := service.assetLogRepo.Create(&assetLog, tx); err != nil {
+			tx.Rollback()
+			return nil, err
+		}
 	}
 
-	if _, err := service.assetLogRepo.Create(&assetLog, tx); err != nil {
-		tx.Rollback()
-		return nil, err
-	}
 	if _, err := service.assetRepo.UpdateAssetLifeCycleStage(assignment.AssetId, "In Use", tx); err != nil {
 		tx.Rollback()
 		return nil, err

@@ -79,6 +79,9 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandle
 	// Schedule maintenance
 	api.POST("/maintenance-schedules", MaintenanceSchedulesHandler.Create)
 	api.GET("/maintenance-schedules/:id", MaintenanceSchedulesHandler.GetAllMaintenanceSchedulesByAssetId)
+	api.PATCH("/maintenance-schedules/:id", MaintenanceSchedulesHandler.Update)
+	api.DELETE("/maintenance-schedules/:id", MaintenanceSchedulesHandler.Delete)
+	api.GET("/maintenance-schedules", MaintenanceSchedulesHandler.GetAllMaintenanceSchedules)
 
 	// SSE
 	api.GET("/sse", SSEHandler.SSEHandle)
