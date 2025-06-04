@@ -66,7 +66,7 @@ func main() {
 	requestTransferService := service.NewRequestTransferService(requestTransferRepository, assignmentService, userRepository, assetsRepository)
 	requestTransferHandler := handler.NewRequestTransferHandler(requestTransferService)
 	//Maintenance
-	MaintenanceService := service.NewMaintenanceSchedulesService(maintenanceRepository)
+	MaintenanceService := service.NewMaintenanceSchedulesService(maintenanceRepository, assetsRepository)
 	maintenanceHandler := handler.NewMaintenanceSchedulesHandler(MaintenanceService)
 
 	// Notification

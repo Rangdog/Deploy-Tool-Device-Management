@@ -8,14 +8,22 @@ import (
 )
 
 type MaintenanceSchedulesService struct {
-	repo repository.MaintenanceSchedulesRepository
+	repo      repository.MaintenanceSchedulesRepository
+	assetRepo repository.AssetsRepository
 }
 
-func NewMaintenanceSchedulesService(repo repository.MaintenanceSchedulesRepository) *MaintenanceSchedulesService {
-	return &MaintenanceSchedulesService{repo: repo}
+func NewMaintenanceSchedulesService(repo repository.MaintenanceSchedulesRepository, assetRepo repository.AssetsRepository) *MaintenanceSchedulesService {
+	return &MaintenanceSchedulesService{repo: repo, assetRepo: assetRepo}
 }
 
 func (service *MaintenanceSchedulesService) Create(userId int64, assetId int64, startDate, endDate time.Time) (*entity.MaintenanceSchedules, error) {
+	assetCheck, err := service.assetRepo.GetAssetById(assetId)
+	if err != nil {
+		return nil, err
+	}
+	if assetCheck.Status == "Disposed" || assetCheck.Status == "Retired" || assetCheck.Status == "Under Maintenance" {
+		return nil, errors.New("can't set maintenance schedules because status")
+	}
 	maintenance := entity.MaintenanceSchedules{
 		AssetId:   assetId,
 		StartDate: startDate,
