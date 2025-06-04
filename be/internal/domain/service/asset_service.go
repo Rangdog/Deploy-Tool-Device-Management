@@ -79,7 +79,7 @@ func (service *AssetsService) Create(userId int64, assetName string, purchaseDat
 		tx.Rollback()
 		return nil, err
 	}
-	changeSummary := "Create asset chair"
+	changeSummary := "Create asset"
 	assetLog := entity.AssetLog{
 		Action:        "Create",
 		Timestamp:     time.Now(),
