@@ -110,6 +110,11 @@ func RequirePermission(permSlug []string, accessLevel []string, db *gorm.DB) gin
 		str := fmt.Sprint(userID)
 
 		userIdConvert, err := strconv.ParseInt(str, 10, 64)
+		if err != nil {
+			pkg.PanicExeption(constant.UnknownError, "Internal server error")
+			c.Abort()
+			return
+		}
 		ok, err := utils.UserHasPermission(db, userIdConvert, permSlug, accessLevel)
 		if err != nil {
 			pkg.PanicExeption(constant.UnknownError, "Internal server error")
@@ -117,7 +122,7 @@ func RequirePermission(permSlug []string, accessLevel []string, db *gorm.DB) gin
 			return
 		}
 		if !ok {
-			pkg.PanicExeption(constant.StatusForbidden, "Permission denied")
+			pkg.PanicExeption(constant.StatusForbidden, "Forbidden")
 			c.Abort()
 			return
 		}
