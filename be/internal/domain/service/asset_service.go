@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"mime/multipart"
+	"strconv"
 	"strings"
 	"time"
 
@@ -425,6 +426,22 @@ func (service *AssetsService) Filter(userId int64, assetName *string, status *st
 }
 
 func (service *AssetsService) ApplyFilterDashBoard(userId int64, status *string, categoryId *string, departmentId *string, export *string) (*dto.DashboardSummary, []*entity.Assets, error) {
+	user, err := service.userRepository.FindByUserId(userId)
+	if err != nil {
+		return nil, nil, err
+	}
+	roleHeadDep := service.roleRepository.GetRoleBySlug("department-head")
+	roleView := service.roleRepository.GetRoleBySlug("viewer")
+	if user.RoleId == roleHeadDep.Id || user.RoleId == roleView.Id {
+		if user.DepartmentId != nil {
+			// Convert *int64 to string
+			depIdStr := strconv.FormatInt(*user.DepartmentId, 10)
+			departmentId = &depIdStr // assign pointer to string
+		} else {
+			departmentId = nil
+		}
+	}
+
 	var filter = filter.AssetFilterDashboard{
 		CategoryId:   categoryId,
 		DepartmentId: departmentId,
@@ -463,4 +480,24 @@ func (service *AssetsService) GetAssetsByCateOfDepartment(categoryId, department
 		return nil, err
 	}
 	return assets, nil
+}
+
+func (service *AssetsService) CheckPermissionForManager(userId int64, depId int64) error {
+	user, err := service.userRepository.FindByUserId(userId)
+	role := service.roleRepository.GetRoleBySlug("admin")
+	if user.RoleId == role.Id {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	if user.DepartmentId != nil && *user.DepartmentId == depId {
+		return nil
+	}
+	return errors.New("you can have permission for manager asset in the department")
+}
+
+func (service *AssetsService) GetUserById(id int64) (entity.Users, error) {
+	user, err := service.userRepository.FindByUserId(id)
+	return *user, err
 }

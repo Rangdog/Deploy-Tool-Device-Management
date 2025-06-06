@@ -283,3 +283,16 @@ func (service *UserService) UpdateManagerDep(id int64) error {
 		return err
 	}
 }
+
+func (service *UserService) UpdateCanExport(id int64) error {
+	user, err := service.repo.FindByUserId(id)
+	if err != nil {
+		return err
+	}
+	roleViewer := service.roleRepository.GetRoleBySlug("viewer")
+	if user.RoleId != roleViewer.Id {
+		return nil
+	}
+	err = service.repo.UpdateCanExport(id, !user.CanExport)
+	return err
+}

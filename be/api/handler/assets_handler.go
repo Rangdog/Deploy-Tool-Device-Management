@@ -104,6 +104,12 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 		return
 	}
 
+	err = h.service.CheckPermissionForManager(userId, departmentId)
+	if err != nil {
+		pkg.PanicExeption(constant.InvalidRequest, err.Error())
+		return
+	}
+
 	assetCreate, err := h.service.Create(
 		userId,
 		assetName,
@@ -228,6 +234,15 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 	image, err := c.FormFile("image")
 	if err != nil {
 		pkg.PanicExeption(constant.InvalidRequest, "Image upload missing")
+		return
+	}
+	assetCheck, err := h.service.GetAssetById(userId, assetId)
+	if err != nil {
+		pkg.PanicExeption(constant.InvalidRequest, "Failed to update asset")
+	}
+	err = h.service.CheckPermissionForManager(userId, assetCheck.DepartmentId)
+	if err != nil {
+		pkg.PanicExeption(constant.InvalidRequest, err.Error())
 		return
 	}
 	assetUpdate, err := h.service.UpdateAsset(
@@ -427,6 +442,15 @@ func (h *AssetsHandler) DeleteAsset(c *gin.Context) {
 		log.Error("Happened error when convert assetId to int64. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when convert assetId to int64")
 	}
+	assetCheck, err := h.service.GetAssetById(userId, assetId)
+	if err != nil {
+		pkg.PanicExeption(constant.InvalidRequest, "Failed to update asset")
+	}
+	err = h.service.CheckPermissionForManager(userId, assetCheck.DepartmentId)
+	if err != nil {
+		pkg.PanicExeption(constant.InvalidRequest, err.Error())
+		return
+	}
 	err = h.service.DeleteAsset(userId, assetId)
 	if err != nil {
 		pkg.PanicExeption(constant.UnknownError, "Happened error when delete assets")
@@ -460,6 +484,15 @@ func (h *AssetsHandler) UpdateAssetRetired(c *gin.Context) {
 	if err := c.ShouldBindJSON(&request); err != nil {
 		log.Error("Happened error when mapping request from FE. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest)
+	}
+	assetCheck, err := h.service.GetAssetById(userId, assetId)
+	if err != nil {
+		pkg.PanicExeption(constant.InvalidRequest, "Failed to update asset")
+	}
+	err = h.service.CheckPermissionForManager(userId, assetCheck.DepartmentId)
+	if err != nil {
+		pkg.PanicExeption(constant.InvalidRequest, err.Error())
+		return
 	}
 	asset, err := h.service.UpdateAssetRetired(userId, assetId, request.ResidualValue)
 	if err != nil {
@@ -524,16 +557,37 @@ func (h *AssetsHandler) FilterAssetDashboard(c *gin.Context) {
 		pkg.PanicExeption(constant.UnknownError, "Happened error when filter asset")
 	}
 	if filter.Export != nil {
-		if *filter.Export == "csv" {
-			data, _ := GenerateCSV(assets)
-			c.Header("Content-Disposition", "attachment; filename=assets.csv")
-			c.Data(http.StatusOK, "text/csv", data)
-			return
-		} else if *filter.Export == "pdf" {
-			data, _ := GeneratePDF(assets)
-			c.Header("Content-Disposition", "attachment; filename=assets.pdf")
-			c.Data(http.StatusOK, "application/pdf", data)
-			return
+		user, err := h.service.GetUserById(userId)
+		if err != nil {
+			log.Error("Happened error when filter asset. Error", err)
+			pkg.PanicExeption(constant.UnknownError, "Happened error when filter asset")
+		}
+		if user.Role.Slug != "viewer" {
+			if *filter.Export == "csv" {
+				data, _ := GenerateCSV(assets)
+				c.Header("Content-Disposition", "attachment; filename=assets.csv")
+				c.Data(http.StatusOK, "text/csv", data)
+				return
+			} else if *filter.Export == "pdf" {
+				data, _ := GeneratePDF(assets)
+				c.Header("Content-Disposition", "attachment; filename=assets.pdf")
+				c.Data(http.StatusOK, "application/pdf", data)
+				return
+			}
+		} else {
+			if user.CanExport {
+				if *filter.Export == "csv" {
+					data, _ := GenerateCSV(assets)
+					c.Header("Content-Disposition", "attachment; filename=assets.csv")
+					c.Data(http.StatusOK, "text/csv", data)
+					return
+				} else if *filter.Export == "pdf" {
+					data, _ := GeneratePDF(assets)
+					c.Header("Content-Disposition", "attachment; filename=assets.pdf")
+					c.Data(http.StatusOK, "application/pdf", data)
+					return
+				}
+			}
 		}
 	}
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, summary))

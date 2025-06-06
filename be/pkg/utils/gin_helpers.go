@@ -466,7 +466,7 @@ func SendEmailsForWarrantyExpiry(db *gorm.DB, emailNotifier interfaces.EmailNoti
 	wg.Wait()
 }
 
-func UserHasPermission(db *gorm.DB, userId int64, permSlug []string, accessLevel []*string) (bool, error) {
+func UserHasPermission(db *gorm.DB, userId int64, permSlug []string, accessLevel []string) (bool, error) {
 	var user entity.Users
 	err := db.Preload("Role.RolePermissions.Permission").
 		First(&user, userId).Error
@@ -480,7 +480,7 @@ func UserHasPermission(db *gorm.DB, userId int64, permSlug []string, accessLevel
 				return true, nil
 			}
 		} else {
-			if slices.Contains(permSlug, rolePerm.Permission.Slug) && slices.Contains(accessLevel, &rolePerm.AccessLevel) {
+			if slices.Contains(permSlug, rolePerm.Permission.Slug) && slices.Contains(accessLevel, rolePerm.AccessLevel) {
 				return true, nil
 			}
 		}

@@ -1297,6 +1297,30 @@ paths:
       summary: Delete user
       tags:
       - Users
+  /api/user/can-export/{user_id}:
+    patch:
+      consumes:
+      - application/json
+      description: Update can-export by userId
+      parameters:
+      - description: user_id
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: Update can-export by userId
+      tags:
+      - Users
   /api/user/department:
     patch:
       consumes:
@@ -1384,7 +1408,7 @@ paths:
     patch:
       consumes:
       - application/json
-      description: GUpdate head department by userId
+      description: Update head department by userId
       parameters:
       - description: user_id
         in: path
@@ -1441,7 +1465,7 @@ paths:
     patch:
       consumes:
       - application/json
-      description: GUpdate head department by userId
+      description: Update head department by userId
       parameters:
       - description: user_id
         in: path

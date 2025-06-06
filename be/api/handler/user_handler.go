@@ -489,7 +489,7 @@ func (h *UserHandler) UpdateDepartment(c *gin.Context) {
 
 // User godoc
 // @Summary      Update head department by userId
-// @Description  GUpdate head department by userId
+// @Description  Update head department by userId
 // @Tags         Users
 // @Accept       json
 // @Produce      json
@@ -502,7 +502,7 @@ func (h *UserHandler) UpdateDepartment(c *gin.Context) {
 // @Security JWT
 func (h *UserHandler) UpdateHeadDep(c *gin.Context) {
 	defer pkg.PanicHandler(c)
-	idStr := c.Param("department_id")
+	idStr := c.Param("user_id")
 	userId, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
 		log.Error("Happened error when convert userId to int64. Error", err)
@@ -518,7 +518,7 @@ func (h *UserHandler) UpdateHeadDep(c *gin.Context) {
 
 // User godoc
 // @Summary      Update head department by userId
-// @Description  GUpdate head department by userId
+// @Description  Update head department by userId
 // @Tags         Users
 // @Accept       json
 // @Produce      json
@@ -531,7 +531,7 @@ func (h *UserHandler) UpdateHeadDep(c *gin.Context) {
 // @Security JWT
 func (h *UserHandler) UpdateManagerDep(c *gin.Context) {
 	defer pkg.PanicHandler(c)
-	idStr := c.Param("department_id")
+	idStr := c.Param("user_id")
 	userId, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
 		log.Error("Happened error when convert userId to int64. Error", err)
@@ -541,6 +541,35 @@ func (h *UserHandler) UpdateManagerDep(c *gin.Context) {
 	if err != nil {
 		log.Error("Happened error when update user is manager department. Error", err)
 		pkg.PanicExeption(constant.UnknownError, "Happened error when update user is manager department")
+	}
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccessNoData(http.StatusOK, constant.Success))
+}
+
+// User godoc
+// @Summary      Update can-export by userId
+// @Description  Update can-export by userId
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param		user_id	path		string				true	"user_id"
+// @param Authorization header string true "Authorization"
+// @Router       /api/user/can-export/{user_id} [PATCH]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
+func (h *UserHandler) UpdateCanExport(c *gin.Context) {
+	defer pkg.PanicHandler(c)
+	idStr := c.Param("user_id")
+	userId, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		log.Error("Happened error when convert userId to int64. Error", err)
+		pkg.PanicExeption(constant.InvalidRequest, "Happened error when convert userId to int64")
+	}
+	err = h.service.UpdateCanExport(userId)
+	if err != nil {
+		log.Error("Happened error when update user can export. Error", err)
+		pkg.PanicExeption(constant.UnknownError, "Happened error when update user can export")
 	}
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccessNoData(http.StatusOK, constant.Success))
 }

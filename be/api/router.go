@@ -31,59 +31,60 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandle
 	api.PATCH("users/information", userHandler.UpdateInformationUser)                                                       // đã check
 	api.PATCH("users/role", middleware.RequirePermission([]string{"role-assignment"}, nil, db), userHandler.UpdateRoleUser) // đã check
 	api.PATCH("/user/department", middleware.RequirePermission([]string{"user-management"}, nil, db), userHandler.UpdateDepartment)
-	api.PATCH("api/user/head-department/:user_id", userHandler.UpdateHeadDep)
-	api.PATCH("api/user/manager-department/:user_id", userHandler.UpdateManagerDep)
+	api.PATCH("api/user/head-department/:user_id", middleware.RequirePermission([]string{"user-management"}, nil, db), userHandler.UpdateHeadDep)
+	api.PATCH("api/user/manager-department/:user_id", middleware.RequirePermission([]string{"user-management"}, nil, db), userHandler.UpdateManagerDep)
+	api.PATCH("api/user/can-export/:user_id", middleware.RequirePermission([]string{"user-management"}, nil, db), userHandler.UpdateCanExport)
 	//Locations
-	api.POST("/locations", LocationHandler.Create)       // đã check
-	api.GET("/locations", LocationHandler.GetAll)        // đã check
-	api.DELETE("/locations/:id", LocationHandler.Delete) // đã check
+	api.POST("/locations", middleware.RequirePermission([]string{"manage-taxonomy"}, nil, db), LocationHandler.Create)       // đã check
+	api.GET("/locations", LocationHandler.GetAll)                                                                            // đã check
+	api.DELETE("/locations/:id", middleware.RequirePermission([]string{"manage-taxonomy"}, nil, db), LocationHandler.Delete) // đã check
 
 	//Categories
-	api.POST("/categories", CategoriesHandler.Create)       // đã check
-	api.GET("/categories", CategoriesHandler.GetAll)        // đã check
-	api.DELETE("/categories/:id", CategoriesHandler.Delete) // đã check
+	api.POST("/categories", middleware.RequirePermission([]string{"manage-taxonomy"}, nil, db), CategoriesHandler.Create)       // đã check
+	api.GET("/categories", CategoriesHandler.GetAll)                                                                            // đã check
+	api.DELETE("/categories/:id", middleware.RequirePermission([]string{"manage-taxonomy"}, nil, db), CategoriesHandler.Delete) // đã check
 
 	//Departments
-	api.POST("/departments", DepartmentsHandler.Create)       // đã check
-	api.GET("/departments", DepartmentsHandler.GetAll)        // đã check
-	api.DELETE("/departments/:id", DepartmentsHandler.Delete) // đã check
+	api.POST("/departments", middleware.RequirePermission([]string{"manage-taxonomy"}, nil, db), DepartmentsHandler.Create)       // đã check
+	api.GET("/departments", DepartmentsHandler.GetAll)                                                                            // đã check
+	api.DELETE("/departments/:id", middleware.RequirePermission([]string{"manage-taxonomy"}, nil, db), DepartmentsHandler.Delete) // đã check
 
 	//Assets
-	api.POST("/assets", AssetsHandler.Create)            // đã check
-	api.GET("/assets/:id", AssetsHandler.GetAssetById)   // đã check
-	api.GET("/assets", AssetsHandler.GetAllAsset)        // đã check
-	api.GET("/assets/filter", AssetsHandler.FilterAsset) // đã check
-	api.PUT("/assets/:id", AssetsHandler.Update)         // đã check
-	api.DELETE("/assets/:id", AssetsHandler.DeleteAsset)
-	api.PATCH("/assets-retired/:id", middleware.RequirePermission([]string{"lifecycle-update"}, nil, db), AssetsHandler.UpdateAssetRetired) // đã check
-	api.GET("/assets/filter-dashboard", AssetsHandler.FilterAssetDashboard)                                                                 // đã check
+	api.POST("/assets", middleware.RequirePermission([]string{"manage-assets"}, []string{"full", "limited"}, db), AssetsHandler.Create) // đã check
+	api.GET("/assets/:id", AssetsHandler.GetAssetById)                                                                                  // đã check
+	api.GET("/assets", AssetsHandler.GetAllAsset)                                                                                       // đã check
+	api.GET("/assets/filter", AssetsHandler.FilterAsset)                                                                                // đã check
+	api.PUT("/assets/:id", AssetsHandler.Update)                                                                                        // đã check
+	api.DELETE("/assets/:id", middleware.RequirePermission([]string{"manage-assets"}, nil, db), AssetsHandler.DeleteAsset)
+	api.PATCH("/assets-retired/:id", middleware.RequirePermission([]string{"lifecycle-update", "manage-assets"}, nil, db), AssetsHandler.UpdateAssetRetired)      // đã check
+	api.GET("/assets/filter-dashboard", middleware.RequirePermission([]string{"dashboards"}, []string{"full", "scoped"}, db), AssetsHandler.FilterAssetDashboard) // đã check
 	api.GET("/assets/request-transfer", AssetsHandler.GetAssetsByCateOfDepartment)
 
 	//Roles
 	api.GET("/roles", RoleHandler.GetAllRole) // đã check
 
 	//Assignment
-	api.POST("/assignments", AssignmentHandler.Create)
-	api.PUT("/assignments/:id", AssignmentHandler.Update)            // đã check
-	api.GET("/assignments/filter", AssignmentHandler.FilterAsset)    // đã check
-	api.GET("/assignments/:id", AssignmentHandler.GetAssignmentById) // đã check
+	api.POST("/assignments", middleware.RequirePermission([]string{"assign-assets"}, nil, db), AssignmentHandler.Create)
+	api.PUT("/assignments/:id", middleware.RequirePermission([]string{"assign-assets"}, nil, db), AssignmentHandler.Update)            // đã check
+	api.GET("/assignments/filter", middleware.RequirePermission([]string{"assign-assets"}, nil, db), AssignmentHandler.FilterAsset)    // đã check
+	api.GET("/assignments/:id", middleware.RequirePermission([]string{"assign-assets"}, nil, db), AssignmentHandler.GetAssignmentById) // đã check
 
 	//AssetsLog
-	api.GET("/assets-log/:id", AssetLogHandler.GetLogByAssetId) // đã check
+	api.GET("/assets-log/:id", middleware.RequirePermission([]string{"audit-logs"}, nil, db), AssetLogHandler.GetLogByAssetId) // đã check
 
 	//Request
-	api.POST("/request-transfer", RequestTransferHandler.Create)                      // đã check
-	api.PATCH("/request-transfer/confirm/:id", RequestTransferHandler.Accept)         // đã check
-	api.PATCH("/request-transfer/deny/:id", RequestTransferHandler.Deny)              // đã check
-	api.GET("/request-transfer/:id", RequestTransferHandler.GetRequestTransferById)   // đã check
-	api.GET("/request-transfer/filter", RequestTransferHandler.FilterRequestTransfer) // đã check
+	api.POST("/request-transfer", middleware.RequirePermission([]string{"transfer-assets"}, []string{"full", "can-request"}, db), RequestTransferHandler.Create) // đã check
+	api.PATCH("/request-transfer/confirm/:id", middleware.RequirePermission([]string{"transfer-assets"}, nil, db), RequestTransferHandler.Accept)                // đã check
+	api.PATCH("/request-transfer/deny/:id", middleware.RequirePermission([]string{"transfer-assets"}, nil, db), RequestTransferHandler.Deny)                     // đã check
+	api.GET("/request-transfer/:id", middleware.RequirePermission([]string{"transfer-assets"}, nil, db), RequestTransferHandler.GetRequestTransferById)          // đã check
+	api.GET("/request-transfer/filter", middleware.RequirePermission([]string{"transfer-assets"}, nil, db), RequestTransferHandler.FilterRequestTransfer)        // đã check
 
 	// Schedule maintenance
-	api.POST("/maintenance-schedules", MaintenanceSchedulesHandler.Create)
-	api.GET("/maintenance-schedules/:id", MaintenanceSchedulesHandler.GetAllMaintenanceSchedulesByAssetId)
-	api.PATCH("/maintenance-schedules/:id", MaintenanceSchedulesHandler.Update)
-	api.DELETE("/maintenance-schedules/:id", MaintenanceSchedulesHandler.Delete)
-	api.GET("/maintenance-schedules", MaintenanceSchedulesHandler.GetAllMaintenanceSchedules)
+	api.POST("/maintenance-schedules", middleware.RequirePermission([]string{"maintenance-logs"}, nil, db), MaintenanceSchedulesHandler.Create)
+	api.GET("/maintenance-schedules/:id", middleware.RequirePermission([]string{"maintenance-logs"}, []string{"full", "view"}, db), MaintenanceSchedulesHandler.GetAllMaintenanceSchedulesByAssetId)
+	api.PATCH("/maintenance-schedules/:id", middleware.RequirePermission([]string{"maintenance-logs"}, nil, db), MaintenanceSchedulesHandler.Update)
+	api.DELETE("/maintenance-schedules/:id", middleware.RequirePermission([]string{"maintenance-logs"}, nil, db), MaintenanceSchedulesHandler.Delete)
+	api.GET("/maintenance-schedules", middleware.RequirePermission([]string{"maintenance-logs"}, []string{"full", "view"}, db), MaintenanceSchedulesHandler.GetAllMaintenanceSchedules)
 
 	// SSE
 	api.GET("/sse", SSEHandler.SSEHandle)

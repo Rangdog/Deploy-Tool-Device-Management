@@ -92,7 +92,7 @@ func CORSMiddleware() gin.HandlerFunc {
 	}
 }
 
-func RequirePermission(permSlug []string, accessLevel []*string, db *gorm.DB) gin.HandlerFunc {
+func RequirePermission(permSlug []string, accessLevel []string, db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		defer pkg.PanicHandler(c)
 		userID, exists := c.Get("userID")

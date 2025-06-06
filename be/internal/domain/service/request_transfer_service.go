@@ -35,6 +35,9 @@ func (service *RequestTransferService) Create(userId int64, categoryId int64, de
 }
 
 func (service *RequestTransferService) Accept(userId int64, id int64, assetId int64) (*entity.RequestTransfer, error) {
+	if service.IsRoleHeadDep(userId) {
+		return nil, errors.New("head Department can't accept request")
+	}
 	requestCheck, err := service.repo.GetRequestTransferById(id)
 	if err != nil {
 		return nil, err
@@ -79,6 +82,9 @@ func (service *RequestTransferService) Accept(userId int64, id int64, assetId in
 }
 
 func (service *RequestTransferService) Deny(userId int64, id int64) (*entity.RequestTransfer, error) {
+	if service.IsRoleHeadDep(userId) {
+		return nil, errors.New("head Department can't deny request")
+	}
 	requestCheck, err := service.repo.GetRequestTransferById(id)
 	if err != nil {
 		return nil, err
@@ -118,4 +124,13 @@ func (service *RequestTransferService) Filter(userId int64, status *string) ([]d
 	requestRes := utils.ConvertRequestTransfersToResponses(requests)
 
 	return requestRes, nil
+}
+
+func (service *RequestTransferService) IsRoleHeadDep(userId int64) bool {
+	user, err := service.userRepo.FindByUserId(userId)
+	if err != nil {
+		return false
+	}
+	return user.IsHeadDepartment
+
 }

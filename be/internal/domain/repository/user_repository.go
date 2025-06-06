@@ -26,4 +26,5 @@ type UserRepository interface {
 	CheckManagerDep(depId int64) error
 	UpdateHeadDep(id int64, isHead bool) error
 	UpdateManagerDep(id int64, isManager bool) error
+	UpdateCanExport(id int64, canExport bool) error
 }

@@ -185,3 +185,8 @@ func (r *PostgreSQLUserRepository) UpdateManagerDep(id int64, isManager bool) er
 	result := r.db.Model(entity.Users{}).Where("id = ?", id).Update("is_asset_manager", isManager)
 	return result.Error
 }
+
+func (r *PostgreSQLUserRepository) UpdateCanExport(id int64, canExport bool) error {
+	result := r.db.Model(entity.Users{}).Where("id = ?", id).Update("can_export", canExport)
+	return result.Error
+}

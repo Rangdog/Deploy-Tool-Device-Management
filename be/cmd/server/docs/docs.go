@@ -1663,6 +1663,43 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/api/user/can-export/{user_id}": {
+            "patch": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "Update can-export by userId",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Update can-export by userId",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user_id",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/api/user/department": {
             "patch": {
                 "security": [
@@ -1799,7 +1836,7 @@ const docTemplate = `{
                         "JWT": []
                     }
                 ],
-                "description": "GUpdate head department by userId",
+                "description": "Update head department by userId",
                 "consumes": [
                     "application/json"
                 ],
@@ -1888,7 +1925,7 @@ const docTemplate = `{
                         "JWT": []
                     }
                 ],
-                "description": "GUpdate head department by userId",
+                "description": "Update head department by userId",
                 "consumes": [
                     "application/json"
                 ],

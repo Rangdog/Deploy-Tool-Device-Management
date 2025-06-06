@@ -13,6 +13,7 @@ type Users struct {
 	IsHeadDepartment bool   `gorm:"not null;default:false" json:"isHeadDepartment"`
 	IsAssetManager   bool   `gorm:"not null;default:false" json:"isAssetManager"`
 	CompanyId        int64  `json:"-"`
+	CanExport        bool   `gorm:"not null;default:false" json:"canExport"`
 
 	Role       Roles       `gorm:"foreignKey:RoleId;references:Id"`
 	Department Departments `gorm:"DepartmentId:RoleId;references:Id"`
