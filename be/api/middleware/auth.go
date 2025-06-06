@@ -117,7 +117,7 @@ func RequirePermission(permSlug []string, accessLevel []string, db *gorm.DB) gin
 			return
 		}
 		if !ok {
-			pkg.PanicExeption(constant.StatusForbidden, "Forbidden")
+			pkg.PanicExeption(constant.StatusForbidden, "Permission denied")
 			c.Abort()
 			return
 		}
