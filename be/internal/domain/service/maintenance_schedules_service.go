@@ -4,19 +4,26 @@ import (
 	"BE_Manage_device/internal/domain/entity"
 	"BE_Manage_device/internal/domain/repository"
 	"errors"
+	"fmt"
 	"time"
 )
 
 type MaintenanceSchedulesService struct {
-	repo      repository.MaintenanceSchedulesRepository
-	assetRepo repository.AssetsRepository
+	repo                repository.MaintenanceSchedulesRepository
+	assetRepo           repository.AssetsRepository
+	NotificationService *NotificationService
+	userRepository      repository.UserRepository
 }
 
-func NewMaintenanceSchedulesService(repo repository.MaintenanceSchedulesRepository, assetRepo repository.AssetsRepository) *MaintenanceSchedulesService {
-	return &MaintenanceSchedulesService{repo: repo, assetRepo: assetRepo}
+func NewMaintenanceSchedulesService(repo repository.MaintenanceSchedulesRepository, assetRepo repository.AssetsRepository, userRepository repository.UserRepository, NotificationService *NotificationService) *MaintenanceSchedulesService {
+	return &MaintenanceSchedulesService{repo: repo, assetRepo: assetRepo, NotificationService: NotificationService, userRepository: userRepository}
 }
 
 func (service *MaintenanceSchedulesService) Create(userId int64, assetId int64, startDate, endDate time.Time) (*entity.MaintenanceSchedules, error) {
+	userUpdate, err := service.userRepository.FindByUserId(userId)
+	if err != nil {
+		return nil, err
+	}
 	assetCheck, err := service.assetRepo.GetAssetById(assetId)
 	if err != nil {
 		return nil, err
@@ -33,6 +40,21 @@ func (service *MaintenanceSchedulesService) Create(userId int64, assetId int64, 
 	if err != nil {
 		return nil, err
 	}
+	userHeadDepart, _ := service.userRepository.GetUserHeadDepartment(assetCheck.DepartmentId)
+	userManagerAsset, _ := service.userRepository.GetUserAssetManageOfDepartment(assetCheck.DepartmentId)
+	usersToNotifications := []*entity.Users{}
+	usersToNotifications = append(usersToNotifications, assetCheck.OnwerUser)
+	usersToNotifications = append(usersToNotifications, userHeadDepart)
+	usersToNotifications = append(usersToNotifications, userManagerAsset)
+	message := fmt.Sprintf("The maintenance schedules (ID: %v) has just been created by %v", maintenance.Id, userUpdate.Email)
+	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				fmt.Println("SendNotificationToUsers panic:", r)
+			}
+		}()
+		service.NotificationService.SendNotificationToUsers(usersToNotifications, message, *assetCheck)
+	}()
 	return maintenanceCreate, nil
 }
 
@@ -44,15 +66,41 @@ func (service *MaintenanceSchedulesService) GetAllMaintenanceSchedulesByAssetId(
 	return maintenances, nil
 }
 
-func (service *MaintenanceSchedulesService) Update(id int64, startDate time.Time, endDate time.Time) (*entity.MaintenanceSchedules, error) {
-	maintenace, err := service.repo.Update(id, startDate, endDate)
+func (service *MaintenanceSchedulesService) Update(userId int64, id int64, startDate time.Time, endDate time.Time) (*entity.MaintenanceSchedules, error) {
+	userUpdate, err := service.userRepository.FindByUserId(userId)
 	if err != nil {
 		return nil, err
 	}
-	return maintenace, nil
+
+	maintenance, err := service.repo.Update(id, startDate, endDate)
+	if err != nil {
+		return nil, err
+	}
+	maintenaceUpdate, _ := service.repo.GetMaintenanceSchedulesById(id)
+
+	userHeadDepart, _ := service.userRepository.GetUserHeadDepartment(maintenaceUpdate.Asset.DepartmentId)
+	userManagerAsset, _ := service.userRepository.GetUserAssetManageOfDepartment(maintenaceUpdate.Asset.DepartmentId)
+	usersToNotifications := []*entity.Users{}
+	usersToNotifications = append(usersToNotifications, maintenaceUpdate.Asset.OnwerUser)
+	usersToNotifications = append(usersToNotifications, userHeadDepart)
+	usersToNotifications = append(usersToNotifications, userManagerAsset)
+	message := fmt.Sprintf("The maintenance schedules (ID: %v) has just been updated by %v", maintenaceUpdate.Id, userUpdate.Email)
+	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				fmt.Println("SendNotificationToUsers panic:", r)
+			}
+		}()
+		service.NotificationService.SendNotificationToUsers(usersToNotifications, message, maintenaceUpdate.Asset)
+	}()
+	return maintenance, nil
 }
 
-func (service *MaintenanceSchedulesService) Delete(id int64) error {
+func (service *MaintenanceSchedulesService) Delete(userId int64, id int64) error {
+	userUpdate, err := service.userRepository.FindByUserId(userId)
+	if err != nil {
+		return err
+	}
 	maintenanceCheck, err := service.repo.GetMaintenanceSchedulesById(id)
 	if err != nil {
 		return err
@@ -61,6 +109,23 @@ func (service *MaintenanceSchedulesService) Delete(id int64) error {
 		return errors.New("start date <= now")
 	}
 	err = service.repo.Delete(id)
+	maintenaceUpdate, _ := service.repo.GetMaintenanceSchedulesById(id)
+
+	userHeadDepart, _ := service.userRepository.GetUserHeadDepartment(maintenaceUpdate.Asset.DepartmentId)
+	userManagerAsset, _ := service.userRepository.GetUserAssetManageOfDepartment(maintenaceUpdate.Asset.DepartmentId)
+	usersToNotifications := []*entity.Users{}
+	usersToNotifications = append(usersToNotifications, maintenaceUpdate.Asset.OnwerUser)
+	usersToNotifications = append(usersToNotifications, userHeadDepart)
+	usersToNotifications = append(usersToNotifications, userManagerAsset)
+	message := fmt.Sprintf("The maintenance schedules (ID: %v) has just been deleted by %v", maintenaceUpdate.Id, userUpdate.Email)
+	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				fmt.Println("SendNotificationToUsers panic:", r)
+			}
+		}()
+		service.NotificationService.SendNotificationToUsers(usersToNotifications, message, maintenaceUpdate.Asset)
+	}()
 	return err
 }
 

@@ -66,7 +66,7 @@ func main() {
 	requestTransferService := service.NewRequestTransferService(requestTransferRepository, assignmentService, userRepository, assetsRepository)
 	requestTransferHandler := handler.NewRequestTransferHandler(requestTransferService)
 	//Maintenance
-	MaintenanceService := service.NewMaintenanceSchedulesService(maintenanceRepository, assetsRepository)
+	MaintenanceService := service.NewMaintenanceSchedulesService(maintenanceRepository, assetsRepository, userRepository, notificationsService)
 	maintenanceHandler := handler.NewMaintenanceSchedulesHandler(MaintenanceService)
 
 	// Notification
@@ -87,14 +87,14 @@ func main() {
 
 	_, err := c.AddFunc("0 8 * * *", func() {
 		log.Println("🔔 Running maintenance notification check at 8:00 AM")
-		utils.CheckAndSenMaintenanceNotification(db, emailService, assetsRepository)
+		utils.CheckAndSenMaintenanceNotification(db, emailService, assetsRepository, userRepository, notificationsService)
 	})
 	if err != nil {
 		log.Fatalf("❌ Failed to schedule cron job: %v", err)
 	}
 	_, err = c.AddFunc("0 8 * * *", func() {
 		log.Println("🔔 Running warranty notification check at 8:00 AM")
-		utils.SendEmailsForWarrantyExpiry(db, emailService, assetsRepository)
+		utils.SendEmailsForWarrantyExpiry(db, emailService, notificationsService, assetsRepository, userRepository)
 	})
 	if err != nil {
 		log.Fatalf("❌ Failed to schedule cron job: %v", err)
@@ -102,7 +102,7 @@ func main() {
 
 	_, err = c.AddFunc("0 9 * * *", func() {
 		log.Println("🔔 Running update status when finish maintenance check at 8:00 AM")
-		utils.UpdateStatusWhenFinishMaintenance(db, assetsRepository)
+		utils.UpdateStatusWhenFinishMaintenance(db, assetsRepository, userRepository, notificationsService)
 	})
 	if err != nil {
 		log.Fatalf("❌ Failed to schedule cron job: %v", err)

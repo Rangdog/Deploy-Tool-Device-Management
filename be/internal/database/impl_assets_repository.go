@@ -176,7 +176,7 @@ func (r *PostgreSQLAssetsRepository) GetAssetsWasWarrantyExpiry() ([]*entity.Ass
 	err := r.db.Model(&entity.Assets{}).
 		Joins("LEFT JOIN notifications ON notifications.asset_id = assets.id AND notifications.type = ?", "Expired").
 		Where("assets.warrant_expiry < ?", today).
-		Where("notifications.id IS NULL").
+		Where("notifications.id IS NULL").Preload("OnwerUser").
 		Find(&assets).Error
 
 	return assets, err

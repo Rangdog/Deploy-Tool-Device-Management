@@ -247,10 +247,10 @@ type notificationJob struct {
 	Body    string
 }
 
-func CheckAndSenMaintenanceNotification(db *gorm.DB, emailNotifier interfaces.EmailNotifier, assetRepo repository.AssetsRepository) {
+func CheckAndSenMaintenanceNotification(db *gorm.DB, emailNotifier interfaces.EmailNotifier, assetRepo repository.AssetsRepository, userRepo repository.UserRepository, notification interfaces.Notification) {
 	today := time.Now().Truncate(24 * time.Hour)
 	var schedules []entity.MaintenanceSchedules
-	err := db.Where("start_date <= ? AND end_date >= ?", today, today).Find(&schedules).Error
+	err := db.Where("start_date <= ? AND end_date >= ?", today, today).Preload("Asset").Preload("Asset.OnwerUser").Find(&schedules).Error
 	if err != nil {
 		log.Printf("Error fetching maintenance schedules: %v", err)
 		return
@@ -330,6 +330,27 @@ func CheckAndSenMaintenanceNotification(db *gorm.DB, emailNotifier interfaces.Em
 			job.Emails = emails
 			job.Subject = subject
 			job.Body = body
+			userHeadDepart, _ := userRepo.GetUserHeadDepartment(s.Asset.DepartmentId)
+			userManagerAsset, _ := userRepo.GetUserAssetManageOfDepartment(s.Asset.DepartmentId)
+			usersToNotifications := []*entity.Users{}
+			if s.Asset.OnwerUser != nil {
+				usersToNotifications = append(usersToNotifications, s.Asset.OnwerUser)
+			}
+			if userHeadDepart != nil {
+				usersToNotifications = append(usersToNotifications, userHeadDepart)
+			}
+			if userManagerAsset != nil {
+				usersToNotifications = append(usersToNotifications, userManagerAsset)
+			}
+			message := fmt.Sprintf("The asset (ID: %v) moved to 'Under Maintenance'", s.AssetId)
+			go func() {
+				defer func() {
+					if r := recover(); r != nil {
+						fmt.Println("SendNotificationToUsers panic:", r)
+					}
+				}()
+				notification.SendNotificationToUsers(usersToNotifications, message, s.Asset)
+			}()
 			return nil
 		})
 		if len(job.Emails) > 0 {
@@ -359,7 +380,7 @@ func CheckAndSenMaintenanceNotification(db *gorm.DB, emailNotifier interfaces.Em
 	wg.Wait()
 }
 
-func UpdateStatusWhenFinishMaintenance(db *gorm.DB, assetRepo repository.AssetsRepository) {
+func UpdateStatusWhenFinishMaintenance(db *gorm.DB, assetRepo repository.AssetsRepository, userRepo repository.UserRepository, notification interfaces.Notification) {
 	assets, err := assetRepo.GetAssetByStatus("Under Maintenance")
 	if err != nil {
 		log.Printf("❌ Error fetching assets with status 'Under Maintenance': %v", err)
@@ -378,12 +399,33 @@ func UpdateStatusWhenFinishMaintenance(db *gorm.DB, assetRepo repository.AssetsR
 				log.Printf("❌ Error updating asset %d to 'In Use': %v", a.Id, err)
 			} else {
 				log.Printf("✅ Asset %d moved to 'In Use'", a.Id)
+				userHeadDepart, _ := userRepo.GetUserHeadDepartment(a.DepartmentId)
+				userManagerAsset, _ := userRepo.GetUserAssetManageOfDepartment(a.DepartmentId)
+				usersToNotifications := []*entity.Users{}
+				if a.OnwerUser != nil {
+					usersToNotifications = append(usersToNotifications, a.OnwerUser)
+				}
+				if userHeadDepart != nil {
+					usersToNotifications = append(usersToNotifications, userHeadDepart)
+				}
+				if userManagerAsset != nil {
+					usersToNotifications = append(usersToNotifications, userManagerAsset)
+				}
+				message := fmt.Sprintf("The asset (ID: %v) moved to 'In Use'", a.Id)
+				go func() {
+					defer func() {
+						if r := recover(); r != nil {
+							fmt.Println("SendNotificationToUsers panic:", r)
+						}
+					}()
+					notification.SendNotificationToUsers(usersToNotifications, message, *a)
+				}()
 			}
 		}
 	}
 }
 
-func SendEmailsForWarrantyExpiry(db *gorm.DB, emailNotifier interfaces.EmailNotifier, assetRepo repository.AssetsRepository) {
+func SendEmailsForWarrantyExpiry(db *gorm.DB, emailNotifier interfaces.EmailNotifier, notification interfaces.Notification, assetRepo repository.AssetsRepository, userRepo repository.UserRepository) {
 	assets, err := assetRepo.GetAssetsWasWarrantyExpiry()
 	if err != nil {
 		log.Printf("❌ Error fetching assets : %v", err)
@@ -445,6 +487,27 @@ func SendEmailsForWarrantyExpiry(db *gorm.DB, emailNotifier interfaces.EmailNoti
 		if len(emails) > 0 {
 			jobs = append(jobs, job)
 		}
+		userHeadDepart, _ := userRepo.GetUserHeadDepartment(a.DepartmentId)
+		userManagerAsset, _ := userRepo.GetUserAssetManageOfDepartment(a.DepartmentId)
+		usersToNotifications := []*entity.Users{}
+		if a.OnwerUser != nil {
+			usersToNotifications = append(usersToNotifications, a.OnwerUser)
+		}
+		if userHeadDepart != nil {
+			usersToNotifications = append(usersToNotifications, userHeadDepart)
+		}
+		if userManagerAsset != nil {
+			usersToNotifications = append(usersToNotifications, userManagerAsset)
+		}
+		message := fmt.Sprintf("The asset (ID: %v) has just been Expired", a.Id)
+		go func() {
+			defer func() {
+				if r := recover(); r != nil {
+					fmt.Println("SendNotificationToUsers panic:", r)
+				}
+			}()
+			notification.SendNotificationToUsers(usersToNotifications, message, *a)
+		}()
 	}
 	const workerCount = 10
 	jobsQueue := make(chan notificationJob, len(jobs))
@@ -512,4 +575,8 @@ func CurrentAssetValue(
 	// Giá trị còn lại không thấp hơn salvage value
 	currentValue := math.Max(originalCost-accumulatedDepreciation, salvageValue)
 	return currentValue
+}
+
+func PtrInt64(i int64) *int64 {
+	return &i
 }

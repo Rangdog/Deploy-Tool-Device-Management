@@ -269,7 +269,7 @@ func (service *UserService) UpdateManagerDep(id int64) error {
 		return err
 	}
 	if user.IsAssetManager {
-		err := service.repo.UpdateManagerDep(id, !user.IsHeadDepartment)
+		err := service.repo.UpdateManagerDep(id, !user.IsAssetManager)
 		return err
 	} else {
 		if user.DepartmentId == nil {
@@ -279,7 +279,7 @@ func (service *UserService) UpdateManagerDep(id int64) error {
 		if err != nil {
 			return err
 		}
-		err = service.repo.UpdateManagerDep(id, !user.IsHeadDepartment)
+		err = service.repo.UpdateManagerDep(id, !user.IsAssetManager)
 		return err
 	}
 }

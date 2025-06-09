@@ -107,6 +107,7 @@ func (h *MaintenanceSchedulesHandler) GetAllMaintenanceSchedulesByAssetId(c *gin
 // @Security JWT
 func (h *MaintenanceSchedulesHandler) Update(c *gin.Context) {
 	defer pkg.PanicHandler(c)
+	userId := utils.GetUserIdFromContext(c)
 	idStr := c.Param("id")
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
@@ -127,7 +128,7 @@ func (h *MaintenanceSchedulesHandler) Update(c *gin.Context) {
 		log.Error("Happened error start date >= end date .")
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error start date > end date.")
 	}
-	maintenance, err := h.service.Update(id, request.StartDate, request.EndDate)
+	maintenance, err := h.service.Update(userId, id, request.StartDate, request.EndDate)
 	if err != nil {
 		log.Error("Happened error when create maintenance. Error", err)
 		pkg.PanicExeption(constant.UnknownError, "Happened error when update maintenance.")
@@ -151,13 +152,14 @@ func (h *MaintenanceSchedulesHandler) Update(c *gin.Context) {
 // @Security JWT
 func (h *MaintenanceSchedulesHandler) Delete(c *gin.Context) {
 	defer pkg.PanicHandler(c)
+	userId := utils.GetUserIdFromContext(c)
 	idStr := c.Param("id")
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
 		log.Error("Happened error when convert project id to int64. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest)
 	}
-	err = h.service.Delete(id)
+	err = h.service.Delete(userId, id)
 	if err != nil {
 		log.Error("Happened error when create maintenance. Error", err)
 		pkg.PanicExeption(constant.UnknownError, "Happened error when delete maintenance.")

@@ -49,7 +49,7 @@ func (r PostgreSQLMaintenanceSchedulesRepository) Delete(id int64) error {
 
 func (r PostgreSQLMaintenanceSchedulesRepository) GetMaintenanceSchedulesById(id int64) (*entity.MaintenanceSchedules, error) {
 	maintenance := entity.MaintenanceSchedules{}
-	result := r.db.Model(entity.MaintenanceSchedules{}).Where("id = ?", id).Preload("Asset").First(&maintenance)
+	result := r.db.Model(entity.MaintenanceSchedules{}).Where("id = ?", id).Preload("Asset").Preload("Asset.OnwerUser").First(&maintenance)
 	if result.Error != nil {
 		return nil, result.Error
 	}

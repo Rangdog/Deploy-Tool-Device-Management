@@ -6,6 +6,7 @@ import (
 	"BE_Manage_device/internal/domain/filter"
 	"BE_Manage_device/internal/domain/repository"
 	"BE_Manage_device/pkg/utils"
+
 	"errors"
 	"fmt"
 	"mime/multipart"
@@ -287,8 +288,12 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 }
 
 func (service *AssetsService) DeleteAsset(userId int64, id int64) error {
+	userUpdate, err := service.userRepository.FindByUserId(userId)
+	if err != nil {
+		return err
+	}
 	tx := service.repo.GetDB().Begin()
-	err := service.repo.DeleteAsset(id, tx)
+	err = service.repo.DeleteAsset(id, tx)
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -312,10 +317,29 @@ func (service *AssetsService) DeleteAsset(userId int64, id int64) error {
 		return err
 	}
 	tx.Commit()
+	userHeadDepart, _ := service.userRepository.GetUserHeadDepartment(asset.DepartmentId)
+	userManagerAsset, _ := service.userRepository.GetUserAssetManageOfDepartment(asset.DepartmentId)
+	usersToNotifications := []*entity.Users{}
+	usersToNotifications = append(usersToNotifications, asset.OnwerUser)
+	usersToNotifications = append(usersToNotifications, userHeadDepart)
+	usersToNotifications = append(usersToNotifications, userManagerAsset)
+	message := fmt.Sprintf("The asset '%v' (ID: %v) has just been updated by %v", asset.AssetName, asset.Id, userUpdate.Email)
+	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				fmt.Println("SendNotificationToUsers panic:", r)
+			}
+		}()
+		service.NotificationService.SendNotificationToUsers(usersToNotifications, message, *asset)
+	}()
 	return nil
 }
 
 func (service *AssetsService) UpdateAssetRetired(userId int64, id int64, ResidualValue float64) (*entity.Assets, error) {
+	userUpdate, err := service.userRepository.FindByUserId(userId)
+	if err != nil {
+		return nil, err
+	}
 	assetCheck, err := service.repo.GetAssetById(id)
 	if err != nil {
 		return nil, err
@@ -363,6 +387,21 @@ func (service *AssetsService) UpdateAssetRetired(userId int64, id int64, Residua
 		return nil, err
 	}
 	tx.Commit()
+	userHeadDepart, _ := service.userRepository.GetUserHeadDepartment(asset.DepartmentId)
+	userManagerAsset, _ := service.userRepository.GetUserAssetManageOfDepartment(asset.DepartmentId)
+	usersToNotifications := []*entity.Users{}
+	usersToNotifications = append(usersToNotifications, asset.OnwerUser)
+	usersToNotifications = append(usersToNotifications, userHeadDepart)
+	usersToNotifications = append(usersToNotifications, userManagerAsset)
+	message := fmt.Sprintf("The asset '%v' (ID: %v) has just been updated by %v", asset.AssetName, asset.Id, userUpdate.Email)
+	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				fmt.Println("SendNotificationToUsers panic:", r)
+			}
+		}()
+		service.NotificationService.SendNotificationToUsers(usersToNotifications, message, *asset)
+	}()
 	return asset, nil
 
 }
