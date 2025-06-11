@@ -71,7 +71,10 @@ func (service *MaintenanceSchedulesService) Update(userId int64, id int64, start
 	if err != nil {
 		return nil, err
 	}
-
+	maintenaceUpdateOld, _ := service.repo.GetMaintenanceSchedulesById(id)
+	if maintenaceUpdateOld.StartDate.After(time.Now()) {
+		return nil, errors.New("start date <= now")
+	}
 	maintenance, err := service.repo.Update(id, startDate, endDate)
 	if err != nil {
 		return nil, err

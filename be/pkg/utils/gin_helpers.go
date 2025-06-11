@@ -248,14 +248,15 @@ type notificationJob struct {
 }
 
 func CheckAndSenMaintenanceNotification(db *gorm.DB, emailNotifier interfaces.EmailNotifier, assetRepo repository.AssetsRepository, userRepo repository.UserRepository, notification interfaces.Notification) {
-	today := time.Now().Truncate(24 * time.Hour)
+	startOfDay := time.Now().Truncate(24 * time.Hour)
+	endOfDay := startOfDay.Add(24 * time.Hour)
 	var schedules []entity.MaintenanceSchedules
-	err := db.Where("start_date <= ? AND end_date >= ?", today, today).Preload("Asset").Preload("Asset.OnwerUser").Find(&schedules).Error
-	log.Info("schedules", len(schedules))
+	err := db.Where("start_date <= ? AND end_date >= ?", startOfDay, endOfDay).Preload("Asset").Preload("Asset.OnwerUser").Find(&schedules).Error
 	if err != nil {
 		log.Printf("Error fetching maintenance schedules: %v", err)
 		return
 	}
+	log.Info("schedules", len(schedules))
 	var jobs []notificationJob
 	for _, s := range schedules {
 		// Check nếu đã thông báo rồi
@@ -323,7 +324,7 @@ func CheckAndSenMaintenanceNotification(db *gorm.DB, emailNotifier interfaces.Em
 			// 6. Ghi log notification
 			notify := entity.MaintenanceNotifications{
 				ScheduleId: s.Id,
-				NotifyDate: today,
+				NotifyDate: time.Now(),
 			}
 			if err := tx.Create(&notify).Error; err != nil {
 				return fmt.Errorf("error inserting notification: %w", err)
