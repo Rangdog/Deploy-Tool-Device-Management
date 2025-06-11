@@ -256,7 +256,6 @@ func CheckAndSenMaintenanceNotification(db *gorm.DB, emailNotifier interfaces.Em
 		log.Printf("Error fetching maintenance schedules: %v", err)
 		return
 	}
-	log.Info("schedules", len(schedules))
 	var jobs []notificationJob
 	for _, s := range schedules {
 		// Check nếu đã thông báo rồi
