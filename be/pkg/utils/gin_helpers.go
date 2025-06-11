@@ -251,6 +251,7 @@ func CheckAndSenMaintenanceNotification(db *gorm.DB, emailNotifier interfaces.Em
 	today := time.Now().Truncate(24 * time.Hour)
 	var schedules []entity.MaintenanceSchedules
 	err := db.Where("start_date <= ? AND end_date >= ?", today, today).Preload("Asset").Preload("Asset.OnwerUser").Find(&schedules).Error
+	log.Info("schedules", len(schedules))
 	if err != nil {
 		log.Printf("Error fetching maintenance schedules: %v", err)
 		return

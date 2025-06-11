@@ -89,6 +89,7 @@ func main() {
 		log.Println("🔔 Running maintenance notification check at 8:00 AM")
 		utils.CheckAndSenMaintenanceNotification(db, emailService, assetsRepository, userRepository, notificationsService)
 	})
+	utils.CheckAndSenMaintenanceNotification(db, emailService, assetsRepository, userRepository, notificationsService)
 	if err != nil {
 		log.Fatalf("❌ Failed to schedule cron job: %v", err)
 	}
