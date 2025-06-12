@@ -705,8 +705,8 @@ func (h *AssetsHandler) GetAssetsByCateOfDepartment(c *gin.Context) {
 }
 
 // Asset godoc
-// @Summary Get asset not maintenance schedules
-// @Description Get asset ot maintenance schedules
+// @Summary Get asset haven't maintenance schedules
+// @Description Get asset haven't maintenance schedules
 // @Tags Assets
 // @Accept json
 // @Produce json

@@ -357,7 +357,7 @@ const docTemplate = `{
                         "JWT": []
                     }
                 ],
-                "description": "Get asset ot maintenance schedules",
+                "description": "Get asset haven't maintenance schedules",
                 "consumes": [
                     "application/json"
                 ],
@@ -367,7 +367,7 @@ const docTemplate = `{
                 "tags": [
                     "Assets"
                 ],
-                "summary": "Get asset not maintenance schedules",
+                "summary": "Get asset haven't maintenance schedules",
                 "parameters": [
                     {
                         "type": "string",

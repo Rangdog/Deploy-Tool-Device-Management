@@ -524,7 +524,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get asset ot maintenance schedules
+      description: Get asset haven't maintenance schedules
       parameters:
       - description: Authorization
         in: header
@@ -536,7 +536,7 @@ paths:
       responses: {}
       security:
       - JWT: []
-      summary: Get asset not maintenance schedules
+      summary: Get asset haven't maintenance schedules
       tags:
       - Assets
   /api/assets/request-transfer:
