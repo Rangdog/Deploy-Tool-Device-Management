@@ -28,4 +28,5 @@ type AssetsRepository interface {
 	UpdateCost(id int64, cost float64) error
 	UpdateAcquisitionDate(id int64, AcquisitionDate time.Time) error
 	DeleteOwnerAssetOfOwnerId(ownerId int64) error
+	GetAllAssetNotHaveMaintenance() ([]*entity.Assets, error)
 }

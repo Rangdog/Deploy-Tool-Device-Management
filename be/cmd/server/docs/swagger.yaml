@@ -520,6 +520,25 @@ paths:
       summary: Get dashboard
       tags:
       - Assets
+  /api/assets/maintenance-schedules:
+    get:
+      consumes:
+      - application/json
+      description: Get asset ot maintenance schedules
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: Get asset not maintenance schedules
+      tags:
+      - Assets
   /api/assets/request-transfer:
     get:
       consumes:

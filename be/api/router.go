@@ -59,6 +59,7 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandle
 	api.PATCH("/assets-retired/:id", middleware.RequirePermission([]string{"lifecycle-update", "manage-assets"}, nil, db), AssetsHandler.UpdateAssetRetired)      // đã check
 	api.GET("/assets/filter-dashboard", middleware.RequirePermission([]string{"dashboards"}, []string{"full", "scoped"}, db), AssetsHandler.FilterAssetDashboard) // đã check
 	api.GET("/assets/request-transfer", AssetsHandler.GetAssetsByCateOfDepartment)
+	api.GET("/assets/maintenance-schedules", AssetsHandler.GetAllAssetNotHaveMaintenance)
 
 	//Roles
 	api.GET("/roles", RoleHandler.GetAllRole) // đã check

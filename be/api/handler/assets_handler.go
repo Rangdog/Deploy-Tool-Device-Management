@@ -703,3 +703,61 @@ func (h *AssetsHandler) GetAssetsByCateOfDepartment(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, assetsResponse))
 }
+
+// Asset godoc
+// @Summary Get asset not maintenance schedules
+// @Description Get asset ot maintenance schedules
+// @Tags Assets
+// @Accept json
+// @Produce json
+// @param Authorization header string true "Authorization"
+// @Router /api/assets/maintenance-schedules [GET]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
+func (h *AssetsHandler) GetAllAssetNotHaveMaintenance(c *gin.Context) {
+	defer pkg.PanicHandler(c)
+	assets, err := h.service.GetAllAssetNotHaveMaintenance()
+	if err != nil {
+		log.Error("Happened error when get assets. Error", err)
+		pkg.PanicExeption(constant.InvalidRequest, "Happened error when get assets")
+	}
+	assetsResponse := []dto.AssetResponse{}
+	for _, asset := range assets {
+		assetResponse := dto.AssetResponse{
+			ID:             asset.Id,
+			AssetName:      asset.AssetName,
+			PurchaseDate:   asset.PurchaseDate.Format("2006-01-02"),
+			Cost:           asset.Cost,
+			WarrantExpiry:  asset.WarrantExpiry.Format("2006-01-02"),
+			Status:         asset.Status,
+			SerialNumber:   asset.SerialNumber,
+			FileAttachment: *asset.FileAttachment,
+			ImageUpload:    *asset.ImageUpload,
+			QrURL:          *asset.QrUrl,
+			Category: dto.CategoryResponse{
+				ID:           asset.Category.Id,
+				CategoryName: asset.Category.CategoryName,
+			},
+			Department: dto.DepartmentResponse{
+				ID:             asset.Department.Id,
+				DepartmentName: asset.Department.DepartmentName,
+				Location: dto.LocationResponse{
+					ID:           asset.Department.Location.Id,
+					LocationName: asset.Department.Location.LocationName,
+				},
+			},
+		}
+		if asset.OnwerUser != nil {
+			assetResponse.Owner = dto.OwnerResponse{
+				ID:        asset.OnwerUser.Id,
+				FirstName: asset.OnwerUser.FirstName,
+				LastName:  asset.OnwerUser.LastName,
+				Email:     asset.OnwerUser.Email,
+			}
+		}
+		assetsResponse = append(assetsResponse, assetResponse)
+	}
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, assetsResponse))
+}

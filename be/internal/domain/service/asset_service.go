@@ -540,3 +540,11 @@ func (service *AssetsService) GetUserById(id int64) (entity.Users, error) {
 	user, err := service.userRepository.FindByUserId(id)
 	return *user, err
 }
+
+func (service *AssetsService) GetAllAssetNotHaveMaintenance() ([]*entity.Assets, error) {
+	assets, err := service.repo.GetAllAssetNotHaveMaintenance()
+	if err != nil {
+		return nil, err
+	}
+	return assets, nil
+}
