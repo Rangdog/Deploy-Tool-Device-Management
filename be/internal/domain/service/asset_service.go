@@ -276,7 +276,7 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 	usersToNotifications = append(usersToNotifications, userHeadDepart)
 	usersToNotifications = append(usersToNotifications, userManagerAsset)
 	message := fmt.Sprintf("The asset '%v' (ID: %v) has just been updated by %v", assetName, assetId, userUpdate.Email)
-	userNotificationUnique := utils.ConvertUsersToNotificationsToMap(usersToNotifications)
+	userNotificationUnique := utils.ConvertUsersToNotificationsToMap(userId, usersToNotifications)
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
@@ -325,7 +325,7 @@ func (service *AssetsService) DeleteAsset(userId int64, id int64) error {
 	usersToNotifications = append(usersToNotifications, userHeadDepart)
 	usersToNotifications = append(usersToNotifications, userManagerAsset)
 	message := fmt.Sprintf("The asset '%v' (ID: %v) has just been delete by %v", asset.AssetName, asset.Id, userUpdate.Email)
-	userNotificationUnique := utils.ConvertUsersToNotificationsToMap(usersToNotifications)
+	userNotificationUnique := utils.ConvertUsersToNotificationsToMap(userId, usersToNotifications)
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
@@ -396,7 +396,7 @@ func (service *AssetsService) UpdateAssetRetired(userId int64, id int64, Residua
 	usersToNotifications = append(usersToNotifications, userHeadDepart)
 	usersToNotifications = append(usersToNotifications, userManagerAsset)
 	message := fmt.Sprintf("The asset '%v' (ID: %v) has just been updated by %v", asset.AssetName, asset.Id, userUpdate.Email)
-	userNotificationUnique := utils.ConvertUsersToNotificationsToMap(usersToNotifications)
+	userNotificationUnique := utils.ConvertUsersToNotificationsToMap(userId, usersToNotifications)
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {

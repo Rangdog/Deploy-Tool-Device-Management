@@ -156,13 +156,16 @@ func ConvertRolesToResponsesArray(role []*entity.Roles) []dto.RoleResponse {
 	return res
 }
 
-func ConvertUsersToNotificationsToMap(usersToNotifications []*entity.Users) []*entity.Users {
+func ConvertUsersToNotificationsToMap(userId int64, usersToNotifications []*entity.Users) []*entity.Users {
 	uniqueMap := make(map[int64]bool)
 	uniqueUsers := []*entity.Users{}
 
 	for _, user := range usersToNotifications {
 		if user == nil {
 			continue // tránh panic nếu có user nil
+		}
+		if user.Id == userId {
+			continue // loại trừ user có id = userId truyền vào
 		}
 		if !uniqueMap[user.Id] {
 			uniqueMap[user.Id] = true

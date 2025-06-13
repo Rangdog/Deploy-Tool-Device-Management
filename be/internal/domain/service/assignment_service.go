@@ -151,7 +151,7 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 	usersToNotifications = append(usersToNotifications, userHeadDepart)
 	usersToNotifications = append(usersToNotifications, userManagerAsset)
 	message := fmt.Sprintf("The asset '%v' (ID: %v) has just been updated by %v", asset.AssetName, asset.Id, byUser.Email)
-	userNotificationUnique := utils.ConvertUsersToNotificationsToMap(usersToNotifications)
+	userNotificationUnique := utils.ConvertUsersToNotificationsToMap(userId, usersToNotifications)
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
