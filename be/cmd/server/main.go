@@ -60,7 +60,7 @@ func main() {
 	assignmentService := service.NewAssignmentService(assignmentRepository, assetsLogRepository, assetsRepository, departmentRepository, userRepository, notificationsService)
 	assignmentHandler := handler.NewAssignmentHandler(assignmentService)
 	//AssetLog
-	assetLogService := service.NewAssetLogService(assetsLogRepository)
+	assetLogService := service.NewAssetLogService(assetsLogRepository, userRepository)
 	assetLogHandler := handler.NewAssetLogHandler(assetLogService)
 	//Request Transfer
 	requestTransferService := service.NewRequestTransferService(requestTransferRepository, assignmentService, userRepository, assetsRepository)

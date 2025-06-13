@@ -10,8 +10,9 @@ import (
 
 type AssetLogFilter struct {
 	Action    *string `form:"action" json:"action"`
-	StartTime *string
-	EndTime   *string
+	StartTime *string `form:"startTime" json:"startTime"`
+	EndTime   *string `form:"endTime" json:"endTime"`
+	DepId     *int64
 }
 
 func (f *AssetLogFilter) ApplyFilter(db *gorm.DB, assetId int64) *gorm.DB {
@@ -28,6 +29,9 @@ func (f *AssetLogFilter) ApplyFilter(db *gorm.DB, assetId int64) *gorm.DB {
 		if t, err := time.Parse(time.RFC3339Nano, *f.EndTime); err == nil {
 			db = db.Where("timestamp<=?", t)
 		}
+	}
+	if f.DepId != nil {
+		db = db.Joins("join assets on assets.id = asset_logs.asset_id").Where("assets.department_id = ?", *f.DepId)
 	}
 	return db.Preload("ByUser").Preload("AssignUser").Preload("Asset").Order("id ASC")
 }

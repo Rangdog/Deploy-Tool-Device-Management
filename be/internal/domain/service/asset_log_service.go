@@ -8,11 +8,12 @@ import (
 )
 
 type AssetLogService struct {
-	repo repository.AssetsLogRepository
+	repo     repository.AssetsLogRepository
+	userRepo repository.UserRepository
 }
 
-func NewAssetLogService(repo repository.AssetsLogRepository) *AssetLogService {
-	return &AssetLogService{repo: repo}
+func NewAssetLogService(repo repository.AssetsLogRepository, userRepo repository.UserRepository) *AssetLogService {
+	return &AssetLogService{repo: repo, userRepo: userRepo}
 }
 
 func (service *AssetLogService) GetLogByAssetId(assetId int64) ([]*entity.AssetLog, error) {
@@ -23,11 +24,21 @@ func (service *AssetLogService) GetLogByAssetId(assetId int64) ([]*entity.AssetL
 	return assetlogs, nil
 }
 func (service *AssetLogService) Filter(userId int64, assetId int64, action, startTime, endTime *string) ([]dto.AssetLogsResponse, error) {
+	userCheck, err := service.userRepo.FindByUserId(userId)
+	if err != nil {
+		return nil, err
+	}
 	var filter = filter.AssetLogFilter{
 		Action:    action,
 		StartTime: startTime,
 		EndTime:   endTime,
 	}
+	if userCheck.Role.Slug == "assetManager" {
+		if userCheck.DepartmentId != nil {
+			filter.DepId = userCheck.DepartmentId
+		}
+	}
+
 	db := service.repo.GetDB()
 	dbFilter := filter.ApplyFilter(db.Model(&entity.AssetLog{}), assetId)
 	var total int64
