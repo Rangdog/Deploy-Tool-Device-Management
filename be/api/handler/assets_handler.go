@@ -173,6 +173,7 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 // @Tags Assets
 // @Accept multipart/form-data
 // @Produce json
+// @Param		id	path		string				true	"id"
 // @Param assetName formData string true "Asset Name"
 // @Param purchaseDate formData string true "Purchase Date (RFC3339 format, e.g. 2023-04-15T10:00:00Z)"
 // @Param cost formData number true "Cost"

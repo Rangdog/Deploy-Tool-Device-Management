@@ -395,6 +395,11 @@ paths:
       - multipart/form-data
       description: Update assets
       parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
       - description: Asset Name
         in: formData
         name: assetName

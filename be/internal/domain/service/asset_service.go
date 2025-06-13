@@ -276,13 +276,14 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 	usersToNotifications = append(usersToNotifications, userHeadDepart)
 	usersToNotifications = append(usersToNotifications, userManagerAsset)
 	message := fmt.Sprintf("The asset '%v' (ID: %v) has just been updated by %v", assetName, assetId, userUpdate.Email)
+	userNotificationUnique := utils.ConvertUsersToNotificationsToMap(usersToNotifications)
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
 				fmt.Println("SendNotificationToUsers panic:", r)
 			}
 		}()
-		service.NotificationService.SendNotificationToUsers(usersToNotifications, message, asset)
+		service.NotificationService.SendNotificationToUsers(userNotificationUnique, message, asset)
 	}()
 	return assetUpdated, nil
 }
@@ -324,13 +325,14 @@ func (service *AssetsService) DeleteAsset(userId int64, id int64) error {
 	usersToNotifications = append(usersToNotifications, userHeadDepart)
 	usersToNotifications = append(usersToNotifications, userManagerAsset)
 	message := fmt.Sprintf("The asset '%v' (ID: %v) has just been delete by %v", asset.AssetName, asset.Id, userUpdate.Email)
+	userNotificationUnique := utils.ConvertUsersToNotificationsToMap(usersToNotifications)
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
 				fmt.Println("SendNotificationToUsers panic:", r)
 			}
 		}()
-		service.NotificationService.SendNotificationToUsers(usersToNotifications, message, *asset)
+		service.NotificationService.SendNotificationToUsers(userNotificationUnique, message, *asset)
 	}()
 	return nil
 }
@@ -394,13 +396,14 @@ func (service *AssetsService) UpdateAssetRetired(userId int64, id int64, Residua
 	usersToNotifications = append(usersToNotifications, userHeadDepart)
 	usersToNotifications = append(usersToNotifications, userManagerAsset)
 	message := fmt.Sprintf("The asset '%v' (ID: %v) has just been updated by %v", asset.AssetName, asset.Id, userUpdate.Email)
+	userNotificationUnique := utils.ConvertUsersToNotificationsToMap(usersToNotifications)
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
 				fmt.Println("SendNotificationToUsers panic:", r)
 			}
 		}()
-		service.NotificationService.SendNotificationToUsers(usersToNotifications, message, *asset)
+		service.NotificationService.SendNotificationToUsers(userNotificationUnique, message, *asset)
 	}()
 	return asset, nil
 
