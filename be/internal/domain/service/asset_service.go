@@ -323,7 +323,7 @@ func (service *AssetsService) DeleteAsset(userId int64, id int64) error {
 	usersToNotifications = append(usersToNotifications, asset.OnwerUser)
 	usersToNotifications = append(usersToNotifications, userHeadDepart)
 	usersToNotifications = append(usersToNotifications, userManagerAsset)
-	message := fmt.Sprintf("The asset '%v' (ID: %v) has just been updated by %v", asset.AssetName, asset.Id, userUpdate.Email)
+	message := fmt.Sprintf("The asset '%v' (ID: %v) has just been delete by %v", asset.AssetName, asset.Id, userUpdate.Email)
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {

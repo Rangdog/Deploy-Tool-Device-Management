@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"sync"
 	"time"
-
-	"github.com/sirupsen/logrus"
 )
 
 type NotificationService struct {
@@ -79,8 +77,6 @@ func (service *NotificationService) SendNotificationToUsers(users []*entity.User
 			AssetId:    &asset.Id,
 			NotifyDate: &timeNotify,
 		}
-		a := service
-		logrus.Info(a)
 		_, err := service.notificationRepository.Create(&notify)
 		if err != nil {
 			// log lỗi, tuỳ quyết định dừng hay tiếp tục
