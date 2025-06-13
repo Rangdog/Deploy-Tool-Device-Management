@@ -71,7 +71,7 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandle
 	api.GET("/assignments/:id", middleware.RequirePermission([]string{"assign-assets"}, nil, db), AssignmentHandler.GetAssignmentById) // đã check
 
 	//AssetsLog
-	api.GET("/assets-log/:id", middleware.RequirePermission([]string{"audit-logs"}, nil, db), AssetLogHandler.GetLogByAssetId) // đã check
+	api.GET("/assets-log/:id", middleware.RequirePermission([]string{"audit-logs"}, []string{"full", "partial"}, db), AssetLogHandler.GetLogByAssetId) // đã check
 
 	//Request
 	api.POST("/request-transfer", middleware.RequirePermission([]string{"transfer-assets"}, []string{"full", "can-request"}, db), RequestTransferHandler.Create) // đã check
