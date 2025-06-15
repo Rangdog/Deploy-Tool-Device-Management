@@ -111,8 +111,13 @@ func (service *RequestTransferService) GetRequestTransferById(userId int64, id i
 }
 
 func (service *RequestTransferService) Filter(userId int64, status *string) ([]dto.RequestTransferResponse, error) {
+	users ,err := service.userRepo.FindByUserId(userId)
+	if err != nil{
+		return nil, err
+	}
 	var filter = filter.RequestTransferFilter{
 		Status: status,
+		DepId: *users.DepartmentId,
 	}
 	db := service.repo.GetDB()
 	dbFilter := filter.ApplyFilter(db.Model(&entity.RequestTransfer{}), userId)

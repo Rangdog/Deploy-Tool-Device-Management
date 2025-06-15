@@ -221,8 +221,8 @@ func (r *PostgreSQLAssetsRepository) UpdateCost(id int64, cost float64) error {
 	return result.Error
 }
 
-func (r *PostgreSQLAssetsRepository) UpdateAcquisitionDate(id int64, AcquisitionDate time.Time) error {
-	result := r.db.Model(entity.Assets{}).Where("id = ?", id).Update("acquisition_date", AcquisitionDate)
+func (r *PostgreSQLAssetsRepository) UpdateAcquisitionDate(id int64, AcquisitionDate time.Time, tx *gorm.DB) error {
+	result := tx.Model(entity.Assets{}).Where("id = ?", id).Update("acquisition_date", AcquisitionDate)
 	return result.Error
 }
 

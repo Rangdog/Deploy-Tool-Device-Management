@@ -24,6 +24,7 @@ func NewAssignmentService(repo repository.AssignmentRepository, assetLogRepo rep
 }
 
 func (service *AssignmentService) Create(userIdAssign, departmentId *int64, userId, assetId int64) (*entity.Assignments, error) {
+	var err error
 	assignment := entity.Assignments{
 		UserId:       userIdAssign,
 		AssetId:      assetId,
@@ -31,9 +32,16 @@ func (service *AssignmentService) Create(userIdAssign, departmentId *int64, user
 		DepartmentId: departmentId,
 	}
 	tx := service.repo.GetDB().Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			panic(r)
+		} else if err != nil {
+			tx.Rollback()
+		}
+	}()
 	assignmentCreated, err := service.repo.Create(&assignment, tx)
 	if err != nil {
-		tx.Rollback()
 		return nil, err
 	}
 	tx.Commit()
@@ -41,6 +49,7 @@ func (service *AssignmentService) Create(userIdAssign, departmentId *int64, user
 }
 
 func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssign, departmentId *int64) (*entity.Assignments, error) {
+	var err error
 	assignment, err := service.repo.GetAssignmentById(assignmentId)
 	if err != nil {
 		return nil, err
@@ -67,6 +76,9 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 	defer func() {
 		if r := recover(); r != nil {
 			tx.Rollback()
+			panic(r)
+		} else if err != nil {
+			tx.Rollback()
 		}
 	}()
 	var assignmentUpdated *entity.Assignments
@@ -76,7 +88,6 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 		assignmentUpdated, err = service.repo.Update(assignmentId, userId, assignment.AssetId, userIdAssign, assignUser.DepartmentId, tx)
 	}
 	if err != nil {
-		tx.Rollback()
 		return nil, err
 	}
 
@@ -91,17 +102,14 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 	if departmentId != nil && (*departmentId != asset.DepartmentId) {
 		department, err := service.departmentRepo.GetDepartmentById(*departmentId)
 		if err != nil {
-			tx.Rollback()
 			return nil, err
 		}
 		assetLog.ChangeSummary = fmt.Sprintf("Transfer from department %v to department %v by user %v\n",
 			asset.Department.DepartmentName, department.DepartmentName, byUser.Email)
 		if _, err := service.assetRepo.UpdateAssetDepartment(assignment.AssetId, *departmentId, tx); err != nil {
-			tx.Rollback()
 			return nil, err
 		}
 		if _, err := service.assetLogRepo.Create(&assetLog, tx); err != nil {
-			tx.Rollback()
 			return nil, err
 		}
 	}
@@ -112,33 +120,27 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 		assetLog.ChangeSummary += fmt.Sprintf("Transfer from user: %v to user: %v\n",
 			byUser.Email, assignUser.Email)
 		if _, err := service.assetRepo.UpdateAssetOwner(assignment.AssetId, *userIdAssign, tx); err != nil {
-			tx.Rollback()
 			return nil, err
 		}
 		if err := service.assetRepo.UpdateOwner(assignment.AssetId, assignUser.Id, tx); err != nil {
-			tx.Rollback()
 			return nil, err
 		}
 		if *assignUser.DepartmentId != asset.DepartmentId {
 			_, err := service.assetRepo.UpdateAssetDepartment(asset.Id, *assignUser.DepartmentId, tx)
 			if err != nil {
-				tx.Rollback()
 				return nil, err
 			}
 		}
 		if _, err := service.assetLogRepo.Create(&assetLog, tx); err != nil {
-			tx.Rollback()
 			return nil, err
 		}
 	}
 
 	if _, err := service.assetRepo.UpdateAssetLifeCycleStage(assignment.AssetId, "In Use", tx); err != nil {
-		tx.Rollback()
 		return nil, err
 	}
-	err = service.assetRepo.UpdateAcquisitionDate(assignment.AssetId, time.Now())
+	err = service.assetRepo.UpdateAcquisitionDate(assignment.AssetId, time.Now(), tx)
 	if err != nil {
-		tx.Rollback()
 		return nil, err
 	}
 	if err := tx.Commit().Error; err != nil {
@@ -146,10 +148,7 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 	}
 	userHeadDepart, _ := service.userRepo.GetUserHeadDepartment(assetLog.Asset.DepartmentId)
 	userManagerAsset, _ := service.userRepo.GetUserAssetManageOfDepartment(assetLog.Asset.DepartmentId)
-	usersToNotifications := []*entity.Users{}
-	usersToNotifications = append(usersToNotifications, asset.OnwerUser)
-	usersToNotifications = append(usersToNotifications, userHeadDepart)
-	usersToNotifications = append(usersToNotifications, userManagerAsset)
+	usersToNotifications := []*entity.Users{asset.OnwerUser, userHeadDepart, userManagerAsset}
 	message := fmt.Sprintf("The asset '%v' (ID: %v) has just been updated by %v", asset.AssetName, asset.Id, byUser.Email)
 	userNotificationUnique := utils.ConvertUsersToNotificationsToMap(userId, usersToNotifications)
 	go func() {

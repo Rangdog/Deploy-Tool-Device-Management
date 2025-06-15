@@ -26,7 +26,7 @@ type AssetsRepository interface {
 	UpdateAssetOwner(id, Owner int64, tx *gorm.DB) (*entity.Assets, error)
 	GetAssetsByCateOfDepartment(categoryId int64, departmentId int64) ([]*entity.Assets, error)
 	UpdateCost(id int64, cost float64) error
-	UpdateAcquisitionDate(id int64, AcquisitionDate time.Time) error
+	UpdateAcquisitionDate(id int64, AcquisitionDate time.Time, tx *gorm.DB) error
 	DeleteOwnerAssetOfOwnerId(ownerId int64) error
 	GetAllAssetNotHaveMaintenance() ([]*entity.Assets, error)
 }

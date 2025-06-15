@@ -61,6 +61,14 @@ func (service *AssetsService) Create(userId int64, assetName string, purchaseDat
 		return nil, err
 	}
 	tx := service.repo.GetDB().Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			panic(r)
+		} else if err != nil {
+			tx.Rollback()
+		}
+	}()
 	asset := entity.Assets{
 		AssetName:      assetName,
 		PurchaseDate:   purchaseDate,
@@ -76,7 +84,6 @@ func (service *AssetsService) Create(userId int64, assetName string, purchaseDat
 	}
 	assetCreate, err := service.repo.Create(&asset, tx)
 	if err != nil {
-		tx.Rollback()
 		return nil, err
 	}
 	changeSummary := "Create asset"
@@ -90,7 +97,6 @@ func (service *AssetsService) Create(userId int64, assetName string, purchaseDat
 	}
 	_, err = service.assertLogRepository.Create(&assetLog, tx)
 	if err != nil {
-		tx.Rollback()
 		return nil, err
 	}
 	assign := entity.Assignments{
@@ -101,7 +107,6 @@ func (service *AssetsService) Create(userId int64, assetName string, purchaseDat
 	}
 	_, err = service.assignRepository.Create(&assign, tx)
 	if err != nil {
-		tx.Rollback()
 		return nil, err
 	}
 	if err := tx.Commit().Error; err != nil {
@@ -171,7 +176,9 @@ func (service *AssetsService) SetRole(assetId int64) error {
 }
 
 func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName string, purchaseDate time.Time, warrantExpiry time.Time, serialNumber string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, categoryId int64, cost float64) (*entity.Assets, error) {
-	imgFile, err := image.Open()
+	var err error
+	var imgFile multipart.File
+	imgFile, err = image.Open()
 	if err != nil {
 		return nil, fmt.Errorf("cannot open image: %w", err)
 	}
@@ -228,6 +235,14 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 		filedUpdate = append(filedUpdate, "category")
 	}
 	tx := service.repo.GetDB().Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			panic(r)
+		} else if err != nil {
+			tx.Rollback()
+		}
+	}()
 	asset := entity.Assets{
 		Id:             assetId,
 		AssetName:      assetName,
@@ -241,13 +256,11 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 	}
 	assetUpdated, err := service.repo.UpdateAsset(&asset, tx)
 	if err != nil {
-		tx.Rollback()
 		return nil, err
 	}
 
 	userUpdate, err := service.userRepository.FindByUserId(userId)
 	if err != nil {
-		tx.Rollback()
 		return nil, err
 	}
 	changeSummary := ""
@@ -265,16 +278,23 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 	}
 	_, err = service.assertLogRepository.Create(&assetLog, tx)
 	if err != nil {
-		tx.Rollback()
 		return nil, err
 	}
-	tx.Commit()
+	if err = tx.Commit().Error; err != nil {
+		return nil, fmt.Errorf("commit failed: %w", err)
+	}
 	userHeadDepart, _ := service.userRepository.GetUserHeadDepartment(assetUpdated.DepartmentId)
 	userManagerAsset, _ := service.userRepository.GetUserAssetManageOfDepartment(assetUpdated.DepartmentId)
 	usersToNotifications := []*entity.Users{}
-	usersToNotifications = append(usersToNotifications, asset.OnwerUser)
-	usersToNotifications = append(usersToNotifications, userHeadDepart)
-	usersToNotifications = append(usersToNotifications, userManagerAsset)
+	if assetUpdated.OnwerUser != nil {
+		usersToNotifications = append(usersToNotifications, assetUpdated.OnwerUser)
+	}
+	if userHeadDepart != nil {
+		usersToNotifications = append(usersToNotifications, userHeadDepart)
+	}
+	if userManagerAsset != nil {
+		usersToNotifications = append(usersToNotifications, userManagerAsset)
+	}
 	message := fmt.Sprintf("The asset '%v' (ID: %v) has just been updated by %v", assetName, assetId, userUpdate.Email)
 	userNotificationUnique := utils.ConvertUsersToNotificationsToMap(userId, usersToNotifications)
 	go func() {
@@ -289,19 +309,26 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 }
 
 func (service *AssetsService) DeleteAsset(userId int64, id int64) error {
+	var err error
 	userUpdate, err := service.userRepository.FindByUserId(userId)
 	if err != nil {
 		return err
 	}
 	tx := service.repo.GetDB().Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			panic(r)
+		} else if err != nil {
+			tx.Rollback()
+		}
+	}()
 	err = service.repo.DeleteAsset(id, tx)
 	if err != nil {
-		tx.Rollback()
 		return err
 	}
 	asset, err := service.repo.GetAssetById(id)
 	if err != nil {
-		tx.Rollback()
 		return err
 	}
 	changeSummary := "Delete asset chair"
@@ -314,10 +341,11 @@ func (service *AssetsService) DeleteAsset(userId int64, id int64) error {
 	}
 	_, err = service.assertLogRepository.Create(&assetLog, tx)
 	if err != nil {
-		tx.Rollback()
 		return err
 	}
-	tx.Commit()
+	if err = tx.Commit().Error; err != nil {
+		return fmt.Errorf("commit failed: %w", err)
+	}
 	userHeadDepart, _ := service.userRepository.GetUserHeadDepartment(asset.DepartmentId)
 	userManagerAsset, _ := service.userRepository.GetUserAssetManageOfDepartment(asset.DepartmentId)
 	usersToNotifications := []*entity.Users{}
@@ -338,6 +366,7 @@ func (service *AssetsService) DeleteAsset(userId int64, id int64) error {
 }
 
 func (service *AssetsService) UpdateAssetRetired(userId int64, id int64, ResidualValue float64) (*entity.Assets, error) {
+	var err error
 	userUpdate, err := service.userRepository.FindByUserId(userId)
 	if err != nil {
 		return nil, err
@@ -350,9 +379,16 @@ func (service *AssetsService) UpdateAssetRetired(userId int64, id int64, Residua
 		return nil, errors.New("can't retired asset")
 	}
 	tx := service.repo.GetDB().Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			panic(r)
+		} else if err != nil {
+			tx.Rollback()
+		}
+	}()
 	asset, err := service.repo.UpdateAssetLifeCycleStage(id, "Retired", tx)
 	if err != nil {
-		tx.Rollback()
 		return nil, err
 	}
 	now := time.Now()
@@ -363,7 +399,6 @@ func (service *AssetsService) UpdateAssetRetired(userId int64, id int64, Residua
 		yearsUsed--
 	}
 	if yearsUsed <= 0 {
-		tx.Rollback()
 		fmt.Println("Asset not in use for a full year.")
 		return nil, errors.New("a")
 	}
@@ -372,7 +407,6 @@ func (service *AssetsService) UpdateAssetRetired(userId int64, id int64, Residua
 	asset.AnnualDepreciation = &annualDepreciation
 	asset, err = service.repo.UpdateAsset(asset, tx)
 	if err != nil {
-		tx.Rollback()
 		return nil, err
 	}
 	changeSummary := "Retired asset"
@@ -385,10 +419,11 @@ func (service *AssetsService) UpdateAssetRetired(userId int64, id int64, Residua
 	}
 	_, err = service.assertLogRepository.Create(&assetLog, tx)
 	if err != nil {
-		tx.Rollback()
 		return nil, err
 	}
-	tx.Commit()
+	if err = tx.Commit().Error; err != nil {
+		return nil,fmt.Errorf("commit failed: %w", err)
+	}
 	userHeadDepart, _ := service.userRepository.GetUserHeadDepartment(asset.DepartmentId)
 	userManagerAsset, _ := service.userRepository.GetUserAssetManageOfDepartment(asset.DepartmentId)
 	usersToNotifications := []*entity.Users{}
