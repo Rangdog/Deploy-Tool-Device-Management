@@ -117,7 +117,9 @@ func (service *RequestTransferService) Filter(userId int64, status *string) ([]d
 	}
 	var filter = filter.RequestTransferFilter{
 		Status: status,
-		DepId: *users.DepartmentId,
+	}
+	if users.Role.Slug != "admin"{
+		filter.DepId = users.DepartmentId
 	}
 	db := service.repo.GetDB()
 	dbFilter := filter.ApplyFilter(db.Model(&entity.RequestTransfer{}), userId)
