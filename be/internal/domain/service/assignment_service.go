@@ -7,7 +7,6 @@ import (
 	"BE_Manage_device/internal/domain/repository"
 	"BE_Manage_device/pkg/utils"
 	"fmt"
-	"math"
 	"time"
 )
 
@@ -154,38 +153,24 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 	return assignmentUpdated, nil
 }
 
-func (service *AssignmentService) Filter(userId int64, emailAssigned *string, emailAssign *string, assetName *string, page int, limit int) (*map[string]any, error) {
+func (service *AssignmentService) Filter(userId int64, emailAssigned *string, emailAssign *string, assetName *string) (*map[string]any, error) {
 	var filter = filter.AssignmentFilter{
 		EmailAssigned: emailAssigned,
 		EmailAssign:   emailAssign,
 		AssetName:     assetName,
-		Page:          page,
-		Limit:         limit,
 	}
 	db := service.repo.GetDB()
 	dbFilter := filter.ApplyFilter(db.Model(&entity.Assignments{}), userId)
-	if filter.Page <= 0 {
-		filter.Page = 1
-	}
-
-	if filter.Limit <= 0 {
-		filter.Limit = 10
-	}
 	var total int64
 	dbFilter.Count(&total)
-	offset := (filter.Page - 1) * filter.Limit
 	var assignments []entity.Assignments
-	result := dbFilter.Offset(offset).Limit(filter.Limit).Find(&assignments)
+	result := dbFilter.Find(&assignments)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 	assignmentsRes := utils.ConvertAssignmentsToResponses(assignments)
 	data := map[string]any{
 		"data":       assignmentsRes,
-		"page":       filter.Page,
-		"limit":      filter.Limit,
-		"total":      total,
-		"total_page": int(math.Ceil(float64(total) / float64(filter.Limit))),
 	}
 	return &data, nil
 }

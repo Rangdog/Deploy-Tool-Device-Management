@@ -500,7 +500,7 @@ func (h *AssetsHandler) FilterAsset(c *gin.Context) {
 		log.Error("Happened error when mapping query to filter. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when mapping query to filter")
 	}
-	data, err := h.service.Filter(userId, filter.AssetName, filter.Status, filter.CategoryId, filter.Cost, filter.SerialNumber, filter.Email, filter.DepartmentId, filter.Page, filter.Limit)
+	data, err := h.service.Filter(userId, filter.AssetName, filter.Status, filter.CategoryId, filter.Cost, filter.SerialNumber, filter.Email, filter.DepartmentId)
 	if err != nil {
 		log.Error("Happened error when filter asset. Error", err)
 		pkg.PanicExeption(constant.UnknownError, "Happened error when filter asset")

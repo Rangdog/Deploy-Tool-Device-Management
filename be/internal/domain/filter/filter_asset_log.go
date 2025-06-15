@@ -12,8 +12,6 @@ type AssetLogFilter struct {
 	Action    *string `form:"action" json:"action"`
 	StartTime *string
 	EndTime   *string
-	Page      int `form:"page" json:"page"`
-	Limit     int `form:"limit" json:"limit"`
 }
 
 func (f *AssetLogFilter) ApplyFilter(db *gorm.DB, assetId int64) *gorm.DB {

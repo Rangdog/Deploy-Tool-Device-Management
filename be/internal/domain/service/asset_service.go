@@ -8,7 +8,6 @@ import (
 	"BE_Manage_device/pkg/utils"
 	"errors"
 	"fmt"
-	"math"
 	"mime/multipart"
 	"sync"
 	"time"
@@ -328,7 +327,7 @@ func (service *AssetsService) UpdateAssetRetired(userId int64, id int64) (*entit
 
 }
 
-func (service *AssetsService) Filter(userId int64, assetName *string, status *string, categoryId *string, cost *string, serialNumber *string, email *string, departmentId *string, page int, limit int) (*map[string]any, error) {
+func (service *AssetsService) Filter(userId int64, assetName *string, status *string, categoryId *string, cost *string, serialNumber *string, email *string, departmentId *string) (*map[string]any, error) {
 	var filter = filter.AssetFilter{
 		AssetName:    assetName,
 		CategoryId:   categoryId,
@@ -337,23 +336,14 @@ func (service *AssetsService) Filter(userId int64, assetName *string, status *st
 		Email:        email,
 		DepartmentId: departmentId,
 		Status:       status,
-		Page:         page,
-		Limit:        limit,
 	}
 	db := service.repo.GetDB()
 	dbFilter := filter.ApplyFilter(db.Model(&entity.Assets{}), userId)
-	if filter.Page <= 0 {
-		filter.Page = 1
-	}
-
-	if filter.Limit <= 0 {
-		filter.Limit = 10
-	}
 	var total int64
 	dbFilter.Count(&total)
-	offset := (filter.Page - 1) * filter.Limit
+	
 	var assets []entity.Assets
-	result := dbFilter.Offset(offset).Limit(filter.Limit).Find(&assets)
+	result := dbFilter.Find(&assets)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -395,10 +385,6 @@ func (service *AssetsService) Filter(userId int64, assetName *string, status *st
 	}
 	data := map[string]any{
 		"data":       assetsResponse,
-		"page":       filter.Page,
-		"limit":      filter.Limit,
-		"total":      total,
-		"total_page": int(math.Ceil(float64(total) / float64(filter.Limit))),
 	}
 	return &data, nil
 }

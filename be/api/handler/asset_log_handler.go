@@ -49,7 +49,7 @@ func (h *AssetLogHandler) GetLogByAssetId(c *gin.Context) {
 		log.Error("Happened error when mapping query to filter. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when mapping query to filter")
 	}
-	assetLogs, err := h.service.Filter(userId, assetId, filter.Action, filter.StartTime, filter.EndTime, filter.Page, filter.Limit)
+	assetLogs, err := h.service.Filter(userId, assetId, filter.Action, filter.StartTime, filter.EndTime)
 	if err != nil {
 		log.Error("Happened error when get asset log. Error", err)
 		pkg.PanicExeption(constant.UnknownError, "Happened error when get asset log")
