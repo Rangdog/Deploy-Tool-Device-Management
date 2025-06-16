@@ -7,6 +7,7 @@ import (
 	"BE_Manage_device/internal/domain/repository"
 	"BE_Manage_device/pkg/utils"
 	"errors"
+	"fmt"
 )
 
 type RequestTransferService struct {
@@ -35,6 +36,7 @@ func (service *RequestTransferService) Create(userId int64, categoryId int64, de
 }
 
 func (service *RequestTransferService) Accept(userId int64, id int64, assetId int64) (*entity.RequestTransfer, error) {
+	var err error
 	if service.IsRoleHeadDep(userId) {
 		return nil, errors.New("head Department can't accept request")
 	}
@@ -53,35 +55,41 @@ func (service *RequestTransferService) Accept(userId int64, id int64, assetId in
 		return nil, errors.New("asset department same request department")
 	}
 	tx := service.repo.GetDB().Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			panic(r)
+		} else if err != nil {
+			tx.Rollback()
+		}
+	}()
 	request, err := service.repo.UpdateStatusConfirm(id, tx)
 	if err != nil {
-		tx.Rollback()
 		return nil, err
 	}
 	assignment, err := service.assignmentService.repo.GetAssignmentByAssetId(assetId)
 	if err != nil {
-		tx.Rollback()
 		return nil, err
 	}
 	if requestCheck.User.DepartmentId == nil {
-		tx.Rollback()
 		return nil, errors.New("user don't have department")
 	}
 	userAssign, err := service.userRepo.GetUserAssetManageOfDepartment(*requestCheck.User.DepartmentId)
 	if err != nil {
-		tx.Rollback()
 		return nil, err
 	}
 	_, err = service.assignmentService.Update(userId, assignment.Id, &userAssign.Id, requestCheck.User.DepartmentId)
 	if err != nil {
-		tx.Rollback()
 		return nil, err
 	}
-	tx.Commit()
+	if err = tx.Commit().Error; err != nil {
+		return nil, fmt.Errorf("commit failed: %w", err)
+	}
 	return request, nil
 }
 
 func (service *RequestTransferService) Deny(userId int64, id int64) (*entity.RequestTransfer, error) {
+	var err error
 	if service.IsRoleHeadDep(userId) {
 		return nil, errors.New("head Department can't deny request")
 	}
@@ -93,12 +101,21 @@ func (service *RequestTransferService) Deny(userId int64, id int64) (*entity.Req
 		return nil, errors.New("can't change request")
 	}
 	tx := service.repo.GetDB().Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			panic(r)
+		} else if err != nil {
+			tx.Rollback()
+		}
+	}()
 	request, err := service.repo.UpdateStatusDeny(id, tx)
 	if err != nil {
-		tx.Rollback()
 		return nil, err
 	}
-
+	if err = tx.Commit().Error; err != nil {
+		return nil, fmt.Errorf("commit failed: %w", err)
+	}
 	return request, nil
 }
 
@@ -111,14 +128,14 @@ func (service *RequestTransferService) GetRequestTransferById(userId int64, id i
 }
 
 func (service *RequestTransferService) Filter(userId int64, status *string) ([]dto.RequestTransferResponse, error) {
-	users ,err := service.userRepo.FindByUserId(userId)
-	if err != nil{
+	users, err := service.userRepo.FindByUserId(userId)
+	if err != nil {
 		return nil, err
 	}
 	var filter = filter.RequestTransferFilter{
 		Status: status,
 	}
-	if users.Role.Slug != "admin"{
+	if users.Role.Slug != "admin" {
 		filter.DepId = users.DepartmentId
 	}
 	db := service.repo.GetDB()
