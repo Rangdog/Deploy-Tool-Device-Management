@@ -661,7 +661,7 @@ func (h *AssetsHandler) GetAssetsByCateOfDepartment(c *gin.Context) {
 		log.Error("Happened error when mapping request from FE. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest)
 	}
-	assets, err := h.service.GetAssetsByCateOfDepartment(userId,request.CategoryId, request.DepartmentId)
+	assets, err := h.service.GetAssetsByCateOfDepartment(userId, request.CategoryId, request.DepartmentId)
 	if err != nil {
 		log.Error("Happened error when get assets. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when get assets")

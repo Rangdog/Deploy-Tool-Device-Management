@@ -25,15 +25,15 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandle
 	api.Use(middleware.AuthMiddleware(config.AccessSecret, session))
 
 	api.GET("/user/department/:department_id", userHandler.GetAllUserOfDepartment)
-	api.GET("/user/session", userHandler.Session)                                                                           // đã check: nên chỉnh lại api response
-	api.POST("/auth/logout", userHandler.Logout)                                                                            // đã check
-	api.GET("/users", userHandler.GetAllUser)                                                                               // đã check:
-	api.PATCH("users/information", userHandler.UpdateInformationUser)                                                       // đã check
-	api.PATCH("users/role", middleware.RequirePermission([]string{"role-assignment"}, nil, db), userHandler.UpdateRoleUser) // đã check
+	api.GET("/user/session", userHandler.Session)                                                                            // đã check: nên chỉnh lại api response
+	api.POST("/auth/logout", userHandler.Logout)                                                                             // đã check
+	api.GET("/users", userHandler.GetAllUser)                                                                                // đã check:
+	api.PATCH("/users/information", userHandler.UpdateInformationUser)                                                       // đã check
+	api.PATCH("/users/role", middleware.RequirePermission([]string{"role-assignment"}, nil, db), userHandler.UpdateRoleUser) // đã check
 	api.PATCH("/user/department", middleware.RequirePermission([]string{"user-management"}, nil, db), userHandler.UpdateDepartment)
-	api.PATCH("api/user/head-department/:user_id", middleware.RequirePermission([]string{"user-management"}, nil, db), userHandler.UpdateHeadDep)
-	api.PATCH("api/user/manager-department/:user_id", middleware.RequirePermission([]string{"user-management"}, nil, db), userHandler.UpdateManagerDep)
-	api.PATCH("api/user/can-export/:user_id", middleware.RequirePermission([]string{"user-management"}, nil, db), userHandler.UpdateCanExport)
+	api.PATCH("/user/head-department/:user_id", middleware.RequirePermission([]string{"user-management"}, nil, db), userHandler.UpdateHeadDep)
+	api.PATCH("/user/manager-department/:user_id", middleware.RequirePermission([]string{"user-management"}, nil, db), userHandler.UpdateManagerDep)
+	api.PATCH("/user/can-export/:user_id", middleware.RequirePermission([]string{"user-management"}, nil, db), userHandler.UpdateCanExport)
 	//Locations
 	api.POST("/locations", middleware.RequirePermission([]string{"manage-taxonomy"}, nil, db), LocationHandler.Create)       // đã check
 	api.GET("/locations", LocationHandler.GetAll)                                                                            // đã check
@@ -50,11 +50,11 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandle
 	api.DELETE("/departments/:id", middleware.RequirePermission([]string{"manage-taxonomy"}, nil, db), DepartmentsHandler.Delete) // đã check
 
 	//Assets
-	api.POST("/assets", middleware.RequirePermission([]string{"manage-assets"}, []string{"full", "limited"}, db), AssetsHandler.Create) // đã check
-	api.GET("/assets/:id", AssetsHandler.GetAssetById)                                                                                  // đã check
-	api.GET("/assets", AssetsHandler.GetAllAsset)                                                                                       // đã check
-	api.GET("/assets/filter", AssetsHandler.FilterAsset)                                                                                // đã check
-	api.PUT("/assets/:id", AssetsHandler.Update)                                                                                        // đã check
+	api.POST("/assets", middleware.RequirePermission([]string{"manage-assets"}, []string{"full", "limited"}, db), AssetsHandler.Create)    // đã check
+	api.GET("/assets/:id", AssetsHandler.GetAssetById)                                                                                     // đã check
+	api.GET("/assets", AssetsHandler.GetAllAsset)                                                                                          // đã check
+	api.GET("/assets/filter", AssetsHandler.FilterAsset)                                                                                   // đã check
+	api.PUT("/assets/:id", middleware.RequirePermission([]string{"manage-assets"}, []string{"full", "limited"}, db), AssetsHandler.Update) // đã check
 	api.DELETE("/assets/:id", middleware.RequirePermission([]string{"manage-assets"}, nil, db), AssetsHandler.DeleteAsset)
 	api.PATCH("/assets-retired/:id", middleware.RequirePermission([]string{"lifecycle-update", "manage-assets"}, nil, db), AssetsHandler.UpdateAssetRetired)      // đã check
 	api.GET("/assets/filter-dashboard", middleware.RequirePermission([]string{"dashboards"}, []string{"full", "scoped"}, db), AssetsHandler.FilterAssetDashboard) // đã check

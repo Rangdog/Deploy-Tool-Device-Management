@@ -5,15 +5,18 @@ import (
 	"BE_Manage_device/internal/domain/entity"
 	"BE_Manage_device/internal/domain/filter"
 	"BE_Manage_device/internal/domain/repository"
+	"errors"
 )
 
 type AssetLogService struct {
-	repo     repository.AssetsLogRepository
-	userRepo repository.UserRepository
+	repo      repository.AssetsLogRepository
+	userRepo  repository.UserRepository
+	roleRepo  repository.RoleRepository
+	assetRepo repository.AssetsRepository
 }
 
-func NewAssetLogService(repo repository.AssetsLogRepository, userRepo repository.UserRepository) *AssetLogService {
-	return &AssetLogService{repo: repo, userRepo: userRepo}
+func NewAssetLogService(repo repository.AssetsLogRepository, userRepo repository.UserRepository, roleRepo repository.RoleRepository, assetRepo repository.AssetsRepository) *AssetLogService {
+	return &AssetLogService{repo: repo, userRepo: userRepo, roleRepo: roleRepo, assetRepo: assetRepo}
 }
 
 func (service *AssetLogService) GetLogByAssetId(assetId int64) ([]*entity.AssetLog, error) {
@@ -77,4 +80,27 @@ func (service *AssetLogService) Filter(userId int64, assetId int64, action, star
 		assetLogResponses = append(assetLogResponses, assetLogResponse)
 	}
 	return assetLogResponses, nil
+}
+
+func (service *AssetLogService) CheckPermissionForManager(userId int64, depId int64) error {
+	user, err := service.userRepo.FindByUserId(userId)
+	role := service.roleRepo.GetRoleBySlug("admin")
+	if user.RoleId == role.Id {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	if user.DepartmentId != nil && *user.DepartmentId == depId {
+		return nil
+	}
+	return errors.New("you can have permission for manager asset in the department")
+}
+
+func (service *AssetLogService) GetAssetById(userId int64, assertId int64) (*entity.Assets, error) {
+	assert, err := service.assetRepo.GetAssetById(assertId)
+	if err != nil {
+		return nil, err
+	}
+	return assert, err
 }

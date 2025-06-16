@@ -49,6 +49,16 @@ func (h *AssetLogHandler) GetLogByAssetId(c *gin.Context) {
 		log.Error("Happened error when mapping query to filter. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when mapping query to filter")
 	}
+	asset, err := h.service.GetAssetById(userId, assetId)
+	if err != nil {
+		log.Error("Happened error when get asset by id. Error", err)
+		pkg.PanicExeption(constant.UnknownError, "Happened error when get asset by id")
+	}
+	err = h.service.CheckPermissionForManager(userId, asset.DepartmentId)
+	if err != nil {
+		pkg.PanicExeption(constant.InvalidRequest, err.Error())
+		return
+	}
 	assetLogs, err := h.service.Filter(userId, assetId, filter.Action, filter.StartTime, filter.EndTime)
 	if err != nil {
 		log.Error("Happened error when get asset log. Error", err)

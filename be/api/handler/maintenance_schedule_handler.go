@@ -121,12 +121,12 @@ func (h *MaintenanceSchedulesHandler) Update(c *gin.Context) {
 	}
 	now := time.Now()
 	if !request.StartDate.After(now) {
-		log.Error("Happened error start date <= now .")
-		pkg.PanicExeption(constant.InvalidRequest, "Happened error start date can't in past.")
+		log.Error("Start date must be in the future.")
+		pkg.PanicExeption(constant.InvalidRequest, "Start date must be after now.")
 	}
 	if !request.EndDate.After(request.StartDate) {
-		log.Error("Happened error start date >= end date .")
-		pkg.PanicExeption(constant.InvalidRequest, "Happened error start date > end date.")
+		log.Error("End date must be after start date.")
+		pkg.PanicExeption(constant.InvalidRequest, "End date must be after start date.")
 	}
 	maintenance, err := h.service.Update(userId, id, request.StartDate, request.EndDate)
 	if err != nil {
