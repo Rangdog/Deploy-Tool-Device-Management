@@ -315,11 +315,6 @@ func CheckAndSenMaintenanceNotification(db *gorm.DB, emailNotifier interfaces.Em
 			</html>
 		`, asset.AssetName, s.StartDate.Format("Jan 2, 2006"), s.EndDate.Format("Jan 2, 2006"))
 
-			// 5. Cập nhật lifecycle
-			if _, err := assetRepo.UpdateAssetLifeCycleStage(asset.Id, "Under Maintenance", tx); err != nil {
-				return fmt.Errorf("error updating asset stage: %w", err)
-			}
-
 			// 6. Ghi log notification
 			notify := entity.MaintenanceNotifications{
 				ScheduleId: s.Id,
@@ -327,6 +322,10 @@ func CheckAndSenMaintenanceNotification(db *gorm.DB, emailNotifier interfaces.Em
 			}
 			if err := tx.Create(&notify).Error; err != nil {
 				return fmt.Errorf("error inserting notification: %w", err)
+			}
+			// 5. Cập nhật lifecycle
+			if _, err := assetRepo.UpdateAssetLifeCycleStage(asset.Id, "Under Maintenance", tx); err != nil {
+				return fmt.Errorf("error updating asset stage: %w", err)
 			}
 			job.Emails = emails
 			job.Subject = subject
@@ -382,10 +381,6 @@ func CheckAndSenMaintenanceNotification(db *gorm.DB, emailNotifier interfaces.Em
 }
 
 func UpdateStatusWhenFinishMaintenance(db *gorm.DB, assetRepo repository.AssetsRepository, userRepo repository.UserRepository, notification interfaces.Notification) {
-	log.Info("db", db)
-	log.Info("assetRepo", assetRepo)
-	log.Info("userRepo", userRepo)
-	log.Info("notification", notification)
 	assets, err := assetRepo.GetAssetByStatus("Under Maintenance")
 	if err != nil {
 		log.Printf("❌ Error fetching assets with status 'Under Maintenance': %v", err)

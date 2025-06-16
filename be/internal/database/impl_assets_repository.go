@@ -161,7 +161,7 @@ func (r *PostgreSQLAssetsRepository) CheckAssetFinishMaintenance(id int64) (bool
 
 func (r *PostgreSQLAssetsRepository) GetAssetByStatus(status string) ([]*entity.Assets, error) {
 	var assets = []*entity.Assets{}
-	result := r.db.Model(entity.Assets{}).Where("status = ?", status).Find(assets)
+	result := r.db.Model(entity.Assets{}).Where("status = ?", status).Find(&assets)
 	if result != nil {
 		return nil, result.Error
 	}
