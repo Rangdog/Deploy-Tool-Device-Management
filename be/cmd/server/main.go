@@ -104,6 +104,7 @@ func main() {
 		log.Println("🔔 Running update status when finish maintenance check at 8:00 AM")
 		utils.UpdateStatusWhenFinishMaintenance(db, assetsRepository, userRepository, notificationsService)
 	})
+	utils.UpdateStatusWhenFinishMaintenance(db, assetsRepository, userRepository, notificationsService)
 	if err != nil {
 		log.Fatalf("❌ Failed to schedule cron job: %v", err)
 	}
