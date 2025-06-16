@@ -58,7 +58,7 @@ func (service *AssetLogService) Filter(userId int64, assetId int64, action, star
 		assetLogResponse.Timestamp = assetLog.Timestamp.Format("2006-01-02")
 		assetLogResponse.ChangeSummary = assetLog.ChangeSummary
 		//byUser
-		assetLogResponse.ByUser.Id = assetLog.ByUserId
+		assetLogResponse.ByUser.Id = *assetLog.ByUserId
 		assetLogResponse.ByUser.FirstName = assetLog.ByUser.FirstName
 		assetLogResponse.ByUser.LastName = assetLog.ByUser.LastName
 		assetLogResponse.ByUser.Email = assetLog.ByUser.Email

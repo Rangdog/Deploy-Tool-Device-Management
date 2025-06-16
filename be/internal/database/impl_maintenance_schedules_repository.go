@@ -42,14 +42,14 @@ func (r *PostgreSQLMaintenanceSchedulesRepository) Update(id int64, startDate ti
 	return &maintenance, nil
 }
 
-func (r PostgreSQLMaintenanceSchedulesRepository) Delete(id int64) error {
+func (r *PostgreSQLMaintenanceSchedulesRepository) Delete(id int64) error {
 	if err := r.db.Delete(&entity.MaintenanceSchedules{}, id).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r PostgreSQLMaintenanceSchedulesRepository) GetMaintenanceSchedulesById(id int64) (*entity.MaintenanceSchedules, error) {
+func (r *PostgreSQLMaintenanceSchedulesRepository) GetMaintenanceSchedulesById(id int64) (*entity.MaintenanceSchedules, error) {
 	maintenance := entity.MaintenanceSchedules{}
 	result := r.db.Model(entity.MaintenanceSchedules{}).Where("id = ?", id).Preload("Asset").Preload("Asset.OnwerUser").First(&maintenance)
 	if result.Error != nil {
@@ -58,7 +58,7 @@ func (r PostgreSQLMaintenanceSchedulesRepository) GetMaintenanceSchedulesById(id
 	return &maintenance, nil
 }
 
-func (r PostgreSQLMaintenanceSchedulesRepository) GetAllMaintenanceSchedules() ([]*entity.MaintenanceSchedules, error) {
+func (r *PostgreSQLMaintenanceSchedulesRepository) GetAllMaintenanceSchedules() ([]*entity.MaintenanceSchedules, error) {
 	startOfDay := time.Now().Truncate(24 * time.Hour)
 	endOfDay := startOfDay.Add(24 * time.Hour)
 	maintenances := []*entity.MaintenanceSchedules{}
@@ -67,4 +67,19 @@ func (r PostgreSQLMaintenanceSchedulesRepository) GetAllMaintenanceSchedules() (
 		return nil, result.Error
 	}
 	return maintenances, result.Error
+}
+
+func (r *PostgreSQLMaintenanceSchedulesRepository) GetDateMaintenanceSchedulesInFuture(assetId int64) ([]*entity.TimeRange, error) {
+	startOfDay := time.Now().Truncate(24 * time.Hour)
+	endOfDay := startOfDay.Add(24 * time.Hour)
+	maintenances := []*entity.MaintenanceSchedules{}
+	result := r.db.Model(entity.MaintenanceSchedules{}).Where("asset_id = ?", assetId).Where("start_date >= ?", endOfDay).Find(&maintenances)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	var TimeRange = []*entity.TimeRange{}
+	for _, i := range maintenances {
+		TimeRange = append(TimeRange, &entity.TimeRange{Start: i.StartDate, End: i.EndDate})
+	}
+	return TimeRange, nil
 }

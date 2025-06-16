@@ -247,7 +247,7 @@ type notificationJob struct {
 	Body    string
 }
 
-func CheckAndSenMaintenanceNotification(db *gorm.DB, emailNotifier interfaces.EmailNotifier, assetRepo repository.AssetsRepository, userRepo repository.UserRepository, notification interfaces.Notification) {
+func CheckAndSenMaintenanceNotification(db *gorm.DB, emailNotifier interfaces.EmailNotifier, assetRepo repository.AssetsRepository, userRepo repository.UserRepository, notification interfaces.Notification, assetLogRepo repository.AssetsLogRepository) {
 	startOfDay := time.Now().Truncate(24 * time.Hour)
 	endOfDay := startOfDay.Add(24 * time.Hour)
 	var schedules []entity.MaintenanceSchedules
@@ -327,6 +327,17 @@ func CheckAndSenMaintenanceNotification(db *gorm.DB, emailNotifier interfaces.Em
 			if _, err := assetRepo.UpdateAssetLifeCycleStage(asset.Id, "Under Maintenance", tx); err != nil {
 				return fmt.Errorf("error updating asset stage: %w", err)
 			}
+
+			assetLog := entity.AssetLog{
+				AssetId:       asset.Id,
+				ChangeSummary: fmt.Sprintf("Asset %d has started maintenance", asset.Id),
+				Timestamp:     time.Now(),
+				Action:        "Maintenance",
+			}
+			if _, err := assetLogRepo.Create(&assetLog, tx); err != nil {
+				return fmt.Errorf("error create asset log: %w", err)
+			}
+
 			job.Emails = emails
 			job.Subject = subject
 			job.Body = body
@@ -380,7 +391,7 @@ func CheckAndSenMaintenanceNotification(db *gorm.DB, emailNotifier interfaces.Em
 	wg.Wait()
 }
 
-func UpdateStatusWhenFinishMaintenance(db *gorm.DB, assetRepo repository.AssetsRepository, userRepo repository.UserRepository, notification interfaces.Notification) {
+func UpdateStatusWhenFinishMaintenance(db *gorm.DB, assetRepo repository.AssetsRepository, userRepo repository.UserRepository, notification interfaces.Notification, assetLogRepo repository.AssetsLogRepository) {
 	assets, err := assetRepo.GetAssetByStatus("Under Maintenance")
 	if err != nil {
 		log.Printf("❌ Error fetching assets with status 'Under Maintenance': %v", err)
@@ -420,6 +431,15 @@ func UpdateStatusWhenFinishMaintenance(db *gorm.DB, assetRepo repository.AssetsR
 					}()
 					notification.SendNotificationToUsers(usersToNotifications, message, *a)
 				}()
+			}
+			assetLog := entity.AssetLog{
+				AssetId:       a.Id,
+				ChangeSummary: fmt.Sprintf("Asset %d has started maintenance", a.Id),
+				Timestamp:     time.Now(),
+				Action:        "Maintenance",
+			}
+			if _, err := assetLogRepo.Create(&assetLog, assetLogRepo.GetDB()); err != nil {
+				log.Printf("❌ Error create asset log ")
 			}
 		}
 	}

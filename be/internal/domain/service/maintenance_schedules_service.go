@@ -36,6 +36,15 @@ func (service *MaintenanceSchedulesService) Create(userId int64, assetId int64, 
 		StartDate: startDate,
 		EndDate:   endDate,
 	}
+	timeRange, err := service.repo.GetDateMaintenanceSchedulesInFuture(assetId)
+	if err != nil {
+		return nil, err
+	}
+	for _, r := range timeRange {
+		if !(endDate.Before(r.Start) || startDate.After(r.End)) {
+			return nil, errors.New("maintenance time overlaps with existing schedule")
+		}
+	}
 	maintenanceCreate, err := service.repo.Create(&maintenance)
 	if err != nil {
 		return nil, err

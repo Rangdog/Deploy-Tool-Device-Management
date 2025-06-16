@@ -90,7 +90,7 @@ func (service *AssetsService) Create(userId int64, assetName string, purchaseDat
 	assetLog := entity.AssetLog{
 		Action:        "Create",
 		Timestamp:     time.Now(),
-		ByUserId:      userId,
+		ByUserId:      &userId,
 		AssignUserId:  &userAssetManager.Id,
 		ChangeSummary: changeSummary,
 		AssetId:       assetCreate.Id,
@@ -272,7 +272,7 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 	assetLog := entity.AssetLog{
 		Action:        "Update",
 		Timestamp:     time.Now(),
-		ByUserId:      userId,
+		ByUserId:      &userId,
 		ChangeSummary: changeSummary,
 		AssetId:       assetId,
 	}
@@ -335,7 +335,7 @@ func (service *AssetsService) DeleteAsset(userId int64, id int64) error {
 	assetLog := entity.AssetLog{
 		Action:        "Delete",
 		Timestamp:     time.Now(),
-		ByUserId:      userId,
+		ByUserId:      &userId,
 		ChangeSummary: changeSummary,
 		AssetId:       asset.Id,
 	}
@@ -413,7 +413,7 @@ func (service *AssetsService) UpdateAssetRetired(userId int64, id int64, Residua
 	assetLog := entity.AssetLog{
 		Action:        "Update",
 		Timestamp:     time.Now(),
-		ByUserId:      userId,
+		ByUserId:      &userId,
 		ChangeSummary: changeSummary,
 		AssetId:       asset.Id,
 	}
@@ -422,7 +422,7 @@ func (service *AssetsService) UpdateAssetRetired(userId int64, id int64, Residua
 		return nil, err
 	}
 	if err = tx.Commit().Error; err != nil {
-		return nil,fmt.Errorf("commit failed: %w", err)
+		return nil, fmt.Errorf("commit failed: %w", err)
 	}
 	userHeadDepart, _ := service.userRepository.GetUserHeadDepartment(asset.DepartmentId)
 	userManagerAsset, _ := service.userRepository.GetUserAssetManageOfDepartment(asset.DepartmentId)
@@ -551,18 +551,18 @@ func CountDashboard(assets []*entity.Assets) dto.DashboardSummary {
 	return s
 }
 
-func (service *AssetsService) GetAssetsByCateOfDepartment(userId,categoryId, departmentId int64) ([]*entity.Assets, error) {
-	user ,err := service.userRepository.FindByUserId(userId)
+func (service *AssetsService) GetAssetsByCateOfDepartment(userId, categoryId, departmentId int64) ([]*entity.Assets, error) {
+	user, err := service.userRepository.FindByUserId(userId)
 	if err != nil {
 		return nil, err
 	}
-	if user.Role.Slug == "admin"{
+	if user.Role.Slug == "admin" {
 		assets, err := service.repo.GetAssetsByCateOfDepartment(categoryId, departmentId)
 		if err != nil {
 			return nil, err
 		}
 		return assets, nil
-	}else{
+	} else {
 		assets, err := service.repo.GetAssetsByCateOfDepartment(categoryId, *user.DepartmentId)
 		if err != nil {
 			return nil, err

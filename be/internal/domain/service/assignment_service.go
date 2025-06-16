@@ -95,7 +95,7 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 		Timestamp: time.Now(),
 		Action:    "Transfer",
 		AssetId:   asset.Id,
-		ByUserId:  byUser.Id,
+		ByUserId:  &byUser.Id,
 	}
 
 	// Chuyển phòng ban

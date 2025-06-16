@@ -10,3 +10,8 @@ type MaintenanceSchedules struct {
 
 	Asset Assets `gorm:"foreignKey:AssetId;references:Id"`
 }
+
+type TimeRange struct {
+	Start time.Time
+	End   time.Time
+}
