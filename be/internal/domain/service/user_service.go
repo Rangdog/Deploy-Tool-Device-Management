@@ -115,7 +115,10 @@ func (service *UserService) SetRole(userId int64, roleId int64) {
 			tx.Rollback()
 		}
 	}
-	tx.Commit()
+	var err error
+	if err = tx.Commit().Error; err != nil {
+		return
+	}
 }
 
 func (service *UserService) FindUserByEmail(email string) (*entity.Users, error) {
