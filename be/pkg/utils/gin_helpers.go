@@ -382,6 +382,10 @@ func CheckAndSenMaintenanceNotification(db *gorm.DB, emailNotifier interfaces.Em
 }
 
 func UpdateStatusWhenFinishMaintenance(db *gorm.DB, assetRepo repository.AssetsRepository, userRepo repository.UserRepository, notification interfaces.Notification) {
+	log.Info("db", db)
+	log.Info("assetRepo", assetRepo)
+	log.Info("userRepo", userRepo)
+	log.Info("notification", notification)
 	assets, err := assetRepo.GetAssetByStatus("Under Maintenance")
 	if err != nil {
 		log.Printf("❌ Error fetching assets with status 'Under Maintenance': %v", err)
