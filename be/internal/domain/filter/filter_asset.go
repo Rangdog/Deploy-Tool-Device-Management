@@ -39,7 +39,7 @@ func (f *AssetFilter) ApplyFilter(db *gorm.DB, userId int64) *gorm.DB {
 		db = db.Where("status = ?", *f.Status)
 	}
 	if f.AssetName != nil {
-		str := fmt.Sprintf("%v", *f.AssetName)
+		str := "%" + fmt.Sprintf("%v", *f.AssetName)
 		str += "%"
 		db = db.Where("LOWER(assets.asset_name) LIKE LOWER(?)", str)
 	}
