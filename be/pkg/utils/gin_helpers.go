@@ -215,7 +215,9 @@ func CheckAndSenMaintenanceNotification(db *gorm.DB, emailNotifier interfaces.Em
 			var userManagerAsset *entity.Users
 			userHeadDepart, _ = userRepo.GetUserHeadDepartment(s.Asset.DepartmentId)
 			userManagerAsset, _ = userRepo.GetUserAssetManageOfDepartment(s.Asset.DepartmentId)
+			userRoleAdmin, _ := userRepo.GetUserRoleAdmin()
 			users := []*entity.Users{s.Asset.OnwerUser, userHeadDepart, userManagerAsset}
+			users = append(users, userRoleAdmin...)
 			if len(users) == 0 {
 				log.Printf("⚠️ No users with notification permission for asset ID %d", s.AssetId)
 				return nil // hoặc có thể return error nếu muốn rollback transaction
@@ -391,7 +393,9 @@ func SendEmailsForWarrantyExpiry(db *gorm.DB, emailNotifier interfaces.EmailNoti
 		var userManagerAsset *entity.Users
 		userHeadDepart, _ = userRepo.GetUserHeadDepartment(a.DepartmentId)
 		userManagerAsset, _ = userRepo.GetUserAssetManageOfDepartment(a.DepartmentId)
+		userRoleAdmin, _ := userRepo.GetUserRoleAdmin()
 		users := []*entity.Users{a.OnwerUser, userHeadDepart, userManagerAsset}
+		users = append(users, userRoleAdmin...)
 		if len(users) == 0 {
 			log.Printf("⚠️ No users with notification permission for asset ID %d", a.Id)
 			continue
@@ -424,11 +428,13 @@ func SendEmailsForWarrantyExpiry(db *gorm.DB, emailNotifier interfaces.EmailNoti
 		now := time.Now()
 		typ := "Expired"
 		assetId := a.Id
+		status := "Pending"
 
 		notify := entity.Notifications{
 			NotifyDate: &now,
 			Type:       &typ,
 			AssetId:    &assetId,
+			Status: &status,
 		}
 		result := db.Create(&notify)
 		if result.Error != nil {

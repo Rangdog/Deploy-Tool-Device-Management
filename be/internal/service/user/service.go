@@ -319,6 +319,7 @@ func (service *UserService) UpdateCanExport(id int64) error {
 
 func (service *UserService) GetUserNotHaveDep() ([]*entity.Users, error) {
 	users, err := service.repo.GetUserNotHaveDep()
+	
 	if err != nil {
 		return nil, err
 	}

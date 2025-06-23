@@ -192,9 +192,18 @@ func (r *PostgreSQLUserRepository) UpdateCanExport(id int64, canExport bool) err
 
 func (r *PostgreSQLUserRepository) GetUserNotHaveDep() ([]*entity.Users, error) {
 	var user []*entity.Users
-	result := r.db.Model(entity.Users{}).Where("department_id is null").Find(&user)
+	result := r.db.Model(entity.Users{}).Joins("join roles on roles.id = users.role_id").Where("roles.slug != ?","admin").Where("department_id is null").Find(&user)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 	return user, nil
+}
+
+func (r *PostgreSQLUserRepository) GetUserRoleAdmin() ([]*entity.Users, error) {
+	var users []*entity.Users
+	result := r.db.Model(entity.Users{}).Where("role_id = (select id from roles where slug = ?)", "admin").Find(&users)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return users, nil
 }
