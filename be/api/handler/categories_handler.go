@@ -6,6 +6,7 @@ import (
 	"BE_Manage_device/internal/domain/dto"
 	"BE_Manage_device/internal/domain/entity"
 	service "BE_Manage_device/internal/service/categories"
+	"time"
 
 	"BE_Manage_device/pkg"
 	"encoding/json"
@@ -100,6 +101,9 @@ func (h *CategoriesHandler) GetAll(c *gin.Context) {
 			pkg.PanicExeption(constant.UnknownError, "Happened error when get all categories")
 		}
 	}
+	// ✅ Cache lại dữ liệu
+	bytes, _ := json.Marshal(categories)
+	config.Rdb.Set(config.Ctx, cacheKeyCategories, bytes, 10*time.Minute)
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, categories))
 }
 
