@@ -116,7 +116,7 @@ func (service *AssetLogService) CheckPermissionForManager(userId int64, depId in
 	if user.DepartmentId != nil && *user.DepartmentId == depId {
 		return nil
 	}
-	return errors.New("you can have permission for manager asset in the department")
+	return errors.New("you are not allowed to manage departmental assets")
 }
 
 func (service *AssetLogService) GetAssetById(userId int64, assertId int64) (*entity.Assets, error) {
