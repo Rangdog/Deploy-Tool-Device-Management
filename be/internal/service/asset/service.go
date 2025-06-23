@@ -172,9 +172,6 @@ func (service *AssetsService) GetAllAsset(userId int64) ([]*entity.Assets, error
 			}
 		} else {
 			assets, err = service.repo.GetAllAsset()
-			// ✅ Cache lại dữ liệu
-			bytes, _ := json.Marshal(assets)
-			config.Rdb.Set(config.Ctx, "assets:all", bytes, 10*time.Minute)
 			if err != nil {
 				return nil, err
 			}
