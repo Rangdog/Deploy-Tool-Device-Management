@@ -23,6 +23,9 @@ func NewMaintenanceSchedulesService(repo maintenanceSchedules.MaintenanceSchedul
 }
 
 func (service *MaintenanceSchedulesService) Create(userId int64, assetId int64, startDate, endDate time.Time) (*entity.MaintenanceSchedules, error) {
+	loc, _ := time.LoadLocation("Asia/Bangkok") // GMT+7
+	startDate = startDate.In(loc)
+	endDate = endDate.In(loc)
 	userUpdate, err := service.userRepository.FindByUserId(userId)
 	if err != nil {
 		return nil, err
@@ -79,6 +82,9 @@ func (service *MaintenanceSchedulesService) GetAllMaintenanceSchedulesByAssetId(
 }
 
 func (service *MaintenanceSchedulesService) Update(userId int64, id int64, startDate time.Time, endDate time.Time) (*entity.MaintenanceSchedules, error) {
+	loc, _ := time.LoadLocation("Asia/Bangkok") // GMT+7
+	startDate = startDate.In(loc)
+	endDate = endDate.In(loc)
 	userUpdate, err := service.userRepository.FindByUserId(userId)
 	if err != nil {
 		return nil, err

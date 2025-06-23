@@ -2,6 +2,7 @@ package repository
 
 import (
 	"BE_Manage_device/internal/domain/entity"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -15,6 +16,8 @@ func NewPostgreSQLAssetsLogRepository(db *gorm.DB) AssetsLogRepository {
 }
 
 func (r *PostgreSQLAssetsLogrepository) Create(assetsLog *entity.AssetLog, tx *gorm.DB) (*entity.AssetLog, error) {
+	loc, _ := time.LoadLocation("Asia/Bangkok") // GMT+7
+	assetsLog.Timestamp = assetsLog.Timestamp.In(loc)
 	result := tx.Create(assetsLog)
 	return assetsLog, result.Error
 }
