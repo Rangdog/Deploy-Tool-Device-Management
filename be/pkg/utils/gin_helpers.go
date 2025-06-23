@@ -211,7 +211,11 @@ func CheckAndSenMaintenanceNotification(db *gorm.DB, emailNotifier interfaces.Em
 		// Nếu chưa có thông báo thì tiến hành
 		err = db.Transaction(func(tx *gorm.DB) error {
 			// 1. Lấy user nhận email
-			users, err := assetRepo.GetUserHavePermissionNotifications(s.AssetId)
+			var userHeadDepart *entity.Users
+			var userManagerAsset *entity.Users
+			userHeadDepart, _ = userRepo.GetUserHeadDepartment(s.Asset.DepartmentId)
+			userManagerAsset, _ = userRepo.GetUserAssetManageOfDepartment(s.Asset.DepartmentId)
+			users := []*entity.Users{s.Asset.OnwerUser, userHeadDepart, userManagerAsset}
 			if len(users) == 0 {
 				log.Printf("⚠️ No users with notification permission for asset ID %d", s.AssetId)
 				return nil // hoặc có thể return error nếu muốn rollback transaction
@@ -282,18 +286,6 @@ func CheckAndSenMaintenanceNotification(db *gorm.DB, emailNotifier interfaces.Em
 			job.Emails = emails
 			job.Subject = subject
 			job.Body = body
-			userHeadDepart, _ := userRepo.GetUserHeadDepartment(s.Asset.DepartmentId)
-			userManagerAsset, _ := userRepo.GetUserAssetManageOfDepartment(s.Asset.DepartmentId)
-			usersToNotifications := []*entity.Users{}
-			if s.Asset.OnwerUser != nil {
-				usersToNotifications = append(usersToNotifications, s.Asset.OnwerUser)
-			}
-			if userHeadDepart != nil {
-				usersToNotifications = append(usersToNotifications, userHeadDepart)
-			}
-			if userManagerAsset != nil {
-				usersToNotifications = append(usersToNotifications, userManagerAsset)
-			}
 			message := fmt.Sprintf("The asset (ID: %v) moved to 'Under Maintenance'", s.AssetId)
 			go func() {
 				defer func() {
@@ -301,7 +293,7 @@ func CheckAndSenMaintenanceNotification(db *gorm.DB, emailNotifier interfaces.Em
 						fmt.Println("SendNotificationToUsers panic:", r)
 					}
 				}()
-				notification.SendNotificationToUsers(usersToNotifications, message, s.Asset)
+				notification.SendNotificationToUsers(users, message, s.Asset)
 			}()
 			return nil
 		})
@@ -395,13 +387,13 @@ func SendEmailsForWarrantyExpiry(db *gorm.DB, emailNotifier interfaces.EmailNoti
 	var jobs []notificationJob
 	for _, a := range assets {
 		var job notificationJob
-		users, err := assetRepo.GetUserHavePermissionNotifications(a.Id)
+		var userHeadDepart *entity.Users
+		var userManagerAsset *entity.Users
+		userHeadDepart, _ = userRepo.GetUserHeadDepartment(a.DepartmentId)
+		userManagerAsset, _ = userRepo.GetUserAssetManageOfDepartment(a.DepartmentId)
+		users := []*entity.Users{a.OnwerUser, userHeadDepart, userManagerAsset}
 		if len(users) == 0 {
 			log.Printf("⚠️ No users with notification permission for asset ID %d", a.Id)
-			continue
-		}
-		if err != nil {
-			log.Printf("❌ error fetching emails %d", a.Id)
 			continue
 		}
 		var emails []string
@@ -448,18 +440,7 @@ func SendEmailsForWarrantyExpiry(db *gorm.DB, emailNotifier interfaces.EmailNoti
 		if len(emails) > 0 {
 			jobs = append(jobs, job)
 		}
-		userHeadDepart, _ := userRepo.GetUserHeadDepartment(a.DepartmentId)
-		userManagerAsset, _ := userRepo.GetUserAssetManageOfDepartment(a.DepartmentId)
-		usersToNotifications := []*entity.Users{}
-		if a.OnwerUser != nil {
-			usersToNotifications = append(usersToNotifications, a.OnwerUser)
-		}
-		if userHeadDepart != nil {
-			usersToNotifications = append(usersToNotifications, userHeadDepart)
-		}
-		if userManagerAsset != nil {
-			usersToNotifications = append(usersToNotifications, userManagerAsset)
-		}
+
 		message := fmt.Sprintf("The asset (ID: %v) has just been Expired", a.Id)
 		go func() {
 			defer func() {
@@ -467,7 +448,7 @@ func SendEmailsForWarrantyExpiry(db *gorm.DB, emailNotifier interfaces.EmailNoti
 					fmt.Println("SendNotificationToUsers panic:", r)
 				}
 			}()
-			notification.SendNotificationToUsers(usersToNotifications, message, *a)
+			notification.SendNotificationToUsers(users, message, *a)
 		}()
 	}
 	const workerCount = 10
