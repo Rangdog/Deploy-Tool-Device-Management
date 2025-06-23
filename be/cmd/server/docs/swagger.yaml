@@ -1628,6 +1628,29 @@ paths:
       summary: Get all user
       tags:
       - Users
+  /api/users/not-dep:
+    get:
+      consumes:
+      - application/json
+      description: Get user haven't dep
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ApiResponseSuccessStruct'
+      security:
+      - JWT: []
+      summary: Get user haven't dep
+      tags:
+      - Users
   /api/users/role:
     patch:
       consumes:

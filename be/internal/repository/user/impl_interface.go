@@ -189,3 +189,12 @@ func (r *PostgreSQLUserRepository) UpdateCanExport(id int64, canExport bool) err
 	result := r.db.Model(entity.Users{}).Where("id = ?", id).Update("can_export", canExport)
 	return result.Error
 }
+
+func (r *PostgreSQLUserRepository) GetUserNotHaveDep() ([]*entity.Users, error) {
+	var user []*entity.Users
+	result := r.db.Model(entity.Users{}).Where("department_id is null").Find(&user)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return user, nil
+}

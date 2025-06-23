@@ -326,3 +326,11 @@ func (service *UserService) UpdateCanExport(id int64) error {
 	err = service.repo.UpdateCanExport(id, !user.CanExport)
 	return err
 }
+
+func (service *UserService) GetUserNotHaveDep() ([]*entity.Users, error) {
+	users, err := service.repo.GetUserNotHaveDep()
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}

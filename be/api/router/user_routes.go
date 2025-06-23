@@ -23,4 +23,5 @@ func registerUserRoutes(api *gin.RouterGroup, h *handler.UserHandler, session re
 	api.PATCH("/user/head-department/:user_id", middleware.RequirePermission([]string{"user-management"}, nil, db), h.UpdateHeadDep)
 	api.PATCH("/user/manager-department/:user_id", middleware.RequirePermission([]string{"user-management"}, nil, db), h.UpdateManagerDep)
 	api.PATCH("/user/can-export/:user_id", middleware.RequirePermission([]string{"user-management"}, nil, db), h.UpdateCanExport)
+	api.GET("/users/not-dep", h.GetUserNotHaveDep)
 }

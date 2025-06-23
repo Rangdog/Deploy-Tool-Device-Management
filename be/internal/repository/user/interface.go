@@ -27,4 +27,5 @@ type UserRepository interface {
 	UpdateHeadDep(id int64, isHead bool) error
 	UpdateManagerDep(id int64, isManager bool) error
 	UpdateCanExport(id int64, canExport bool) error
+	GetUserNotHaveDep() ([]*entity.Users, error)
 }

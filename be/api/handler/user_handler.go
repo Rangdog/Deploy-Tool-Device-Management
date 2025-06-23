@@ -616,3 +616,27 @@ func (h *UserHandler) UpdateCanExport(c *gin.Context) {
 	config.Rdb.Del(config.Ctx, cacheKeyUserSessionStr)
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccessNoData(http.StatusOK, constant.Success))
 }
+
+// User godoc
+// @Summary      Get user haven't dep
+// @Description Get user haven't dep
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @param Authorization header string true "Authorization"
+// @Router       /api/users/not-dep [GET]
+// @Success      200   {object}  dto.ApiResponseSuccessStruct
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
+func (h *UserHandler) GetUserNotHaveDep(c *gin.Context) {
+	defer pkg.PanicHandler(c)
+	users, err := h.service.GetUserNotHaveDep()
+	if err != nil {
+		log.Error("Happened error when get user haven't dep. Error", err)
+		pkg.PanicExeption(constant.UnknownError, "Happened error when get user haven't dep. Error")
+	}
+	usersResponses := utils.ConvertUsersToUserResponses(users)
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, usersResponses))
+}
