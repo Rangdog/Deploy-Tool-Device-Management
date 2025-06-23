@@ -231,25 +231,25 @@ func (service *UserService) UpdateRole(userId int64, setRoleUserId int64, slug s
 		return nil, err
 	}
 	if slug == "assetManager" {
-		service.UpdateManagerDep(userId)
+		service.UpdateManagerDep(setRoleUserId)
 		if userUpdated.IsHeadDepartment {
-			service.UpdateHeadDep(userId)
+			service.UpdateHeadDep(setRoleUserId)
 		}
 	}
 	if slug == "departmentHead" {
-		service.UpdateHeadDep(userId)
+		service.UpdateHeadDep(setRoleUserId)
 		if userUpdated.IsAssetManager {
-			service.UpdateManagerDep(userId)
+			service.UpdateManagerDep(setRoleUserId)
 		}
 	}
 	if slug == "viewer" {
-		service.UpdateManagerDep(userId)
+		service.UpdateManagerDep(setRoleUserId)
 		if userUpdated.IsHeadDepartment {
-			service.UpdateHeadDep(userId)
+			service.UpdateHeadDep(setRoleUserId)
 		}
-		service.UpdateHeadDep(userId)
+		service.UpdateHeadDep(setRoleUserId)
 		if userUpdated.IsAssetManager {
-			service.UpdateManagerDep(userId)
+			service.UpdateManagerDep(setRoleUserId)
 		}
 	}
 	return userUpdated, nil
