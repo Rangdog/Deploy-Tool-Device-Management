@@ -15,6 +15,54 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/CheckAndSenMaintenanceNotification": {
+            "get": {
+                "description": "CheckAndSenMaintenanceNotification",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cron"
+                ],
+                "summary": "CheckAndSenMaintenanceNotification",
+                "responses": {}
+            }
+        },
+        "/api/SendEmailsForWarrantyExpiry": {
+            "get": {
+                "description": "SendEmailsForWarrantyExpiry",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cron"
+                ],
+                "summary": "SendEmailsForWarrantyExpiry",
+                "responses": {}
+            }
+        },
+        "/api/UpdateStatusWhenFinishMaintenance": {
+            "get": {
+                "description": "UpdateStatusWhenFinishMaintenance",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cron"
+                ],
+                "summary": "UpdateStatusWhenFinishMaintenance",
+                "responses": {}
+            }
+        },
         "/api/assets": {
             "get": {
                 "security": [
@@ -172,6 +220,11 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "name": "action",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "depId",
                         "in": "query"
                     },
                     {
@@ -1587,6 +1640,11 @@ const docTemplate = `{
                 ],
                 "summary": "Get all RequestTransfer with filter",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "name": "depId",
+                        "in": "query"
+                    },
                     {
                         "type": "string",
                         "name": "status",

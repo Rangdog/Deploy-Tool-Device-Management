@@ -198,6 +198,39 @@ definitions:
 info:
   contact: {}
 paths:
+  /api/CheckAndSenMaintenanceNotification:
+    get:
+      consumes:
+      - application/json
+      description: CheckAndSenMaintenanceNotification
+      produces:
+      - application/json
+      responses: {}
+      summary: CheckAndSenMaintenanceNotification
+      tags:
+      - Cron
+  /api/SendEmailsForWarrantyExpiry:
+    get:
+      consumes:
+      - application/json
+      description: SendEmailsForWarrantyExpiry
+      produces:
+      - application/json
+      responses: {}
+      summary: SendEmailsForWarrantyExpiry
+      tags:
+      - Cron
+  /api/UpdateStatusWhenFinishMaintenance:
+    get:
+      consumes:
+      - application/json
+      description: UpdateStatusWhenFinishMaintenance
+      produces:
+      - application/json
+      responses: {}
+      summary: UpdateStatusWhenFinishMaintenance
+      tags:
+      - Cron
   /api/assets:
     get:
       consumes:
@@ -299,6 +332,9 @@ paths:
       - in: query
         name: action
         type: string
+      - in: query
+        name: depId
+        type: integer
       - in: query
         name: endTime
         type: string
@@ -1235,6 +1271,9 @@ paths:
       - application/json
       description: Get all request transfer have permission
       parameters:
+      - in: query
+        name: depId
+        type: integer
       - in: query
         name: status
         type: string

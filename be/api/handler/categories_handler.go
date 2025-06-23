@@ -78,14 +78,6 @@ func (h *CategoriesHandler) GetAll(c *gin.Context) {
 		// ✅ Dữ liệu có trong Redis, trả về
 		var cached []entity.Categories
 		if err := json.Unmarshal([]byte(val), &cached); err == nil {
-			ttl, err := config.Rdb.TTL(config.Ctx, cacheKeyCategories).Result()
-			if err == nil && ttl > 0 {
-				newTTL := ttl * 2
-				if newTTL > maxTTL {
-					newTTL = maxTTL
-				}
-				config.Rdb.Expire(config.Ctx, cacheKeyCategories, newTTL)
-			}
 			for _, a := range cached {
 				copy := a
 				categories = append(categories, &copy)

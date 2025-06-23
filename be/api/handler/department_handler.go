@@ -83,14 +83,6 @@ func (h *DepartmentsHandler) GetAll(c *gin.Context) {
 		// ✅ Dữ liệu có trong Redis, trả về
 		var cached []entity.Departments
 		if err := json.Unmarshal([]byte(val), &cached); err == nil {
-			ttl, err := config.Rdb.TTL(config.Ctx, cacheKeyDepartment).Result()
-			if err == nil && ttl > 0 {
-				newTTL := ttl * 2
-				if newTTL > maxTTL {
-					newTTL = maxTTL
-				}
-				config.Rdb.Expire(config.Ctx, cacheKeyDepartment, newTTL)
-			}
 			for _, a := range cached {
 				copy := a
 				departments = append(departments, &copy)
