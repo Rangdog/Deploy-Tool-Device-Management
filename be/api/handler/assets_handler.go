@@ -12,7 +12,6 @@ import (
 	"BE_Manage_device/pkg/utils"
 	"bytes"
 	"encoding/csv"
-	"encoding/json"
 	"net/http"
 	"strconv"
 	"time"
@@ -74,13 +73,13 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 
 	loc, _ := time.LoadLocation("Asia/Bangkok")
 
-	purchaseDate, err := time.ParseInLocation("2006-01-02T15:04:05", purchaseDateStr, loc)
+	purchaseDate, err := time.ParseInLocation("2025-06-22T00:00:00.000Z", purchaseDateStr, loc)
 	if err != nil {
 		log.Info("Error: ", err.Error())
 		pkg.PanicExeption(constant.InvalidRequest, "Invalid purchase_date format")
 	}
 
-	warrantExpiry, err := time.ParseInLocation("2006-01-02T15:04:05", warrantExpiryStr, loc)
+	warrantExpiry, err := time.ParseInLocation("2025-06-22T00:00:00.000Z", warrantExpiryStr, loc)
 	if err != nil {
 		pkg.PanicExeption(constant.InvalidRequest, "Invalid warrant_expiry format")
 	}
@@ -219,13 +218,13 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 
 	loc, _ := time.LoadLocation("Asia/Bangkok")
 
-	purchaseDate, err := time.ParseInLocation("2006-01-02T15:04:05", purchaseDateStr, loc)
+	purchaseDate, err := time.ParseInLocation("2025-06-22T00:00:00.000Z", purchaseDateStr, loc)
 	if err != nil {
 		log.Info("Error: ", err.Error())
 		pkg.PanicExeption(constant.InvalidRequest, "Invalid purchase_date format")
 	}
 
-	warrantExpiry, err := time.ParseInLocation("2006-01-02T15:04:05", warrantExpiryStr, loc)
+	warrantExpiry, err := time.ParseInLocation("2025-06-22T00:00:00.000Z", warrantExpiryStr, loc)
 	if err != nil {
 		pkg.PanicExeption(constant.InvalidRequest, "Invalid warrant_expiry format")
 	}
@@ -435,9 +434,6 @@ func (h *AssetsHandler) GetAllAsset(c *gin.Context) {
 		}
 		assetsResponse = append(assetsResponse, assetResponse)
 	}
-	// ✅ Cache lại dữ liệu
-	bytes, _ := json.Marshal(assets)
-	config.Rdb.Set(config.Ctx, cacheKey, bytes, 10*time.Minute)
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, assetsResponse))
 }
 

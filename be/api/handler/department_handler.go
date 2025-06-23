@@ -6,7 +6,6 @@ import (
 	"BE_Manage_device/internal/domain/dto"
 	"BE_Manage_device/internal/domain/entity"
 	service "BE_Manage_device/internal/service/departments"
-	"time"
 
 	"BE_Manage_device/pkg"
 	"encoding/json"
@@ -105,6 +104,9 @@ func (h *DepartmentsHandler) GetAll(c *gin.Context) {
 			log.Error("Happened error when get all departments. Error", err)
 			pkg.PanicExeption(constant.UnknownError, "Happened error when get all departments")
 		}
+		// ✅ Cache lại dữ liệu
+		bytes, _ := json.Marshal(departments)
+		config.Rdb.Set(config.Ctx, cacheKeyDepartment, bytes, initialTTL)
 	}
 	var departmentResponses []dto.DepartmentResponse
 	for _, department := range departments {
@@ -115,9 +117,6 @@ func (h *DepartmentsHandler) GetAll(c *gin.Context) {
 		departmentResponse.Location.LocationName = department.Location.LocationName
 		departmentResponses = append(departmentResponses, departmentResponse)
 	}
-	// ✅ Cache lại dữ liệu
-	bytes, _ := json.Marshal(departments)
-	config.Rdb.Set(config.Ctx, cacheKeyDepartment, bytes, 10*time.Minute)
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, departmentResponses))
 }
 
