@@ -107,7 +107,7 @@ func RequirePermission(permSlug []string, accessLevel []string, db *gorm.DB) gin
 			logrus.Info("userID:", userID)
 		} else {
 			logrus.Error("Happened error when get userId from gin Context")
-			pkg.PanicExeption(constant.UnknownError)
+			pkg.PanicExeption(constant.UnknownError, "Happened error when get userId from gin Context")
 		}
 		str := fmt.Sprint(userID)
 

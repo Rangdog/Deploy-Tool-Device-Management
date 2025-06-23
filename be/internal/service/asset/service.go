@@ -119,7 +119,7 @@ func (service *AssetsService) Create(userId int64, assetName string, purchaseDat
 	if err := tx.Commit().Error; err != nil {
 		return nil, err
 	}
-	go service.SetRole(assetCreate.Id) // commit ở đây
+	go service.SetRole(assetCreate.Id)
 	qrUrl, err := utils.GenerateAssetQR(assetCreate.Id, url)
 	if err != nil {
 		logrus.Info("Error when create qrurl")
