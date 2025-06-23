@@ -187,10 +187,13 @@ type notificationJob struct {
 }
 
 func CheckAndSenMaintenanceNotification(db *gorm.DB, emailNotifier interfaces.EmailNotifier, assetRepo asset.AssetsRepository, userRepo user.UserRepository, notification interfaces.Notification, assetLogRepo repository.AssetsLogRepository) {
-	startOfDay := time.Now().Truncate(24 * time.Hour)
+	loc, _ := time.LoadLocation("Asia/Bangkok")
+
+	now := time.Now().In(loc)
+	startOfDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, loc)
 	endOfDay := startOfDay.Add(24 * time.Hour)
 	var schedules []entity.MaintenanceSchedules
-	err := db.Where("start_date <= ? AND end_date >= ?", startOfDay, endOfDay).Preload("Asset").Preload("Asset.OnwerUser").Find(&schedules).Error
+	err := db.Where("start_date <= ? and start_date >= ?", endOfDay, startOfDay).Preload("Asset").Preload("Asset.OnwerUser").Find(&schedules).Error
 	if err != nil {
 		log.Printf("Error fetching maintenance schedules: %v", err)
 		return

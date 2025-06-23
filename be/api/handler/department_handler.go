@@ -6,7 +6,6 @@ import (
 	"BE_Manage_device/internal/domain/dto"
 	"BE_Manage_device/internal/domain/entity"
 	service "BE_Manage_device/internal/service/departments"
-	"time"
 
 	"BE_Manage_device/pkg"
 	"encoding/json"
@@ -109,7 +108,7 @@ func (h *DepartmentsHandler) GetAll(c *gin.Context) {
 	}
 	// ✅ Cache lại dữ liệu
 	bytes, _ := json.Marshal(departments)
-	config.Rdb.Set(config.Ctx, cacheKeyDepartment, bytes, 10*time.Minute)
+	config.Rdb.Set(config.Ctx, cacheKeyDepartment, bytes, initialTTL)
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, departmentResponses))
 }
 

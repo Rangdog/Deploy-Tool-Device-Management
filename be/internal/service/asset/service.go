@@ -1,7 +1,6 @@
 package service
 
 import (
-	"BE_Manage_device/config"
 	"BE_Manage_device/internal/domain/dto"
 	"BE_Manage_device/internal/domain/entity"
 	"BE_Manage_device/internal/domain/filter"
@@ -14,7 +13,6 @@ import (
 	userRBAC "BE_Manage_device/internal/repository/user_rbac"
 	notificationS "BE_Manage_device/internal/service/notification"
 	"BE_Manage_device/pkg/utils"
-	"encoding/json"
 
 	"errors"
 	"fmt"
@@ -150,31 +148,9 @@ func (service *AssetsService) GetAllAsset(userId int64) ([]*entity.Assets, error
 	if user.Role.Slug == "departmentHead" {
 		assets, err = service.repo.GetAllAssetOfDep(*user.DepartmentId)
 	} else {
-		val, err := config.Rdb.Get(config.Ctx, "assets:all").Result()
-		if err == nil {
-			// ✅ Dữ liệu có trong Redis, trả về
-			var cached []entity.Assets
-			if err := json.Unmarshal([]byte(val), &cached); err == nil {
-				ttl, err := config.Rdb.TTL(config.Ctx, "assets:all").Result()
-				if err == nil && ttl > 0 {
-					newTTL := ttl * 2
-					if newTTL > 1*time.Hour {
-						newTTL = 1 * time.Hour
-					}
-					config.Rdb.Expire(config.Ctx, "assets:all", newTTL)
-				}
-				for _, a := range cached {
-					copy := a
-					assets = append(assets, &copy)
-				}
-			} else {
-				return nil, errors.New("happened error when get all categories. Error")
-			}
-		} else {
-			assets, err = service.repo.GetAllAsset()
-			if err != nil {
-				return nil, err
-			}
+		assets, err = service.repo.GetAllAsset()
+		if err != nil {
+			return nil, err
 		}
 	}
 	if err != nil {

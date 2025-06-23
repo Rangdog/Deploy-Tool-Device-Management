@@ -12,7 +12,6 @@ import (
 	"BE_Manage_device/pkg/utils"
 	"bytes"
 	"encoding/csv"
-	"encoding/json"
 	"net/http"
 	"strconv"
 	"time"
@@ -431,9 +430,6 @@ func (h *AssetsHandler) GetAllAsset(c *gin.Context) {
 		}
 		assetsResponse = append(assetsResponse, assetResponse)
 	}
-	// ✅ Cache lại dữ liệu
-	bytes, _ := json.Marshal(assets)
-	config.Rdb.Set(config.Ctx, cacheKey, bytes, 10*time.Minute)
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, assetsResponse))
 }
 
