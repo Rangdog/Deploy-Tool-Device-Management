@@ -71,15 +71,13 @@ func (h *AssetsHandler) Create(c *gin.Context) {
 	departmentIdStr := c.PostForm("departmentId")
 	url := c.PostForm("redirectUrl")
 
-	loc, _ := time.LoadLocation("Asia/Bangkok")
-
-	purchaseDate, err := time.ParseInLocation("2025-06-22T00:00:00.000Z", purchaseDateStr, loc)
+	purchaseDate, err := time.Parse(time.RFC3339, purchaseDateStr)
 	if err != nil {
 		log.Info("Error: ", err.Error())
 		pkg.PanicExeption(constant.InvalidRequest, "Invalid purchase_date format")
 	}
 
-	warrantExpiry, err := time.ParseInLocation("2025-06-22T00:00:00.000Z", warrantExpiryStr, loc)
+	warrantExpiry, err := time.Parse(time.RFC3339, warrantExpiryStr)
 	if err != nil {
 		pkg.PanicExeption(constant.InvalidRequest, "Invalid warrant_expiry format")
 	}
@@ -216,15 +214,13 @@ func (h *AssetsHandler) Update(c *gin.Context) {
 	serialNumber := c.PostForm("serialNumber")
 	categoryIdStr := c.PostForm("categoryId")
 
-	loc, _ := time.LoadLocation("Asia/Bangkok")
-
-	purchaseDate, err := time.ParseInLocation("2025-06-22T00:00:00.000Z", purchaseDateStr, loc)
+	purchaseDate, err := time.Parse(time.RFC3339, purchaseDateStr)
 	if err != nil {
 		log.Info("Error: ", err.Error())
 		pkg.PanicExeption(constant.InvalidRequest, "Invalid purchase_date format")
 	}
 
-	warrantExpiry, err := time.ParseInLocation("2025-06-22T00:00:00.000Z", warrantExpiryStr, loc)
+	warrantExpiry, err := time.Parse(time.RFC3339, warrantExpiryStr)
 	if err != nil {
 		pkg.PanicExeption(constant.InvalidRequest, "Invalid warrant_expiry format")
 	}
