@@ -222,9 +222,6 @@ func CheckAndSenMaintenanceNotification(db *gorm.DB, emailNotifier interfaces.Em
 				log.Printf("⚠️ No users with notification permission for asset ID %d", s.AssetId)
 				return nil // hoặc có thể return error nếu muốn rollback transaction
 			}
-			if err != nil {
-				return fmt.Errorf("error fetching emails: %w", err)
-			}
 
 			// 2. Lấy asset
 			asset, err := assetRepo.GetAssetById(s.AssetId)
@@ -434,7 +431,7 @@ func SendEmailsForWarrantyExpiry(db *gorm.DB, emailNotifier interfaces.EmailNoti
 			NotifyDate: &now,
 			Type:       &typ,
 			AssetId:    &assetId,
-			Status: &status,
+			Status:     &status,
 		}
 		result := db.Create(&notify)
 		if result.Error != nil {
