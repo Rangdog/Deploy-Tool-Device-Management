@@ -234,6 +234,8 @@ func (h *UserHandler) ResetPassword(c *gin.Context) {
 				log.Error("Happened error when resert password. Error", err)
 				pkg.PanicExeption(constant.UnknownError, err.Error())
 			}
+			cacheKeyUserSessionStr := fmt.Sprintf("%s:%d", cacheKeyUserSession, user.Id)
+			config.Rdb.Del(config.Ctx, cacheKeyUserSessionStr)
 			c.JSON(http.StatusOK, pkg.BuildReponseSuccessNoData(http.StatusOK, constant.Success))
 		} else {
 			pkg.PanicExeption(constant.Unauthorized, "Invalid token")
@@ -370,6 +372,8 @@ func (h *UserHandler) Logout(c *gin.Context) {
 		log.Error("Happened error when logout user. Error", err)
 		pkg.PanicExeption(constant.UnknownError, err.Error())
 	}
+	cacheKeyUserSessionStr := fmt.Sprintf("%s:%d", cacheKeyUserSession, userId)
+	config.Rdb.Del(config.Ctx, cacheKeyUserSessionStr)
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccessNoData(http.StatusOK, constant.Success))
 }
 
