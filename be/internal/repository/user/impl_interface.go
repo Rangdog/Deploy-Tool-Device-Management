@@ -99,7 +99,7 @@ func (r *PostgreSQLUserRepository) UpdateUser(user *entity.Users) (*entity.Users
 		updates["role_id"] = user.RoleId
 	}
 	if user.Avatar != "" {
-		updates["avatar"] = user.RoleId
+		updates["avatar"] = user.Avatar
 	}
 	err := r.db.Model(&userUpdate).Where("id = ?", user.Id).Updates(updates).Error
 	if err != nil {
