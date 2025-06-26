@@ -98,6 +98,9 @@ func (r *PostgreSQLUserRepository) UpdateUser(user *entity.Users) (*entity.Users
 	if user.RoleId != 0 {
 		updates["role_id"] = user.RoleId
 	}
+	if user.Avatar != "" {
+		updates["avatar"] = user.RoleId
+	}
 	err := r.db.Model(&userUpdate).Where("id = ?", user.Id).Updates(updates).Error
 	if err != nil {
 		return nil, err
@@ -192,7 +195,7 @@ func (r *PostgreSQLUserRepository) UpdateCanExport(id int64, canExport bool) err
 
 func (r *PostgreSQLUserRepository) GetUserNotHaveDep() ([]*entity.Users, error) {
 	var user []*entity.Users
-	result := r.db.Model(entity.Users{}).Joins("join roles on roles.id = users.role_id").Where("roles.slug != ?","admin").Where("department_id is null").Find(&user)
+	result := r.db.Model(entity.Users{}).Joins("join roles on roles.id = users.role_id").Where("roles.slug != ?", "admin").Where("department_id is null").Find(&user)
 	if result.Error != nil {
 		return nil, result.Error
 	}

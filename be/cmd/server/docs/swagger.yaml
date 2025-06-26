@@ -1527,7 +1527,7 @@ paths:
         type: string
       - description: Image to upload
         in: formData
-        name: image
+        name: avatar
         type: file
       - description: Authorization
         in: header
