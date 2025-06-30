@@ -32,6 +32,13 @@ definitions:
       userId:
         type: integer
     type: object
+  dto.BillCreateRequest:
+    properties:
+      assetId:
+        type: integer
+      description:
+        type: string
+    type: object
   dto.CheckPasswordReset:
     properties:
       email:
@@ -801,6 +808,86 @@ paths:
       summary: Register user
       tags:
       - Auth
+  /api/bills:
+    post:
+      consumes:
+      - application/json
+      description: Create bill
+      parameters:
+      - description: Data
+        in: body
+        name: bill
+        required: true
+        schema:
+          $ref: '#/definitions/dto.BillCreateRequest'
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: Create bill
+      tags:
+      - Bills
+  /api/bills/{billNumber}:
+    get:
+      consumes:
+      - application/json
+      description: Get bill by bill number
+      parameters:
+      - description: billNumber
+        in: path
+        name: billNumber
+        required: true
+        type: string
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: Get bill by bill number
+      tags:
+      - Bills
+  /api/bills/filter:
+    get:
+      consumes:
+      - application/json
+      description: Get all bill have permission
+      parameters:
+      - in: query
+        name: billNumber
+        type: string
+      - in: query
+        name: categoryId
+        type: string
+      - in: query
+        name: companyId
+        type: integer
+      - in: query
+        name: status
+        type: string
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: Get all bill with filter
+      tags:
+      - Bills
   /api/categories:
     get:
       consumes:

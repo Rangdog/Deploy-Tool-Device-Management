@@ -5,6 +5,7 @@ import (
 	assetS "BE_Manage_device/internal/service/asset"
 	assetLogS "BE_Manage_device/internal/service/asset_log"
 	assignmentS "BE_Manage_device/internal/service/assignment"
+	bill "BE_Manage_device/internal/service/bill"
 	categoriesS "BE_Manage_device/internal/service/categories"
 	company "BE_Manage_device/internal/service/company"
 	departmentS "BE_Manage_device/internal/service/departments"
@@ -31,6 +32,7 @@ type Services struct {
 	Notification         *notificationS.NotificationService
 	Email                *emailS.EmailService
 	Company              *company.CompanyService
+	Bill                 *bill.BillsService
 }
 
 func NewServices(repos *repository.Repository, emailPass string) *Services {
@@ -60,5 +62,6 @@ func NewServices(repos *repository.Repository, emailPass string) *Services {
 		Notification:         notificationService,
 		Email:                emailService,
 		Company:              company.NewCompanyService(repos.Company),
+		Bill:                 bill.NewBillService(repos.Bill, repos.Assets, repos.User),
 	}
 }

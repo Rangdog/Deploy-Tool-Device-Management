@@ -107,8 +107,8 @@ func (h *AssignmentHandler) FilterAsset(c *gin.Context) {
 	}
 	data, err := h.service.Filter(userId, filter.EmailAssigned, filter.EmailAssign, filter.AssetName)
 	if err != nil {
-		log.Error("Happened error when filter asset. Error", err)
-		pkg.PanicExeption(constant.UnknownError, "Happened error when filter asset")
+		log.Error("Happened error when filter assignment. Error: ", err.Error())
+		pkg.PanicExeption(constant.UnknownError, "Happened error when filter assignment. Error: "+err.Error())
 	}
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, data))
 }

@@ -190,6 +190,11 @@ func (service *AssignmentService) Filter(userId int64, emailAssigned *string, em
 		EmailAssign:   emailAssign,
 		AssetName:     assetName,
 	}
+	users, err := service.userRepo.FindByUserId(userId)
+	if err != nil {
+		return nil, err
+	}
+	filter.CompanyId = users.CompanyId
 	db := service.Repo.GetDB()
 	dbFilter := filter.ApplyFilter(db.Model(&entity.Assignments{}), userId)
 

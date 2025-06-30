@@ -4,6 +4,7 @@ import (
 	asset_log "BE_Manage_device/internal/repository/asset_log"
 	asset "BE_Manage_device/internal/repository/assets"
 	assignment "BE_Manage_device/internal/repository/assignments"
+	bill "BE_Manage_device/internal/repository/bill"
 	categories "BE_Manage_device/internal/repository/categories"
 	company "BE_Manage_device/internal/repository/company"
 	department "BE_Manage_device/internal/repository/departments"
@@ -36,6 +37,7 @@ type Repository struct {
 	Notification            notification.NotificationRepository
 	MaintenanceNotification maintenanceNotification.MaintenanceNotificationsRepository
 	Company                 company.CompanyRepository
+	Bill                    bill.BillsRepository
 }
 
 func NewRepository(db *gorm.DB) *Repository {
@@ -55,5 +57,6 @@ func NewRepository(db *gorm.DB) *Repository {
 		Notification:            notification.NewPostgreSQLNotificationRepository(db),
 		MaintenanceNotification: maintenanceNotification.NewPostgreSQLMaintenanceNotificationRepository(db),
 		Company:                 company.NewPostgreSQLCompanyRepository(db),
+		Bill:                    bill.NewPostgreSQLBillsRepository(db),
 	}
 }

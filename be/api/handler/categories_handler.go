@@ -52,7 +52,7 @@ func (h *CategoriesHandler) Create(c *gin.Context) {
 	}
 	location, err := h.service.Create(userId, request.CategoryName)
 	if err != nil {
-		log.Error("Happened error when create category. Error", err)
+		log.Error("Happened error when create category. Error", err.Error())
 		pkg.PanicExeption(constant.UnknownError, "Happened error when create category. Error: "+err.Error())
 	}
 	config.Rdb.Del(config.Ctx, cacheKeyCategories)

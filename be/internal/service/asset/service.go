@@ -284,12 +284,38 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 		_ = uploader.Delete(oldFilePath)
 		filedUpdate = append(filedUpdate, "file")
 	}
-	imageUrl, err := uploader.Upload(imagePath, imgFile, image.Header.Get("Content-Type"))
-	if err != nil {
-		return nil, err
-	}
-	fileUrl, err := uploader.Upload(filePath, fileFile, fileAttachment.Header.Get("Content-Type"))
-	if err != nil {
+	var (
+		wg      sync.WaitGroup
+		errChan = make(chan error, 2)
+	)
+	var imageUrl string
+	var fileUrl string
+	_, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		i, err := uploader.Upload(imagePath, imgFile, image.Header.Get("Content-Type"))
+		if err != nil {
+			errChan <- err
+			cancel()
+			return
+		}
+		imageUrl = i
+	}()
+	go func() {
+		defer wg.Done()
+		f, err := uploader.Upload(filePath, fileFile, fileAttachment.Header.Get("Content-Type"))
+		if err != nil {
+			errChan <- err
+			cancel()
+			return
+		}
+		fileUrl = f
+	}()
+	wg.Wait()
+	close(errChan)
+	if err, ok := <-errChan; ok {
 		return nil, err
 	}
 	if oldAsset.AssetName != assetName {

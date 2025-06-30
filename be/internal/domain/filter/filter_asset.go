@@ -33,10 +33,6 @@ func (f *AssetFilter) ApplyFilter(db *gorm.DB, userId int64) *gorm.DB {
 		Joins("JOIN permissions on permissions.id = role_permissions.permission_id").
 		Joins("JOIN users on users.id = assets.owner").
 		Where("user_rbacs.user_id = ? and permissions.slug = ?", userId, "view-assets")
-		// Join các bảng liên quan đến filter
-	if f.CategoryId != nil {
-		db = db.Joins("JOIN categories ON categories.id = assets.category_id")
-	}
 	if f.Status != nil {
 		db = db.Where("status = ?", *f.Status)
 	}
