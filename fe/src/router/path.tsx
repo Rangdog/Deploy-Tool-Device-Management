@@ -17,6 +17,7 @@ import {
   ViewAllMaintenanceSchedulePage,
   CreateAssetMaintenanceSchedulePage,
   AssetComparisonPage,
+  StatisticReportPage,
 } from '@/pages/dashboard'
 import { ProtectedRoute, AuthRoute } from './auth-guard'
 import Layout from '@/layout/layout'
@@ -34,6 +35,10 @@ export const router = createBrowserRouter([
           {
             path: 'dashboard',
             element: <DashboardPage />,
+          },
+          {
+            path: 'statistics-reports',
+            element: <StatisticReportPage />,
           },
           {
             path: '',
@@ -153,6 +158,7 @@ export const router = createBrowserRouter([
 ])
 export const AppPaths = {
   DASHBOARD: '/dashboard',
+  STATISTICS_REPORTS: '/statistics-reports',
   ASSETS: '/assets',
   ASSET_COMPARISON: '/assets/asset-comparison',
   CREATE_ASSET: '/assets/create-asset',

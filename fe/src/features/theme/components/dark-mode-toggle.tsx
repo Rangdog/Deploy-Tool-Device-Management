@@ -24,7 +24,7 @@ export const DarkModeToggle = () => {
     >
       <div className='flex items-center gap-2'>
         <Palette className='h-4 w-4' />
-        {showText && <span className='text-sm sm:text-base'>Dark mode</span>}
+        {showText && <span className='text-sm'>Dark mode</span>}
       </div>
       {showText && (
         <div

@@ -104,13 +104,13 @@ export const TrendCharts = ({
                   />
                   <XAxis
                     dataKey='month'
-                    tick={{ fontSize: 10, dy: 5 }}
+                    tick={{ fontSize: 12, dy: 8 }}
                     stroke='#64748b'
                     className='dark:text-gray-400'
                     height={40}
                   />
                   <YAxis
-                    tick={{ fontSize: 10 }}
+                    tick={{ fontSize: 12 }}
                     stroke='#64748b'
                     className='dark:text-gray-400'
                     width={40}
@@ -161,13 +161,13 @@ export const TrendCharts = ({
                   />
                   <XAxis
                     dataKey='month'
-                    tick={{ fontSize: 10, dy: 5 }}
+                    tick={{ fontSize: 12, dy: 8 }}
                     stroke='#64748b'
                     className='dark:text-gray-400'
                     height={40}
                   />
                   <YAxis
-                    tick={{ fontSize: 10 }}
+                    tick={{ fontSize: 12 }}
                     tickFormatter={(value) => formatCurrency(value)}
                     stroke='#64748b'
                     className='dark:text-gray-400'

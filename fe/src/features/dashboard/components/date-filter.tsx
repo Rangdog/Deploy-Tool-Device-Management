@@ -14,12 +14,13 @@ import {
 import { CalendarIcon, X, Calendar as CalendarDays, Clock } from 'lucide-react'
 import { format } from 'date-fns'
 import type { DateFilter as DateFilterType } from '../model/statistics-types'
-import { getAvailableYears } from '../utils'
+import { getLast10Years } from '../utils'
 import type { AssetsType } from '@/features/assets/view-all-assets/model'
 
 interface DateFilterProps {
   dateFilter: DateFilterType
   onDateFilterChange: (filter: DateFilterType) => void
+  originalAssets: AssetsType[]
   assets: AssetsType[]
   className?: string
   showClearButton?: boolean
@@ -28,7 +29,8 @@ interface DateFilterProps {
 export const DateFilter = ({
   dateFilter,
   onDateFilterChange,
-  assets,
+  // originalAssets,
+  // assets,
   className = '',
   showClearButton = false,
 }: DateFilterProps) => {
@@ -39,7 +41,7 @@ export const DateFilter = ({
 
   const [filterMode, setFilterMode] = useState<'month-year' | 'date-range'>(getCurrentMode())
 
-  const availableYears = getAvailableYears(assets)
+  const availableYears = getLast10Years()
   const availableMonths = [
     { value: 1, label: 'January' },
     { value: 2, label: 'February' },

@@ -10,6 +10,7 @@ import {
   DepartmentsFilter,
   StatusFilter,
 } from '../../assets/view-all-assets/_components/filter/_components'
+import { useState } from 'react'
 
 interface AdvancedFilterProps {
   dateFilter: DateFilter
@@ -32,7 +33,7 @@ export const AdvancedFilter = ({
     const newFilter = typeof value === 'function' ? value(assetFilter) : value
     onAssetFilterChange(newFilter)
   }
-
+  const [originalAssets] = useState(assets)
   const handleClearAllFilters = () => {
     onDateFilterChange({
       dateField: 'purchase',
@@ -85,6 +86,7 @@ export const AdvancedFilter = ({
           <DateFilterComponent
             dateFilter={dateFilter}
             onDateFilterChange={onDateFilterChange}
+            originalAssets={originalAssets}
             assets={assets}
           />
 
