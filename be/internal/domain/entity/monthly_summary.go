@@ -6,12 +6,10 @@ type MonthlySummary struct {
 	Id                  int64     `gorm:"primaryKey;autoIncrement" json:"id"`
 	Month               int64     `json:"month"`
 	Year                int64     `json:"year"`
-	TotalAmount         int64     `json:"totalAmount"`
+	TotalAmount         float64   `json:"totalAmount"`
 	BillCount           int64     `json:"billCount"`
 	AssetCount          int64     `json:"assetCount"`
-	TotalCategoryAmount int64     `json:"totalCategoryAmount"`
-	GeneratedById       int64     `json:"generatedById"` // user gen id
+	TotalCategoryAmount string    `json:"totalCategoryAmount"`
 	GeneratedAt         time.Time `json:"generatedAt"`
-
-	CreateBy Users `gorm:"foreignKey:GeneratedById;references:Id"`
+	CompanyId           int64     `json:"-"`
 }

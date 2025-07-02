@@ -316,7 +316,7 @@ func ConnectToDB() *gorm.DB {
 	db.Exec(createEnumSQL)
 	sql := "CREATE SEQUENCE bill_number_seq START WITH 1 INCREMENT BY 1;"
 	db.Exec(sql)
-	err = db.AutoMigrate(&entity.Roles{}, &entity.Permission{}, &entity.RolePermission{}, &entity.Users{}, &entity.UsersSessions{}, &entity.UserRbac{}, &entity.Locations{}, &entity.Departments{}, &entity.Categories{}, &entity.Assets{}, &entity.AssetLog{}, &entity.Assignments{}, &entity.RequestTransfer{}, &entity.Notifications{}, &entity.MaintenanceSchedules{}, &entity.MaintenanceNotifications{}, &entity.Company{}, &entity.Bill{})
+	err = db.AutoMigrate(&entity.Roles{}, &entity.Permission{}, &entity.RolePermission{}, &entity.Users{}, &entity.UsersSessions{}, &entity.UserRbac{}, &entity.Locations{}, &entity.Departments{}, &entity.Categories{}, &entity.Assets{}, &entity.AssetLog{}, &entity.Assignments{}, &entity.RequestTransfer{}, &entity.Notifications{}, &entity.MaintenanceSchedules{}, &entity.MaintenanceNotifications{}, &entity.Company{}, &entity.Bill{}, &entity.MonthlySummary{})
 	if err != nil {
 		log.Fatal("Error migrate to database. Error:", err)
 	}

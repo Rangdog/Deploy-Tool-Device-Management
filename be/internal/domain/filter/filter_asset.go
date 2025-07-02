@@ -42,6 +42,7 @@ func (f *AssetFilter) ApplyFilter(db *gorm.DB, userId int64) *gorm.DB {
 		db = db.Where("LOWER(assets.asset_name) LIKE LOWER(?)", str)
 	}
 	if f.CategoryId != nil {
+		db = db.Joins("join categories on categories.id = assets.category_id")
 		parsedID, _ := strconv.ParseInt(*f.CategoryId, 10, 64)
 		db = db.Where("categories.id = ?", parsedID)
 	}

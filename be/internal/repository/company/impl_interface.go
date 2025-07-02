@@ -30,3 +30,9 @@ func (r *PostgreSQLCompanyRepository) GetCompanyBySuffixEmail(email string) (*en
 	result := r.db.Model(entity.Company{}).Where("email = ?", email).First(&Company)
 	return &Company, result.Error
 }
+
+func (r *PostgreSQLCompanyRepository) GetAllCompany() ([]*entity.Company, error) {
+	var company []*entity.Company
+	result := r.db.Model(entity.Company{}).Find(&company)
+	return company, result.Error
+}

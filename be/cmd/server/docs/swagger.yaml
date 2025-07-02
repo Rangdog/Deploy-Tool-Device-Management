@@ -1257,6 +1257,34 @@ paths:
       summary: Update maintenanceSchedules by id
       tags:
       - MaintenanceSchedules
+  /api/monthly-summary/filter:
+    get:
+      consumes:
+      - application/json
+      description: Get monthly summary have permission
+      parameters:
+      - in: query
+        name: companyId
+        type: integer
+      - in: query
+        name: month
+        type: integer
+      - in: query
+        name: year
+        type: integer
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: Get monthly summary with filter
+      tags:
+      - Monthly Summary
   /api/notifications:
     get:
       consumes:

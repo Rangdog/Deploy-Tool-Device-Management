@@ -11,6 +11,7 @@ import (
 	location "BE_Manage_device/internal/repository/locations"
 	maintenanceNotification "BE_Manage_device/internal/repository/maintenance_notifications"
 	maintenanceSchedules "BE_Manage_device/internal/repository/maintenance_schedules"
+	monthlySummary "BE_Manage_device/internal/repository/monthly_summary"
 	notification "BE_Manage_device/internal/repository/noftifications"
 	request_transfer "BE_Manage_device/internal/repository/request_transfer"
 	role "BE_Manage_device/internal/repository/role"
@@ -38,6 +39,7 @@ type Repository struct {
 	MaintenanceNotification maintenanceNotification.MaintenanceNotificationsRepository
 	Company                 company.CompanyRepository
 	Bill                    bill.BillsRepository
+	MonthlySummary          monthlySummary.MonthlySummaryRepository
 }
 
 func NewRepository(db *gorm.DB) *Repository {
@@ -58,5 +60,6 @@ func NewRepository(db *gorm.DB) *Repository {
 		MaintenanceNotification: maintenanceNotification.NewPostgreSQLMaintenanceNotificationRepository(db),
 		Company:                 company.NewPostgreSQLCompanyRepository(db),
 		Bill:                    bill.NewPostgreSQLBillsRepository(db),
+		MonthlySummary:          monthlySummary.NewPostgreSQLMonthlySummary(db),
 	}
 }

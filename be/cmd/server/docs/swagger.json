@@ -1638,6 +1638,51 @@
                 "responses": {}
             }
         },
+        "/api/monthly-summary/filter": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "Get monthly summary have permission",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Monthly Summary"
+                ],
+                "summary": "Get monthly summary with filter",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "name": "companyId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "month",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "year",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/api/notifications": {
             "get": {
                 "security": [

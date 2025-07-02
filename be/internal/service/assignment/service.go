@@ -4,6 +4,7 @@ import (
 	"BE_Manage_device/internal/domain/dto"
 	"BE_Manage_device/internal/domain/entity"
 	"BE_Manage_device/internal/domain/filter"
+	"BE_Manage_device/pkg/utils"
 
 	asset_log "BE_Manage_device/internal/repository/asset_log"
 	asset "BE_Manage_device/internal/repository/assets"
@@ -11,7 +12,7 @@ import (
 	department "BE_Manage_device/internal/repository/departments"
 	user "BE_Manage_device/internal/repository/user"
 	notificationS "BE_Manage_device/internal/service/notification"
-	"BE_Manage_device/pkg/utils"
+
 	"fmt"
 	"time"
 )

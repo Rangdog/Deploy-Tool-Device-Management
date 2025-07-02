@@ -82,7 +82,7 @@ func (h BillsHandler) GetByBillNumber(c *gin.Context) {
 // @Tags Bills
 // @Accept json
 // @Produce json
-// @Param        bill   query    filter.BillFilter   false  "filter assignment"
+// @Param        bill   query    filter.BillFilter   false  "filter bill"
 // @param Authorization header string true "Authorization"
 // @Router /api/bills/filter [GET]
 // @securityDefinitions.apiKey token
