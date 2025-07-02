@@ -80,26 +80,13 @@ func (h *DepartmentsHandler) GetAll(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)
 	var departments []*entity.Departments
-	val, err := config.Rdb.Get(config.Ctx, cacheKeyDepartment).Result()
-	if err == nil {
-		// ✅ Dữ liệu có trong Redis, trả về
-		var cached []entity.Departments
-		if err := json.Unmarshal([]byte(val), &cached); err == nil {
-			for _, a := range cached {
-				copy := a
-				departments = append(departments, &copy)
-			}
-		} else {
-			log.Error("Happened error when get all departments. Error", err)
-			pkg.PanicExeption(constant.UnknownError, "Happened error when get all departments in redis")
-		}
-	} else {
-		departments, err = h.service.GetAll(userId)
-		if err != nil {
-			log.Error("Happened error when get all departments. Error", err)
-			pkg.PanicExeption(constant.UnknownError, "Happened error when get all departments")
-		}
+
+	departments, err := h.service.GetAll(userId)
+	if err != nil {
+		log.Error("Happened error when get all departments. Error", err)
+		pkg.PanicExeption(constant.UnknownError, "Happened error when get all departments")
 	}
+
 	var departmentResponses []dto.DepartmentResponse
 	for _, department := range departments {
 		departmentResponse := dto.DepartmentResponse{}
