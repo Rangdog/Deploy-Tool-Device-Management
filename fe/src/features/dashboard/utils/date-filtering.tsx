@@ -35,7 +35,19 @@ export const filterAssetsByDate = (assets: AssetsType[], filter: DateFilter): As
 
     if (!filter.month && !filter.year) {
       if (filter.startDate && filter.endDate) {
-        return targetDate >= filter.startDate && targetDate <= filter.endDate
+        const normalizedTargetDate = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate())
+        const normalizedStartDate = new Date(
+          filter.startDate.getFullYear(),
+          filter.startDate.getMonth(),
+          filter.startDate.getDate()
+        )
+        const normalizedEndDate = new Date(
+          filter.endDate.getFullYear(),
+          filter.endDate.getMonth(),
+          filter.endDate.getDate()
+        )
+
+        return normalizedTargetDate >= normalizedStartDate && normalizedTargetDate <= normalizedEndDate
       }
       return true
     }
@@ -91,7 +103,16 @@ export const getDateRangeText = (filter: DateFilter): string => {
 
   return 'All Time'
 }
+export const getLast10Years = (): number[] => {
+  const currentYear = new Date().getFullYear()
+  const years: number[] = []
 
+  for (let i = 0; i < 10; i++) {
+    years.push(currentYear - i)
+  }
+
+  return years
+}
 export const getAvailableYears = (assets: AssetsType[]): number[] => {
   if (!assets || assets.length === 0) return []
 
