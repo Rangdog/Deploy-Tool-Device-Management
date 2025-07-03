@@ -144,7 +144,7 @@ func (r *PostgreSQLUserRepository) FindByEmailForLogin(email string) (*entity.Us
 
 func (r *PostgreSQLUserRepository) GetAllUserOfDepartment(departmentTd int64) ([]*entity.Users, error) {
 	users := []*entity.Users{}
-	result := r.db.Model(entity.Users{}).Where("department_id = ?", departmentTd).Preload("Role").Preload("Department").Find(&users)
+	result := r.db.Model(entity.Users{}).Joins("join roles on roles.id = users.role_id").Where("department_id = ?", departmentTd).Where("roles.slug = ?", "viewer").Preload("Role").Preload("Department").Find(&users)
 	if result.Error != nil {
 		return nil, result.Error
 	}

@@ -1264,7 +1264,7 @@ paths:
       description: Get monthly summary have permission
       parameters:
       - in: query
-        name: companyId
+        name: '-'
         type: integer
       - in: query
         name: month
@@ -1636,30 +1636,6 @@ paths:
       summary: Email reset password
       tags:
       - Users
-  /api/user/head-department/{user_id}:
-    patch:
-      consumes:
-      - application/json
-      description: Update head department by userId
-      parameters:
-      - description: user_id
-        in: path
-        name: user_id
-        required: true
-        type: string
-      - description: Authorization
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      security:
-      - JWT: []
-      summary: Update head department by userId
-      tags:
-      - Users
   /api/user/information:
     patch:
       consumes:
@@ -1705,7 +1681,7 @@ paths:
     patch:
       consumes:
       - application/json
-      description: Update head department by userId
+      description: Update manager department by userId
       parameters:
       - description: user_id
         in: path
@@ -1722,7 +1698,7 @@ paths:
       responses: {}
       security:
       - JWT: []
-      summary: Update head department by userId
+      summary: Update manager department by userId
       tags:
       - Users
   /api/user/password-reset:
