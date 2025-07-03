@@ -7,6 +7,7 @@ import (
 	"BE_Manage_device/internal/domain/entity"
 	service "BE_Manage_device/internal/service/departments"
 	"BE_Manage_device/pkg/utils"
+	"fmt"
 
 	"BE_Manage_device/pkg"
 	"encoding/json"
@@ -18,7 +19,7 @@ import (
 )
 
 const (
-	cacheKeyDepartment = "department:all"
+	cacheKeyDepartment = "department:all:Cid:"
 )
 
 type DepartmentsHandler struct {
@@ -60,7 +61,13 @@ func (h *DepartmentsHandler) Create(c *gin.Context) {
 	departmentResponse.DepartmentName = department.DepartmentName
 	departmentResponse.Location.ID = department.Location.Id
 	departmentResponse.Location.LocationName = department.Location.LocationName
-	config.Rdb.Del(config.Ctx, cacheKeyDepartment)
+	companyId, err := h.service.GetCompanyId(userId)
+	if err != nil {
+		log.Error("Happened error when get company id. Error: ", err.Error())
+		pkg.PanicExeption(constant.UnknownError, "Happened error when get company id"+err.Error())
+	}
+	cacheKeyDepartmentCompanyId := fmt.Sprintf("%v:%v", cacheKeyDepartment, companyId)
+	config.Rdb.Del(config.Ctx, cacheKeyDepartmentCompanyId)
 	c.JSON(http.StatusCreated, pkg.BuildReponseSuccess(http.StatusCreated, constant.Success, departmentResponse))
 }
 
@@ -80,13 +87,32 @@ func (h *DepartmentsHandler) GetAll(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)
 	var departments []*entity.Departments
-
-	departments, err := h.service.GetAll(userId)
+	companyId, err := h.service.GetCompanyId(userId)
 	if err != nil {
-		log.Error("Happened error when get all departments. Error", err)
-		pkg.PanicExeption(constant.UnknownError, "Happened error when get all departments")
+		log.Error("Happened error when get company id. Error: ", err.Error())
+		pkg.PanicExeption(constant.UnknownError, "Happened error when get company id"+err.Error())
 	}
-
+	cacheKeyDepartmentCompanyId := fmt.Sprintf("%v:%v", cacheKeyDepartment, companyId)
+	val, err := config.Rdb.Get(config.Ctx, cacheKeyDepartmentCompanyId).Result()
+	if err == nil {
+		// ✅ Dữ liệu có trong Redis, trả về
+		var cached []entity.Departments
+		if err := json.Unmarshal([]byte(val), &cached); err == nil {
+			for _, a := range cached {
+				copy := a
+				departments = append(departments, &copy)
+			}
+		} else {
+			log.Error("Happened error when get all departments. Error", err)
+			pkg.PanicExeption(constant.UnknownError, "Happened error when get all departments in redis")
+		}
+	} else {
+		departments, err = h.service.GetAll(userId)
+		if err != nil {
+			log.Error("Happened error when get all departments. Error", err)
+			pkg.PanicExeption(constant.UnknownError, "Happened error when get all departments")
+		}
+	}
 	var departmentResponses []dto.DepartmentResponse
 	for _, department := range departments {
 		departmentResponse := dto.DepartmentResponse{}
@@ -98,7 +124,7 @@ func (h *DepartmentsHandler) GetAll(c *gin.Context) {
 	}
 	// ✅ Cache lại dữ liệu
 	bytes, _ := json.Marshal(departments)
-	config.Rdb.Set(config.Ctx, cacheKeyDepartment, bytes, initialTTL)
+	config.Rdb.Set(config.Ctx, cacheKeyDepartmentCompanyId, bytes, initialTTL)
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, departmentResponses))
 }
 
@@ -117,6 +143,7 @@ func (h *DepartmentsHandler) GetAll(c *gin.Context) {
 // @Security JWT
 func (h *DepartmentsHandler) Delete(c *gin.Context) {
 	defer pkg.PanicHandler(c)
+	userId := utils.GetUserIdFromContext(c)
 	id := c.Param("id")
 	IdConvert, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
@@ -129,6 +156,12 @@ func (h *DepartmentsHandler) Delete(c *gin.Context) {
 		log.Error("Happened error when delete department. Error", err)
 		pkg.PanicExeption(constant.UnknownError, err.Error())
 	}
-	config.Rdb.Del(config.Ctx, cacheKeyDepartment)
+	companyId, err := h.service.GetCompanyId(userId)
+	if err != nil {
+		log.Error("Happened error when get company id. Error: ", err.Error())
+		pkg.PanicExeption(constant.UnknownError, "Happened error when get company id"+err.Error())
+	}
+	cacheKeyDepartmentCompanyId := fmt.Sprintf("%v:%v", cacheKeyDepartment, companyId)
+	config.Rdb.Del(config.Ctx, cacheKeyDepartmentCompanyId)
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccessNoData(http.StatusOK, constant.Success))
 }

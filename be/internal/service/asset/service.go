@@ -225,28 +225,14 @@ func (service *AssetsService) SetRole(assetId int64) error {
 	}
 	users := service.userRepository.GetAllUser(assets.CompanyId)
 	for _, user := range users {
-		if service.roleRepository.GetSlugByRoleId(user.RoleId) == "department-head" && user.IsHeadDepartment {
-			if assets.DepartmentId == *user.DepartmentId {
-				userRbac := entity.UserRbac{
-					AssetId: assetId,
-					UserId:  user.Id,
-					RoleId:  user.RoleId,
-				}
-				err := service.userRBACRepository.Create(&userRbac, db)
-				if err != nil {
-					return err
-				}
-			}
-		} else {
-			userRbac := entity.UserRbac{
-				AssetId: assetId,
-				UserId:  user.Id,
-				RoleId:  user.RoleId,
-			}
-			err := service.userRBACRepository.Create(&userRbac, db)
-			if err != nil {
-				return err
-			}
+		userRbac := entity.UserRbac{
+			AssetId: assetId,
+			UserId:  user.Id,
+			RoleId:  user.RoleId,
+		}
+		err := service.userRBACRepository.Create(&userRbac, db)
+		if err != nil {
+			return err
 		}
 	}
 	return nil
@@ -712,8 +698,12 @@ func (service *AssetsService) GetUserById(id int64) (entity.Users, error) {
 	return *user, err
 }
 
-func (service *AssetsService) GetAllAssetNotHaveMaintenance() ([]*entity.Assets, error) {
-	assets, err := service.repo.GetAllAssetNotHaveMaintenance()
+func (service *AssetsService) GetAllAssetNotHaveMaintenance(userId int64) ([]*entity.Assets, error) {
+	user, err := service.userRepository.FindByUserId(userId)
+	if err != nil {
+		return nil, err
+	}
+	assets, err := service.repo.GetAllAssetNotHaveMaintenance(user.CompanyId)
 	if err != nil {
 		return nil, err
 	}

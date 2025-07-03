@@ -97,7 +97,7 @@ func (h *AssignmentHandler) Update(c *gin.Context) {
 // @in header
 // @name Authorization
 // @Security JWT
-func (h *AssignmentHandler) FilterAsset(c *gin.Context) {
+func (h *AssignmentHandler) FilterAssignment(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	var filter filter.AssignmentFilter
 	userId := utils.GetUserIdFromContext(c)

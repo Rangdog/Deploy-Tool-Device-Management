@@ -72,3 +72,9 @@ func (r *PostgreSQLAssignmentRepository) GetAssignmentByAssetId(assetId int64) (
 	}
 	return &assignment, nil
 }
+
+func (r *PostgreSQLAssignmentRepository) GetAssignmentForViewer(userId int64) (*entity.Assignments, error) {
+	var assignment entity.Assignments
+	result := r.db.Model(entity.Assignments{}).Where("user_id = ?", userId).Preload("UserAssigned").Preload("UserAssign").Preload("Asset").Preload("Department").Preload("Department.Location").First(&assignment)
+	return &assignment, result.Error
+}

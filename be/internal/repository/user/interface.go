@@ -29,4 +29,5 @@ type UserRepository interface {
 	UpdateCanExport(id int64, canExport bool) error
 	GetUserNotHaveDep() ([]*entity.Users, error)
 	GetUserRoleAdmin() ([]*entity.Users, error)
+	FindManager(userId int64) (*entity.Users, error)
 }

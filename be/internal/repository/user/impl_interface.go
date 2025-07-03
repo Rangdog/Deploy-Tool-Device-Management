@@ -210,3 +210,18 @@ func (r *PostgreSQLUserRepository) GetUserRoleAdmin() ([]*entity.Users, error) {
 	}
 	return users, nil
 }
+
+func (r *PostgreSQLUserRepository) FindManager(userId int64) (*entity.Users, error) {
+	var user entity.Users
+	result := r.db.Model(entity.Users{}).Where("id = ?", userId).First(&user)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	if user.DepartmentId == nil {
+		return nil, errors.New("user haven't department")
+	}
+	depId := user.DepartmentId
+	var userManager entity.Users
+	result = r.db.Model(entity.Users{}).Where("department_id = ? and is_asset_manager = true", depId).First(&userManager)
+	return &userManager, result.Error
+}

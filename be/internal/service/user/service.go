@@ -263,20 +263,8 @@ func (service *UserService) UpdateRole(userId int64, setRoleUserId int64, slug s
 	}
 	if slug == "assetManager" {
 		service.UpdateManagerDep(setRoleUserId)
-		if userUpdated.IsHeadDepartment {
-			service.UpdateHeadDep(setRoleUserId)
-		}
-	}
-	if slug == "departmentHead" {
-		service.UpdateHeadDep(setRoleUserId)
-		if userUpdated.IsAssetManager {
-			service.UpdateManagerDep(setRoleUserId)
-		}
 	}
 	if slug == "viewer" {
-		if userUpdated.IsHeadDepartment {
-			service.UpdateHeadDep(setRoleUserId)
-		}
 		if userUpdated.IsAssetManager {
 			service.UpdateManagerDep(setRoleUserId)
 		}
@@ -299,23 +287,6 @@ func (service *UserService) UpdateDepartment(userId int64, departmentId int64) e
 	}
 	go service.assetRepo.DeleteOwnerAssetOfOwnerId(userId)
 	return err
-}
-
-func (service *UserService) UpdateHeadDep(id int64) error {
-	user, err := service.repo.FindByUserId(id)
-	if err != nil {
-		return err
-	}
-	if user.IsHeadDepartment {
-		err := service.repo.UpdateHeadDep(id, !user.IsHeadDepartment)
-		return err
-	} else {
-		if user.DepartmentId == nil {
-			return errors.New("user don't have department")
-		}
-		err = service.repo.UpdateHeadDep(id, !user.IsHeadDepartment)
-		return err
-	}
 }
 
 func (service *UserService) UpdateManagerDep(id int64) error {
