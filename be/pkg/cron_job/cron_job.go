@@ -3,10 +3,14 @@ package cronjob
 import (
 	asset_log "BE_Manage_device/internal/repository/asset_log"
 	asset "BE_Manage_device/internal/repository/assets"
+	bill "BE_Manage_device/internal/repository/bill"
+	company "BE_Manage_device/internal/repository/company"
+	monthlySummary "BE_Manage_device/internal/repository/monthly_summary"
 	user "BE_Manage_device/internal/repository/user"
 	emailS "BE_Manage_device/internal/service/email"
 	notificationS "BE_Manage_device/internal/service/notification"
 	"BE_Manage_device/pkg/utils"
+	"fmt"
 	"log"
 	"time"
 
@@ -14,7 +18,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func InitCronJobs(db *gorm.DB, emailService *emailS.EmailService, assetsRepository asset.AssetsRepository, userRepository user.UserRepository, notificationsService *notificationS.NotificationService, assetsLogRepository asset_log.AssetsLogRepository) {
+func InitCronJobs(db *gorm.DB, emailService *emailS.EmailService, assetsRepository asset.AssetsRepository, userRepository user.UserRepository, notificationsService *notificationS.NotificationService, assetsLogRepository asset_log.AssetsLogRepository, billRepository bill.BillsRepository, monthlySummaryRepository monthlySummary.MonthlySummaryRepository, companyRepository company.CompanyRepository) {
 	c := cron.New(cron.WithLocation(time.FixedZone("Asia/Ho_Chi_Minh", 7*3600)))
 
 	_, err := c.AddFunc("0 8 * * *", func() {
@@ -47,6 +51,21 @@ func InitCronJobs(db *gorm.DB, emailService *emailS.EmailService, assetsReposito
 	})
 	if err != nil {
 		log.Fatalf("❌ Failed to schedule kill session cron job: %v", err)
+	}
+
+	_, err = c.AddFunc("0 0 * * *", func() {
+		now := time.Now()
+		// Get tomorrow's date
+		tomorrow := now.AddDate(0, 0, 1)
+		// If tomorrow is the first, today is the last day
+		if tomorrow.Day() == 1 {
+			utils.CreateSummary(monthlySummaryRepository, billRepository, companyRepository)
+		} else {
+			fmt.Println("Not the last day of the month. Skipping task...")
+		}
+	})
+	if err != nil {
+		log.Fatalf("❌ Failed to schedule create monthly summary cron job: %v", err)
 	}
 
 	c.Start()

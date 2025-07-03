@@ -52,7 +52,7 @@ func (h *CategoriesHandler) Create(c *gin.Context) {
 	}
 	location, err := h.service.Create(userId, request.CategoryName)
 	if err != nil {
-		log.Error("Happened error when create category. Error", err)
+		log.Error("Happened error when create category. Error", err.Error())
 		pkg.PanicExeption(constant.UnknownError, "Happened error when create category. Error: "+err.Error())
 	}
 	config.Rdb.Del(config.Ctx, cacheKeyCategories)
@@ -75,25 +75,10 @@ func (h *CategoriesHandler) GetAll(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)
 	var categories []*entity.Categories
-	val, err := config.Rdb.Get(config.Ctx, cacheKeyCategories).Result()
-	if err == nil {
-		// ✅ Dữ liệu có trong Redis, trả về
-		var cached []entity.Categories
-		if err := json.Unmarshal([]byte(val), &cached); err == nil {
-			for _, a := range cached {
-				copy := a
-				categories = append(categories, &copy)
-			}
-		} else {
-			log.Error("Happened error when get all categories. Error", err)
-			pkg.PanicExeption(constant.UnknownError, "Happened error when get all categories in redis")
-		}
-	} else {
-		categories, err = h.service.GetAll(userId)
-		if err != nil {
-			log.Error("Happened error when get all categories. Error", err)
-			pkg.PanicExeption(constant.UnknownError, "Happened error when get all categories")
-		}
+	categories, err := h.service.GetAll(userId)
+	if err != nil {
+		log.Error("Happened error when get all categories. Error", err)
+		pkg.PanicExeption(constant.UnknownError, "Happened error when get all categories")
 	}
 	// ✅ Cache lại dữ liệu
 	bytes, _ := json.Marshal(categories)

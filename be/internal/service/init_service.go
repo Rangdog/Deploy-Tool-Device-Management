@@ -5,12 +5,14 @@ import (
 	assetS "BE_Manage_device/internal/service/asset"
 	assetLogS "BE_Manage_device/internal/service/asset_log"
 	assignmentS "BE_Manage_device/internal/service/assignment"
+	bill "BE_Manage_device/internal/service/bill"
 	categoriesS "BE_Manage_device/internal/service/categories"
 	company "BE_Manage_device/internal/service/company"
 	departmentS "BE_Manage_device/internal/service/departments"
 	emailS "BE_Manage_device/internal/service/email"
 	locationS "BE_Manage_device/internal/service/location"
 	maintenanceSchedulesS "BE_Manage_device/internal/service/maintenance_schedules"
+	MonthlySummary "BE_Manage_device/internal/service/monthly_summary"
 	notificationS "BE_Manage_device/internal/service/notification"
 	requestTransferS "BE_Manage_device/internal/service/request_transfer"
 	roleS "BE_Manage_device/internal/service/role"
@@ -31,6 +33,8 @@ type Services struct {
 	Notification         *notificationS.NotificationService
 	Email                *emailS.EmailService
 	Company              *company.CompanyService
+	Bill                 *bill.BillsService
+	MonthlySummary       *MonthlySummary.MonthlySummaryService
 }
 
 func NewServices(repos *repository.Repository, emailPass string) *Services {
@@ -60,5 +64,7 @@ func NewServices(repos *repository.Repository, emailPass string) *Services {
 		Notification:         notificationService,
 		Email:                emailService,
 		Company:              company.NewCompanyService(repos.Company),
+		Bill:                 bill.NewBillService(repos.Bill, repos.Assets, repos.User),
+		MonthlySummary:       MonthlySummary.NewMonthlySummaryService(repos.MonthlySummary, repos.Bill, repos.User),
 	}
 }

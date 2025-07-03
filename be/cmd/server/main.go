@@ -51,6 +51,10 @@ func main() {
 	cronJobTestHandler := handler.NewCronJobTestHandler(db, services.Email, repos.Assets, repos.User, services.Notification, repos.AssetsLog)
 	//CompanyHandler
 	companyHandler := handler.NewCompanyHandler(services.Company)
+	//BillHandler
+	billHandler := handler.NewBillHandler(services.Bill)
+	//MonthlySummaryHandler
+	monthlySummaryHandler := handler.NewMonthlySummry(services.MonthlySummary)
 	docs.SwaggerInfo.Title = "API Tool device manage"
 	docs.SwaggerInfo.Description = "App Tool device manage"
 	docs.SwaggerInfo.Version = "1.0"
@@ -60,10 +64,10 @@ func main() {
 
 	r := gin.Default()
 	pprof.Register(r)
-	api.SetupRoutes(r, userHandler, locationHandler, categoriesHandler, departmentHandler, assetsHandler, roleHandler, assignmentHandler, assetLogHandler, requestTransferHandler, maintenanceHandler, SSeHandler, notificationsHandler, cronJobTestHandler, companyHandler, repos.UserSession, db)
+	api.SetupRoutes(r, userHandler, locationHandler, categoriesHandler, departmentHandler, assetsHandler, roleHandler, assignmentHandler, assetLogHandler, requestTransferHandler, maintenanceHandler, SSeHandler, notificationsHandler, cronJobTestHandler, companyHandler, billHandler, monthlySummaryHandler, repos.UserSession, db)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	cronjob.InitCronJobs(db, services.Email, repos.Assets, repos.User, services.Notification, repos.AssetsLog)
+	cronjob.InitCronJobs(db, services.Email, repos.Assets, repos.User, services.Notification, repos.AssetsLog, repos.Bill, repos.MonthlySummary, repos.Company)
 
 	if err := r.Run(config.Port); err != nil {
 		log.Fatal("failed to run server:", err)

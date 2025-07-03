@@ -163,10 +163,10 @@ func ConvertUsersToNotificationsToMap(userId int64, usersToNotifications []*enti
 
 	for _, user := range usersToNotifications {
 		if user == nil {
-			continue // tránh panic nếu có user nil
+			continue
 		}
 		if user.Id == userId {
-			continue // loại trừ user có id = userId truyền vào
+			continue
 		}
 		if !uniqueMap[user.Id] {
 			uniqueMap[user.Id] = true
@@ -174,4 +174,63 @@ func ConvertUsersToNotificationsToMap(userId int64, usersToNotifications []*enti
 		}
 	}
 	return uniqueUsers
+}
+
+func ConvertAssetToResponse(asset entity.Assets) dto.AssetResponse {
+	var qrURL string
+	if asset.QrUrl != nil {
+		qrURL = *asset.QrUrl
+	}
+	assetResponse := dto.AssetResponse{
+		ID:             asset.Id,
+		AssetName:      asset.AssetName,
+		PurchaseDate:   asset.PurchaseDate.Format("2006-01-02"),
+		Cost:           asset.Cost,
+		WarrantExpiry:  asset.WarrantExpiry.Format("2006-01-02"),
+		Status:         asset.Status,
+		SerialNumber:   asset.SerialNumber,
+		FileAttachment: *asset.FileAttachment,
+		ImageUpload:    *asset.ImageUpload,
+		QrURL:          qrURL,
+		Category: dto.CategoryResponse{
+			ID:           asset.Category.Id,
+			CategoryName: asset.Category.CategoryName,
+		},
+		Department: dto.DepartmentResponse{
+			ID:             asset.Department.Id,
+			DepartmentName: asset.Department.DepartmentName,
+			Location: dto.LocationResponse{
+				ID:           asset.Department.Location.Id,
+				LocationName: asset.Department.Location.LocationName,
+			},
+		},
+	}
+	if asset.OnwerUser != nil {
+		assetResponse.Owner = dto.OwnerResponse{
+			ID:        asset.OnwerUser.Id,
+			FirstName: asset.OnwerUser.FirstName,
+			LastName:  asset.OnwerUser.LastName,
+			Email:     asset.OnwerUser.Email,
+		}
+	}
+	return assetResponse
+}
+
+func ConvertBillToResponse(bill *entity.Bill) dto.BillResponse {
+	return dto.BillResponse{
+		BillNumber:  bill.BillNumber,
+		Amount:      bill.Amount,
+		Description: bill.Description,
+		CreateAt:    bill.CreateAt,
+		Asset:       ConvertAssetToResponse(bill.Asset),
+		CreateBy:    ConvertUserToUserResponse(&bill.CreateBy),
+	}
+}
+
+func ConvertBillsToResponsesArray(bills []*entity.Bill) []dto.BillResponse {
+	res := make([]dto.BillResponse, 0, len(bills))
+	for _, as := range bills {
+		res = append(res, ConvertBillToResponse(as))
+	}
+	return res
 }
