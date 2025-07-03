@@ -8,7 +8,7 @@ import type { DateFilter } from '@/features/dashboard/model/statistics-types'
 import type { FilterType } from '@/features/assets/view-all-assets/model'
 import { tryCatch } from '@/utils'
 import { AreaChart, FileText, Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui'
+import { Button, CardDescription, CardTitle } from '@/components/ui'
 
 const StatisticReportPage = () => {
   const [searchParam, setSearchParam] = useSearchParams()
@@ -153,10 +153,13 @@ const StatisticReportPage = () => {
   return (
     <div className='space-y-4 p-4 sm:space-y-6 sm:p-6'>
       <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
-        <h1 className='flex items-center gap-2 text-2xl font-bold sm:text-3xl'>
-          <FileText className='h-6 w-6 sm:h-8 sm:w-8' />
-          Statistical Reports
-        </h1>
+        <div>
+          <CardTitle className='flex items-center text-2xl'>
+            <FileText className='mr-2 h-5 w-5' />
+            Statistical Reports
+          </CardTitle>
+          <CardDescription>Detailed analytics and performance reports</CardDescription>
+        </div>
 
         {views.length > 1 && (
           <div className='flex gap-2'>

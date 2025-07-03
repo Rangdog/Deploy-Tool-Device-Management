@@ -71,8 +71,8 @@ fe/
 - Dark mode and theme customization support. (Done)
 - User can update their personal information like upload avatar, change information. (Done)
 - Enable side-by-side comparison of multiple assets, including specs, costs, and performance (Done)
+- Admins can view statistical reports filtered by month and year. (Done)
 - Admins can save bills after creating assets, and generate a monthly summary bill for printing at the end of the month.
-- Admins can view statistical reports filtered by month and year.
 - Admin assign asset -> Manager -> user
 - 3 roles: employee (see assets, assign asset, assign to manager then assign to another employee), admin (save records when buy,update,.. ), manager (assign asset to employee)
 - Admin doesn't have to approve
