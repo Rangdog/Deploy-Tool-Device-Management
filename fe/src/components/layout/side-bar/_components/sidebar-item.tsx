@@ -1,4 +1,4 @@
-import { LayoutDashboard, NotebookPen, Computer, SendToBack, PersonStanding } from 'lucide-react'
+import { LayoutDashboard, NotebookPen, Computer, SendToBack, PersonStanding, Receipt } from 'lucide-react'
 import { useAppSelector } from '@/hooks'
 
 export const SidebarNav = () => {
@@ -11,6 +11,8 @@ export const SidebarNav = () => {
       navMain: [],
     }
   }
+  const canManageBills = role === 'admin'
+
   const canCreateAsset = role === 'admin' || (role === 'assetManager' && 'limited scope')
   const canUpdateSchedule = role === 'admin' || role === 'assetManager' || role === 'departmentHead'
   const canCreateSchedule = role === 'admin' || role === 'assetManager'
@@ -26,6 +28,13 @@ export const SidebarNav = () => {
         icon: LayoutDashboard,
         haveChildren: false,
         show: true,
+      },
+      {
+        title: 'Bills',
+        url: '/bills',
+        icon: Receipt,
+        haveChildren: false,
+        show: canManageBills,
       },
       {
         title: 'Assets',
@@ -56,6 +65,7 @@ export const SidebarNav = () => {
           },
         ].filter((item) => item.show !== false),
       },
+
       {
         title: 'Assignments',
         url: '/assignments',

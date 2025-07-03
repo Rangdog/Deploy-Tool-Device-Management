@@ -20,6 +20,7 @@ import {
   StatisticReportPage,
 } from '@/pages/dashboard'
 import { ProtectedRoute, AuthRoute } from './auth-guard'
+import { BillsManagement } from '@/features/bills'
 import Layout from '@/layout/layout'
 import { AssignDepartmentForUserPage, AssignRoleForUserPage, EditProfilePage } from '@/pages/user'
 
@@ -129,6 +130,10 @@ export const router = createBrowserRouter([
               },
             ],
           },
+          {
+            path: 'bills',
+            element: <BillsManagement />,
+          },
         ],
       },
     ],
@@ -160,6 +165,7 @@ export const AppPaths = {
   DASHBOARD: '/dashboard',
   STATISTICS_REPORTS: '/statistics-reports',
   ASSETS: '/assets',
+  BILLS: '/bills',
   ASSET_COMPARISON: '/assets/asset-comparison',
   CREATE_ASSET: '/assets/create-asset',
   ASSIGNMENTS: '/assignments',

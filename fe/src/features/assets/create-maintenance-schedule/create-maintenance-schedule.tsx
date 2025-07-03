@@ -11,7 +11,7 @@ import {
 } from '@/components/ui'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormProvider, useForm } from 'react-hook-form'
-import { Loader2 } from 'lucide-react'
+import { Calendar, Loader2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { useNavigate } from 'react-router-dom'
@@ -81,7 +81,10 @@ const CreateMaintenanceSchedule = () => {
     <div className='container mx-auto py-10'>
       <Card className='mx-auto max-w-2xl'>
         <CardHeader>
-          <CardTitle>Create Maintenance Schedule</CardTitle>
+          <CardTitle className='flex items-center gap-2'>
+            <Calendar className='h-5 w-5' />
+            Create Maintenance Schedule
+          </CardTitle>
           <CardDescription>
             Schedule maintenance for an asset by selecting dates and the asset to maintain.
           </CardDescription>
