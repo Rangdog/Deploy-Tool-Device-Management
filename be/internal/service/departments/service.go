@@ -55,3 +55,8 @@ func (service *DepartmentsService) Delete(id int64) error {
 	err := service.repo.Delete(id)
 	return err
 }
+
+func (service *DepartmentsService) GetCompanyId(userId int64) (int64, error) {
+	user, err := service.userRepo.FindByUserId(userId)
+	return user.CompanyId, err
+}

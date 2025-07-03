@@ -12,4 +12,5 @@ type AssignmentRepository interface {
 	GetDB() *gorm.DB
 	GetAssignmentById(id int64) (*entity.Assignments, error)
 	GetAssignmentByAssetId(assetId int64) (*entity.Assignments, error)
+	GetAssignmentForViewer(userId int64) (*entity.Assignments, error)
 }

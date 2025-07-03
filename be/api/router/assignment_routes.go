@@ -14,8 +14,8 @@ func registerAssignmentRoutes(api *gin.RouterGroup, h *handler.AssignmentHandler
 	api.Use(middleware.AuthMiddleware(config.AccessSecret, session))
 
 	api.POST("/assignments", middleware.RequirePermission([]string{"assign-assets"}, nil, db), h.Create)
-	api.PUT("/assignments/:id", middleware.RequirePermission([]string{"assign-assets"}, nil, db), h.Update)            // đã check
-	api.GET("/assignments/filter", middleware.RequirePermission([]string{"assign-assets"}, nil, db), h.FilterAsset)    // đã check
-	api.GET("/assignments/:id", middleware.RequirePermission([]string{"assign-assets"}, nil, db), h.GetAssignmentById) // đã check
+	api.PUT("/assignments/:id", middleware.RequirePermission([]string{"assign-assets"}, []string{"full", "conditional"}, db), h.Update)              // đã check
+	api.GET("/assignments/filter", middleware.RequirePermission([]string{"assign-assets"}, []string{"full", "conditional"}, db), h.FilterAssignment) // đã check
+	api.GET("/assignments/:id", middleware.RequirePermission([]string{"assign-assets"}, []string{"full", "conditional"}, db), h.GetAssignmentById)   // đã check
 
 }

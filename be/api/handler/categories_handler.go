@@ -7,6 +7,7 @@ import (
 	"BE_Manage_device/internal/domain/entity"
 	service "BE_Manage_device/internal/service/categories"
 	"BE_Manage_device/pkg/utils"
+	"fmt"
 
 	"BE_Manage_device/pkg"
 	"encoding/json"
@@ -55,7 +56,13 @@ func (h *CategoriesHandler) Create(c *gin.Context) {
 		log.Error("Happened error when create category. Error", err.Error())
 		pkg.PanicExeption(constant.UnknownError, "Happened error when create category. Error: "+err.Error())
 	}
-	config.Rdb.Del(config.Ctx, cacheKeyCategories)
+	companyId, err := h.service.GetCompanyId(userId)
+	if err != nil {
+		log.Error("Happened error when get company id. Error: ", err.Error())
+		pkg.PanicExeption(constant.UnknownError, "Happened error when get company id"+err.Error())
+	}
+	cacheKeyCategoriesCompanyId := fmt.Sprintf("%v:%v", cacheKeyCategories, companyId)
+	config.Rdb.Del(config.Ctx, cacheKeyCategoriesCompanyId)
 	c.JSON(http.StatusCreated, pkg.BuildReponseSuccess(http.StatusCreated, constant.Success, location))
 }
 
@@ -75,14 +82,35 @@ func (h *CategoriesHandler) GetAll(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	userId := utils.GetUserIdFromContext(c)
 	var categories []*entity.Categories
-	categories, err := h.service.GetAll(userId)
+	companyId, err := h.service.GetCompanyId(userId)
 	if err != nil {
-		log.Error("Happened error when get all categories. Error", err)
-		pkg.PanicExeption(constant.UnknownError, "Happened error when get all categories")
+		log.Error("Happened error when get company id. Error: ", err.Error())
+		pkg.PanicExeption(constant.UnknownError, "Happened error when get company id"+err.Error())
+	}
+	cacheKeyCategoriesCompanyId := fmt.Sprintf("%v:%v", cacheKeyCategories, companyId)
+	val, err := config.Rdb.Get(config.Ctx, cacheKeyCategoriesCompanyId).Result()
+	if err == nil {
+		// ✅ Dữ liệu có trong Redis, trả về
+		var cached []entity.Categories
+		if err := json.Unmarshal([]byte(val), &cached); err == nil {
+			for _, a := range cached {
+				copy := a
+				categories = append(categories, &copy)
+			}
+		} else {
+			log.Error("Happened error when get all categories. Error", err)
+			pkg.PanicExeption(constant.UnknownError, "Happened error when get all categories in redis")
+		}
+	} else {
+		categories, err = h.service.GetAll(userId)
+		if err != nil {
+			log.Error("Happened error when get all categories. Error", err)
+			pkg.PanicExeption(constant.UnknownError, "Happened error when get all categories")
+		}
 	}
 	// ✅ Cache lại dữ liệu
 	bytes, _ := json.Marshal(categories)
-	config.Rdb.Set(config.Ctx, cacheKeyCategories, bytes, initialTTL)
+	config.Rdb.Set(config.Ctx, cacheKeyCategoriesCompanyId, bytes, initialTTL)
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, categories))
 }
 
@@ -101,6 +129,7 @@ func (h *CategoriesHandler) GetAll(c *gin.Context) {
 // @Security JWT
 func (h *CategoriesHandler) Delete(c *gin.Context) {
 	defer pkg.PanicHandler(c)
+	userId := utils.GetUserIdFromContext(c)
 	id := c.Param("id")
 	IdConvert, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
@@ -113,6 +142,12 @@ func (h *CategoriesHandler) Delete(c *gin.Context) {
 		log.Error("Happened error when delete category. Error", err)
 		pkg.PanicExeption(constant.UnknownError, err.Error())
 	}
-	config.Rdb.Del(config.Ctx, cacheKeyCategories)
+	companyId, err := h.service.GetCompanyId(userId)
+	if err != nil {
+		log.Error("Happened error when get company id. Error: ", err.Error())
+		pkg.PanicExeption(constant.UnknownError, "Happened error when get company id"+err.Error())
+	}
+	cacheKeyCategoriesCompanyId := fmt.Sprintf("%v:%v", cacheKeyCategories, companyId)
+	config.Rdb.Del(config.Ctx, cacheKeyCategoriesCompanyId)
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccessNoData(http.StatusOK, constant.Success))
 }

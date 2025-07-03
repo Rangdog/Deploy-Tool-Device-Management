@@ -66,13 +66,22 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 		return nil, err
 	}
 	var assignUser *entity.Users
-	if userIdAssign != nil {
-		assignUser, err = service.userRepo.FindByUserId(*userIdAssign)
+	if byUser.Role.Slug == "viewer" {
+		userManager, err := service.userRepo.FindManager(byUser.Id)
 		if err != nil {
 			return nil, err
 		}
+		assignUser = userManager
+		userIdAssign = &userManager.Id
 	} else {
-		assignUser = nil
+		if userIdAssign != nil {
+			assignUser, err = service.userRepo.FindByUserId(*userIdAssign)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			assignUser = nil
+		}
 	}
 	asset, err := service.assetRepo.GetAssetById(assignment.AssetId)
 	if err != nil {
@@ -194,6 +203,16 @@ func (service *AssignmentService) Filter(userId int64, emailAssigned *string, em
 	users, err := service.userRepo.FindByUserId(userId)
 	if err != nil {
 		return nil, err
+	}
+	if users.Role.Slug == "viewer" {
+		var assignments []entity.Assignments
+		assigment, err := service.Repo.GetAssignmentForViewer(users.Id)
+		if err != nil {
+			return nil, err
+		}
+		assignments = append(assignments, *assigment)
+		assignmentsRes := utils.ConvertAssignmentsToResponses(assignments)
+		return assignmentsRes, nil
 	}
 	filter.CompanyId = users.CompanyId
 	db := service.Repo.GetDB()

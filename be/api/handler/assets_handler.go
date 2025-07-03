@@ -737,7 +737,8 @@ func (h *AssetsHandler) GetAssetsByCateOfDepartment(c *gin.Context) {
 // @Security JWT
 func (h *AssetsHandler) GetAllAssetNotHaveMaintenance(c *gin.Context) {
 	defer pkg.PanicHandler(c)
-	assets, err := h.service.GetAllAssetNotHaveMaintenance()
+	userId := utils.GetUserIdFromContext(c)
+	assets, err := h.service.GetAllAssetNotHaveMaintenance(userId)
 	if err != nil {
 		log.Error("Happened error when get assets. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when get assets")

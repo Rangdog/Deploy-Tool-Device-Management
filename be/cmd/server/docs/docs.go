@@ -1670,7 +1670,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "name": "companyId",
+                        "name": "-",
                         "in": "query"
                     },
                     {
@@ -2191,43 +2191,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/user/head-department/{user_id}": {
-            "patch": {
-                "security": [
-                    {
-                        "JWT": []
-                    }
-                ],
-                "description": "Update head department by userId",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Update head department by userId",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "user_id",
-                        "name": "user_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Authorization",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
         "/api/user/information": {
             "patch": {
                 "security": [
@@ -2298,7 +2261,7 @@ const docTemplate = `{
                         "JWT": []
                     }
                 ],
-                "description": "Update head department by userId",
+                "description": "Update manager department by userId",
                 "consumes": [
                     "application/json"
                 ],
@@ -2308,7 +2271,7 @@ const docTemplate = `{
                 "tags": [
                     "Users"
                 ],
-                "summary": "Update head department by userId",
+                "summary": "Update manager department by userId",
                 "parameters": [
                     {
                         "type": "string",

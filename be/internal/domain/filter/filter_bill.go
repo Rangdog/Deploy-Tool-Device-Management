@@ -22,6 +22,7 @@ func (f *BillFilter) ApplyFilter(db *gorm.DB) *gorm.DB {
 	}
 	if f.CategoryId != nil {
 		db = db.Joins("join assets on assets.id = bills.asset_id")
+		db = db.Joins("join categories on categories.id = assets.category_id")
 		parsedID, _ := strconv.ParseInt(*f.CategoryId, 10, 64)
 		db = db.Where("categories.id = ?", parsedID)
 	}
