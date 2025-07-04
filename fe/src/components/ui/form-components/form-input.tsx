@@ -33,7 +33,7 @@ export const FormInput = ({
               <Input
                 type={type}
                 placeholder={placeholder || ''}
-                className={cn('h-9 text-sm sm:h-10', {
+                className={cn('h-9 text-sm', {
                   'pl-9 sm:pl-10': Icon,
                 })}
                 {...field}

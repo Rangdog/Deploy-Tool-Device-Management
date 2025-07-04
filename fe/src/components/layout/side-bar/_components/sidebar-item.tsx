@@ -14,12 +14,12 @@ export const SidebarNav = () => {
   const canManageBills = role === 'admin'
 
   const canCreateAsset = role === 'admin' || (role === 'assetManager' && 'limited scope')
-  const canUpdateSchedule = role === 'admin' || role === 'assetManager' || role === 'departmentHead'
+  const canUpdateSchedule = role === 'admin' || role === 'assetManager'
   const canCreateSchedule = role === 'admin' || role === 'assetManager'
-  const canTransferRequests = role === 'admin' || role === 'assetManager' || role === 'departmentHead'
+  const canTransferRequests = role === 'admin' || role === 'assetManager'
   const canViewAssignments = role === 'admin' || role === 'assetManager'
-  const canCreateTransfer = role === 'departmentHead'
-  const canNotViewTransfer = role !== 'departmentHead'
+  const canCreateTransfer = role === 'viewer'
+  const canNotViewTransfer = role !== 'viewer'
   const data = {
     navMain: [
       {

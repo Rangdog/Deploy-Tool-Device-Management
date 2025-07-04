@@ -42,17 +42,14 @@ export interface BillType {
   }
 }
 
-export interface CreateBillRequest {
+export type CreateBillRequest = {
   assetId: number
-  amount: number
+  cost: number
   description: string
   categoryId?: number
   status?: string
-  companyId?: number
-  purchaseDate?: string
-  warrantyExpiry?: string
-  fileAttachment?: string
-  imageUpload?: string
+  fileAttachment?: File
+  imageUpload?: File
 }
 
 export interface BillFilterType {

@@ -173,7 +173,6 @@ const GetAssetDetail = () => {
           </Card>
 
           {role !== 'viewer' &&
-            role !== 'departmentHead' &&
             (role === 'admin' ||
               (role === 'assetManager' && (user as any).department?.id === asset?.department?.id)) && (
               <ViewAssetLog id={id || ''} />
