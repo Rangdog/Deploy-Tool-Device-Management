@@ -41,7 +41,7 @@ export const ProfileForm = ({ user, onSubmit, onClose, isLoading }: ProfileFormP
   const userInitials = ((user.lastName?.[0] || '') + (user.firstName?.[0] || '')).toUpperCase()
 
   return (
-    <Card className='relative mx-auto max-w-2xl'>
+    <Card className='relative mx-auto max-w-md'>
       <Button
         type='button'
         variant='ghost'

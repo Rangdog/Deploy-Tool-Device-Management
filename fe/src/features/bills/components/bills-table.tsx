@@ -1,9 +1,11 @@
-import { Eye, Printer, Calendar } from 'lucide-react'
+import { Eye, Calendar } from 'lucide-react'
 import { Button, Badge } from '@/components/ui'
 import { DataTable } from '@/components/ui/data-table-component'
 import type { BillType } from '../model/bill-types'
 import { toast } from 'sonner'
-
+import { BillPrintLayout } from './bill-print-layout'
+import { renderToString } from 'react-dom/server'
+import { BillPrintButton } from './bill-print-button'
 interface BillsTableProps {
   bills: BillType[]
   onViewBill: (bill: BillType) => void
@@ -18,90 +20,17 @@ export const BillsTable = ({ bills, onViewBill, isLoading }: BillsTableProps) =>
         <html>
           <head>
             <title>Bill ${bill.billNumber}</title>
+            <meta charset="UTF-8">
+            <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
             <style>
-              body { 
-                font-family: Arial, sans-serif; 
-                padding: 40px; 
-                max-width: 800px; 
-                margin: 0 auto;
-                line-height: 1.6;
-              }
-              .header { 
-                text-align: center; 
-                border-bottom: 2px solid #333; 
-                padding-bottom: 20px; 
-                margin-bottom: 30px; 
-              }
-              .bill-info { 
-                display: grid; 
-                grid-template-columns: 1fr 1fr; 
-                gap: 20px; 
-                margin-bottom: 30px; 
-              }
-              .info-row { margin: 8px 0; }
-              .label { font-weight: bold; color: #333; }
-              .amount { 
-                font-size: 28px; 
-                font-weight: bold; 
-                color: #007bff; 
-                text-align: center;
-                padding: 20px;
-                background: #f8f9fa;
-                border-radius: 8px;
-                margin: 20px 0;
-              }
-              .description-box {
-                border: 1px solid #ddd;
-                padding: 15px;
-                background: #f9f9f9;
-                border-radius: 5px;
-                margin: 20px 0;
-              }
               @media print {
-                body { margin: 0; }
-                .no-print { display: none; }
+                .no-print { display: none !important; }
+                body { margin: 0; padding: 0; }
               }
             </style>
           </head>
           <body>
-            <div class="header">
-              <h1>BILL INVOICE</h1>
-              <p>Generated on ${new Date().toLocaleDateString()}</p>
-            </div>
-            
-            <div class="bill-info">
-              <div>
-                <div class="info-row">
-                  <span class="label">Bill Number:</span> ${bill.billNumber || 'N/A'}
-                </div>
-                <div class="info-row">
-                  <span class="label">Asset Name:</span> ${getAssetName(bill)}
-                </div>
-                <div class="info-row">
-                  <span class="label">Category:</span> ${getCategoryName(bill)}
-                </div>
-              </div>
-              <div>
-                <div class="info-row">
-                  <span class="label">Status:</span> ${bill.status || 'Unpaid'}
-                </div>
-                <div class="info-row">
-                  <span class="label">Created Date:</span> ${formatDateForPrint(bill.createAt)}
-                </div>
-                <div class="info-row">
-                  <span class="label">Updated Date:</span> ${formatDateForPrint(bill.updateAt)}
-                </div>
-              </div>
-            </div>
-
-            <div class="description-box">
-              <div class="label">Description:</div>
-              <p>${bill.description || 'No description provided'}</p>
-            </div>
-
-            <div class="amount">
-              Asset Cost: $${getAssetCost(bill).toLocaleString()}
-            </div>
+            ${renderToString(<BillPrintLayout bill={bill} />)}
           </body>
         </html>
       `
@@ -110,9 +39,11 @@ export const BillsTable = ({ bills, onViewBill, isLoading }: BillsTableProps) =>
       if (newWindow) {
         newWindow.document.write(printContent)
         newWindow.document.close()
+
         setTimeout(() => {
           newWindow.print()
-        }, 100)
+        }, 500)
+
         toast.success('Print window opened')
       } else {
         toast.error('Please allow popups for printing')
@@ -122,6 +53,7 @@ export const BillsTable = ({ bills, onViewBill, isLoading }: BillsTableProps) =>
       toast.error('Print failed')
     }
   }
+  console.log('🚀 ~ handlePrintBill ~ handlePrintBill:', handlePrintBill)
 
   const formatDateForPrint = (dateString: string) => {
     try {
@@ -131,6 +63,7 @@ export const BillsTable = ({ bills, onViewBill, isLoading }: BillsTableProps) =>
       return new Date().toLocaleDateString()
     }
   }
+  console.log('🚀 ~ formatDateForPrint ~ formatDateForPrint:', formatDateForPrint)
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
@@ -245,28 +178,23 @@ export const BillsTable = ({ bills, onViewBill, isLoading }: BillsTableProps) =>
     {
       id: 'actions',
       header: 'Actions',
-      cell: ({ row }: any) => (
-        <div className='flex items-center gap-2'>
-          <Button
-            variant='ghost'
-            size='sm'
-            onClick={() => onViewBill(row.original)}
-            className='h-8 w-8 p-0'
-            title='View details'
-          >
-            <Eye className='h-4 w-4' />
-          </Button>
-          <Button
-            variant='ghost'
-            size='sm'
-            onClick={() => handlePrintBill(row.original)}
-            className='h-8 w-8 p-0'
-            title='Print bill'
-          >
-            <Printer className='h-4 w-4' />
-          </Button>
-        </div>
-      ),
+      cell: ({ row }: any) => {
+        const bill = row.original
+
+        return (
+          <div className='flex items-center gap-2'>
+            <Button
+              variant='outline'
+              size='sm'
+              onClick={() => onViewBill(bill)}
+            >
+              <Eye className='h-4 w-4' />
+            </Button>
+
+            <BillPrintButton bill={bill} />
+          </div>
+        )
+      },
     },
   ]
 

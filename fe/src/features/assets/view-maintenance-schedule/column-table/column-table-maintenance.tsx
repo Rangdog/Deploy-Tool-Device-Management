@@ -79,7 +79,7 @@ export const columnTableMaintenance = ({
           >
             <Link to={`/assets/${row.original.asset.id}`}>View Asset</Link>
           </Button>
-          {role !== 'viewer' && role !== 'departmentHead' && status !== 'Under Maintenance' && (
+          {role !== 'viewer' && status !== 'Under Maintenance' && (
             <Button
               variant='outline'
               size='sm'

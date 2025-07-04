@@ -175,6 +175,7 @@ export const CreateBillModal = ({ onBillCreated }: CreateBillModalProps) => {
   }
 
   const onSubmit = async (data: CreateBillFormType) => {
+    console.log('🚀 ~ onSubmit ~ data:', data.assetId)
     setIsSubmitting(true)
 
     try {
@@ -187,14 +188,69 @@ export const CreateBillModal = ({ onBillCreated }: CreateBillModalProps) => {
       }
 
       const currentUserId = getCurrentUserId()
+      console.log('🚀 ~ onSubmit ~ currentUserId:', currentUserId)
 
+      const buildFormDataFromCreateBillRequest = (data: CreateBillRequest): FormData => {
+        const formData = new FormData()
+
+        formData.append('assetId', data.assetId.toString())
+        formData.append('cost', data.cost.toString())
+        formData.append('description', data.description.trim())
+
+        if (data.status) {
+          formData.append('status', data.status)
+        }
+        if (data.categoryId) {
+          formData.append('categoryId', data.categoryId.toString())
+        }
+
+        if (data.fileAttachment) {
+          formData.append('fileAttachment', data.fileAttachment)
+        }
+        if (data.imageUpload) {
+          formData.append('imageUpload', data.imageUpload)
+        }
+
+        return formData
+      }
+
+      // const formData = new FormData()
+      // formData.append('assetId', data.assetId)
+      // formData.append('cost', data.cost.toString())
+      // formData.append('description', data.description.trim())
+      // formData.append('status', data.status)
+      // formData.append('categoryId', selectedAssetData.category.id.toString())
+      // formData.append('createdBy', currentUserId.toString())
+
+      // if (selectedFiles.fileAttachment) {
+      //   formData.append('fileAttachment', selectedFiles.fileAttachment)
+      // }
+      // if (selectedFiles.imageUpload) {
+      //   formData.append('imageUpload', selectedFiles.imageUpload)
+      // }
+      // console.log('🚀 ~ onSubmit ~ formData:', formData)
+      const formValues: CreateBillRequest = {
+        assetId: parseInt(data.assetId, 10),
+        cost: data.cost,
+        description: data.description,
+        categoryId: selectedAssetData.category.id,
+        status: data.status,
+        fileAttachment: selectedFiles.fileAttachment || undefined,
+        imageUpload: selectedFiles.imageUpload || undefined,
+      }
+
+      const formData1 = buildFormDataFromCreateBillRequest(formValues)
+      console.log('🚀 ~ onSubmit ~ formData1:', formData1)
       const formData = new FormData()
-      formData.append('assetId', data.assetId)
-      formData.append('amount', data.cost.toString())
+
+      formData.append('assetId', parseInt(data.assetId).toString())
+      formData.append('cost', data.cost.toString())
       formData.append('description', data.description.trim())
       formData.append('status', data.status)
       formData.append('categoryId', selectedAssetData.category.id.toString())
-      formData.append('createdBy', currentUserId.toString())
+      for (const [key, value] of formData.entries()) {
+        console.log(`${key}:`, value)
+      }
 
       if (selectedFiles.fileAttachment) {
         formData.append('fileAttachment', selectedFiles.fileAttachment)
@@ -203,10 +259,9 @@ export const CreateBillModal = ({ onBillCreated }: CreateBillModalProps) => {
         formData.append('imageUpload', selectedFiles.imageUpload)
       }
 
-      const response = await tryCatch(createBill(formData as unknown as CreateBillRequest))
+      const response = await tryCatch(createBill(formData))
 
       if (response.error) {
-        console.error('Create bill error:', response.error)
         toast.error(response.error?.message || 'Failed to create bill')
       } else {
         const newBill: BillType = {
@@ -246,6 +301,7 @@ export const CreateBillModal = ({ onBillCreated }: CreateBillModalProps) => {
       console.error('Unexpected error:', error)
       toast.error('An unexpected error occurred')
     }
+    console.log('🚀 ~ onSubmit ~ data:', data)
 
     setIsSubmitting(false)
   }
