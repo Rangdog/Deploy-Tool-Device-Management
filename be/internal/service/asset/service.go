@@ -1,6 +1,8 @@
 package service
 
 import (
+	"BE_Manage_device/config"
+	"BE_Manage_device/constant"
 	"BE_Manage_device/internal/domain/dto"
 	"BE_Manage_device/internal/domain/entity"
 	"BE_Manage_device/internal/domain/filter"
@@ -13,7 +15,9 @@ import (
 	user "BE_Manage_device/internal/repository/user"
 	userRBAC "BE_Manage_device/internal/repository/user_rbac"
 	notificationS "BE_Manage_device/internal/service/notification"
+	"BE_Manage_device/pkg"
 	"BE_Manage_device/pkg/utils"
+	"encoding/json"
 
 	"context"
 	"sync"
@@ -24,6 +28,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type AssetsService struct {
@@ -197,23 +203,35 @@ func (service *AssetsService) GetAssetById(userId int64, assertId int64) (*entit
 	return assert, err
 }
 
-func (service *AssetsService) GetAllAsset(userId int64) ([]*entity.Assets, error) {
+func (service *AssetsService) GetAllAsset(userId int64, cacheKey string) ([]*entity.Assets, error) {
 	user, err := service.userRepository.FindByUserId(userId)
 	if err != nil {
 		return nil, err
 	}
+	cacheKeyAssetCompanyId := fmt.Sprintf("%v:%v", cacheKey, user.CompanyId)
+	val, err := config.Rdb.Get(config.Ctx, cacheKeyAssetCompanyId).Result()
 	var assets []*entity.Assets
-	if user.Role.Slug == "departmentHead" {
-		assets, err = service.repo.GetAllAssetOfDep(*user.DepartmentId)
+	if err == nil {
+		var cached []entity.Assets
+		if err := json.Unmarshal([]byte(val), &cached); err == nil {
+			for _, a := range cached {
+				copy := a
+				assets = append(assets, &copy)
+			}
+		} else {
+			log.Error("Happened error when get all asset. Error", err)
+			pkg.PanicExeption(constant.UnknownError, "Happened error when get all asset in redis")
+		}
 	} else {
 		assets, err = service.repo.GetAllAsset(user.CompanyId)
 		if err != nil {
-			return nil, err
+			log.Error("Happened error when get all asset. Error", err)
+			pkg.PanicExeption(constant.UnknownError, "Happened error when get all asset")
 		}
 	}
-	if err != nil {
-		return nil, err
-	}
+	// ✅ Cache lại dữ liệu
+	bytes, _ := json.Marshal(assets)
+	config.Rdb.Set(config.Ctx, cacheKeyAssetCompanyId, bytes, 10*time.Minute)
 	return assets, err
 }
 

@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	cacheKey   = "assets:all"
+	cacheKey   = "assets:all:CId"
 	initialTTL = 10 * time.Minute
 	maxTTL     = 1 * time.Hour
 )
@@ -394,7 +394,7 @@ func (h *AssetsHandler) GetAllAsset(c *gin.Context) {
 	defer pkg.PanicHandler(c)
 	var assets []*entity.Assets
 	userID := utils.GetUserIdFromContext(c)
-	assets, err := h.service.GetAllAsset(userID)
+	assets, err := h.service.GetAllAsset(userID, cacheKey)
 	if err != nil {
 		log.Error("Happened error when get all assets. Error", err)
 		pkg.PanicExeption(constant.UnknownError, "Happened error when get all assets")

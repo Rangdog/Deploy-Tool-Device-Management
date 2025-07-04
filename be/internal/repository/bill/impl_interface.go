@@ -51,3 +51,14 @@ func (r *PostgreSQLBillsRepository) GetAllBillOfMonth(time time.Time, companyId 
 	result := r.db.Model(entity.Bill{}).Where("company_id = ?", companyId).Where("create_at >= ? and create_at <= ?", first, last).Preload("Asset").Preload("Asset.Category").Find(&bills)
 	return bills, result.Error
 }
+
+func (r *PostgreSQLBillsRepository) GetAllBillUnpaid(companyId int64) ([]*entity.Bill, error) {
+	var bills []*entity.Bill
+	result := r.db.Model(entity.Bill{}).Where("company_id = ?", companyId).Where("status_bill = ?", "UnPaid").Preload("CreateBy").Preload("Asset").Preload("CreateBy.Role").Preload("Asset.Category").Preload("Asset.Department").Preload("Asset.Department.Location").Preload("Asset.OnwerUser").Find(&bills)
+	return bills, result.Error
+}
+
+func (r *PostgreSQLBillsRepository) UpdatePaid(billNumberStr string) error {
+	result := r.db.Model(entity.Bill{}).Where("bill_number = ?", billNumberStr).Update("status_bill", "Paid")
+	return result.Error
+}

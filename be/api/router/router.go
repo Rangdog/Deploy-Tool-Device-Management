@@ -15,6 +15,7 @@ func SetupRoutes(r *gin.Engine, userHandler *handler.UserHandler, LocationHandle
 	//users
 	r.Use(middleware.CORSMiddleware())
 	r.Use(middleware.TimeoutMiddleware(5 * time.Second))
+	r.GET("/metrics", middleware.PrometheusHandler())
 	api := r.Group("/api")
 	registerCronJobTestRoutes(api, CronJobTestHandler)
 	registerAuthRoutes(api, userHandler, SSEHandler)

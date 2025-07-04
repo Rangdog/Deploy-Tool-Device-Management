@@ -217,13 +217,28 @@ func ConvertAssetToResponse(asset entity.Assets) dto.AssetResponse {
 }
 
 func ConvertBillToResponse(bill *entity.Bill) dto.BillResponse {
+	var fileAttachmentBill string
+	var imageUploadBill string
+	if bill.FileAttachmentBill != nil {
+		fileAttachmentBill = *bill.FileAttachmentBill
+	} else {
+		fileAttachmentBill = ""
+	}
+	if bill.ImageUploadBill != nil {
+		imageUploadBill = *bill.ImageUploadBill
+	} else {
+		imageUploadBill = ""
+	}
 	return dto.BillResponse{
-		BillNumber:  bill.BillNumber,
-		Amount:      bill.Amount,
-		Description: bill.Description,
-		CreateAt:    bill.CreateAt,
-		Asset:       ConvertAssetToResponse(bill.Asset),
-		CreateBy:    ConvertUserToUserResponse(&bill.CreateBy),
+		BillNumber:         bill.BillNumber,
+		Amount:             bill.Amount,
+		Description:        bill.Description,
+		CreateAt:           bill.CreateAt,
+		Asset:              ConvertAssetToResponse(bill.Asset),
+		CreateBy:           ConvertUserToUserResponse(&bill.CreateBy),
+		StatusBill:         bill.StatusBill,
+		FileAttachmentBill: fileAttachmentBill,
+		ImageUploadBill:    imageUploadBill,
 	}
 }
 

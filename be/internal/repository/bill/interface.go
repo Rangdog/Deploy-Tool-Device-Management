@@ -12,4 +12,6 @@ type BillsRepository interface {
 	GetByBillNumber(string) (*entity.Bill, error)
 	GetDB() *gorm.DB
 	GetAllBillOfMonth(time time.Time, companyId int64) ([]*entity.Bill, error)
+	GetAllBillUnpaid(companyId int64) ([]*entity.Bill, error)
+	UpdatePaid(billNumberStr string) error
 }

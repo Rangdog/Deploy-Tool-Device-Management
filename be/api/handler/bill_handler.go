@@ -2,7 +2,6 @@ package handler
 
 import (
 	"BE_Manage_device/constant"
-	"BE_Manage_device/internal/domain/dto"
 	"BE_Manage_device/internal/domain/filter"
 	service "BE_Manage_device/internal/service/bill"
 	"BE_Manage_device/pkg"
@@ -27,7 +26,11 @@ func NewBillHandler(service *service.BillsService) *BillsHandler {
 // @Tags         Bills
 // @Accept       json
 // @Produce      json
-// @Param        bill   body    dto.BillCreateRequest   true  "Data"
+// @Param assetId formData int true "Asset ID"
+// @Param description formData string false "Description"
+// @Param status formData bool true "Description"
+// @Param file formData file false "File to upload"
+// @Param image formData file false "Image to upload"
 // @param Authorization header string true "Authorization"
 // @Router       /api/bills [POST]
 // @securityDefinitions.apiKey token
@@ -36,13 +39,30 @@ func NewBillHandler(service *service.BillsService) *BillsHandler {
 // @Security JWT
 func (h *BillsHandler) Create(c *gin.Context) {
 	defer pkg.PanicHandler(c)
-	var request dto.BillCreateRequest
-	userId := utils.GetUserIdFromContext(c)
-	if err := c.ShouldBindJSON(&request); err != nil {
-		log.Error("Happened error when mapping request from FE. Error", err)
-		pkg.PanicExeption(constant.InvalidRequest, "Happened error when mapping request from FE.")
+	assetIdStr := c.PostForm("assetId")
+	description := c.PostForm("description")
+	statusStr := c.PostForm("status")
+	assetId, err := utils.ParseStrToInt64(assetIdStr)
+	if err != nil {
+		log.Info("Error: ", err.Error())
+		pkg.PanicExeption(constant.InvalidRequest, "Invalid assetId format")
 	}
-	bill, err := h.service.Create(userId, request.AssetId, request.Description)
+	status, err := utils.ParseStrToBool(statusStr)
+	if err != nil {
+		log.Info("Error: ", err.Error())
+		pkg.PanicExeption(constant.InvalidRequest, "Invalid status format")
+	}
+	file, err := c.FormFile("file")
+	if err != nil {
+		file = nil
+	}
+
+	image, err := c.FormFile("image")
+	if err != nil {
+		image = nil
+	}
+	userId := utils.GetUserIdFromContext(c)
+	bill, err := h.service.Create(userId, assetId, description, image, file, status)
 	if err != nil {
 		log.Error("Happened error when create bill. Error", err.Error())
 		pkg.PanicExeption(constant.UnknownError, "Happened error when create bill. Error: "+err.Error())
@@ -103,4 +123,52 @@ func (h *BillsHandler) FilterBill(c *gin.Context) {
 		pkg.PanicExeption(constant.UnknownError, "Happened error when filter bill. Error: "+err.Error())
 	}
 	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, data))
+}
+
+// Bill godoc
+// @Summary Get un paid bill
+// @Description un paid bill
+// @Tags Bills
+// @Accept json
+// @Produce json
+// @param Authorization header string true "Authorization"
+// @Router /api/bills-un-paid/ [GET]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
+func (h *BillsHandler) GetAllBillUnpaid(c *gin.Context) {
+	defer pkg.PanicHandler(c)
+	userId := utils.GetUserIdFromContext(c)
+	bills, err := h.service.GetAllBillUnpaid(userId)
+	if err != nil {
+		log.Error("Happened error when get bill unpaid. Error: ", err.Error())
+		pkg.PanicExeption(constant.UnknownError, "Happened error when get bill unpaid. Error: "+err.Error())
+	}
+	billsRes := utils.ConvertBillsToResponsesArray(bills)
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccess(http.StatusOK, constant.Success, billsRes))
+}
+
+// Bill godoc
+// @Summary Update paid bill
+// @Description Update paid bill
+// @Tags Bills
+// @Accept json
+// @Produce json
+// @Param		billNumber	path		string				true	"billNumber"
+// @param Authorization header string true "Authorization"
+// @Router /api/bills/{billNumber} [PATCH]
+// @securityDefinitions.apiKey token
+// @in header
+// @name Authorization
+// @Security JWT
+func (h *BillsHandler) UpdatePaid(c *gin.Context) {
+	defer pkg.PanicHandler(c)
+	billNumber := c.Param("billNumber")
+	err := h.service.UpdatePaid(billNumber)
+	if err != nil {
+		log.Error("Happened error when update paid. Error", err.Error())
+		pkg.PanicExeption(constant.UnknownError, "Happened error when update paid"+err.Error())
+	}
+	c.JSON(http.StatusOK, pkg.BuildReponseSuccessNoData(http.StatusOK, constant.Success))
 }
