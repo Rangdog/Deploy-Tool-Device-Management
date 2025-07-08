@@ -633,7 +633,7 @@ func (service *AssetsService) ApplyFilterDashBoard(userId int64, status *string,
 		return nil, nil, err
 	}
 	roleHeadDep := service.roleRepository.GetRoleBySlug("department-head")
-	roleView := service.roleRepository.GetRoleBySlug("viewer")
+	roleView := service.roleRepository.GetRoleBySlug("employee")
 	if user.RoleId == roleHeadDep.Id || user.RoleId == roleView.Id {
 		if user.DepartmentId != nil {
 			// Convert *int64 to string
@@ -676,24 +676,16 @@ func CountDashboard(assets []*entity.Assets) dto.DashboardSummary {
 	return s
 }
 
-func (service *AssetsService) GetAssetsByCateOfDepartment(userId, categoryId, departmentId int64) ([]*entity.Assets, error) {
+func (service *AssetsService) GetAssetsByCateOfDepartment(userId, categoryId int64) ([]*entity.Assets, error) {
 	user, err := service.userRepository.FindByUserId(userId)
 	if err != nil {
 		return nil, err
 	}
-	if user.Role.Slug == "admin" {
-		assets, err := service.repo.GetAssetsByCateOfDepartment(categoryId, departmentId)
-		if err != nil {
-			return nil, err
-		}
-		return assets, nil
-	} else {
-		assets, err := service.repo.GetAssetsByCateOfDepartment(categoryId, *user.DepartmentId)
-		if err != nil {
-			return nil, err
-		}
-		return assets, nil
+	assets, err := service.repo.GetAssetsByCateOfDepartment(categoryId, *user.DepartmentId)
+	if err != nil {
+		return nil, err
 	}
+	return assets, nil
 }
 
 func (service *AssetsService) CheckPermissionForManager(userId int64, depId int64) error {

@@ -220,7 +220,7 @@ func (r *PostgreSQLAssetsRepository) UpdateAssetOwner(id, ownerId int64, tx *gor
 
 func (r *PostgreSQLAssetsRepository) GetAssetsByCateOfDepartment(categoryId int64, departmentId int64) ([]*entity.Assets, error) {
 	assets := []*entity.Assets{}
-	result := r.db.Model(entity.Assets{}).Where("category_id = ? and department_id != ?", categoryId, departmentId).Preload("Category").Preload("Department").Preload("OnwerUser").Preload("Department.Location").Find(&assets)
+	result := r.db.Model(entity.Assets{}).Where("category_id = ? and department_id = ?", categoryId, departmentId).Preload("Category").Preload("Department").Preload("OnwerUser").Preload("Department.Location").Find(&assets)
 	if result.Error != nil {
 		return nil, result.Error
 	}

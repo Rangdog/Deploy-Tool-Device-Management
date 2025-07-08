@@ -66,7 +66,7 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 		return nil, err
 	}
 	var assignUser *entity.Users
-	if byUser.Role.Slug == "viewer" {
+	if byUser.Role.Slug == "employee" {
 		userManager, err := service.userRepo.FindManager(byUser.Id)
 		if err != nil {
 			return nil, err
@@ -204,9 +204,9 @@ func (service *AssignmentService) Filter(userId int64, emailAssigned *string, em
 	if err != nil {
 		return nil, err
 	}
-	if users.Role.Slug == "viewer" {
+	if users.Role.Slug == "employee" {
 		var assignments []entity.Assignments
-		assigment, err := service.Repo.GetAssignmentForViewer(users.Id)
+		assigment, err := service.Repo.GetAssignmentForEmployee(users.Id)
 		if err != nil {
 			return nil, err
 		}

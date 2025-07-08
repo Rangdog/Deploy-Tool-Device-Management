@@ -9,7 +9,7 @@ import (
 
 type BillFilter struct {
 	BillNumber *string `form:"billNumber"`
-	Status     *string `form:"status"`
+	Status     *string `form:"statusBill"`
 	CategoryId *string `form:"categoryId"`
 	CompanyId  int64
 }
@@ -17,8 +17,7 @@ type BillFilter struct {
 func (f *BillFilter) ApplyFilter(db *gorm.DB) *gorm.DB {
 	db.Where("bills.company_id = ?", f.CompanyId)
 	if f.Status != nil {
-		db = db.Joins("join assets on assets.id = bills.asset_id")
-		db = db.Where("status = ?", *f.Status)
+		db = db.Where("status_bill = ?", *f.Status)
 	}
 	if f.CategoryId != nil {
 		db = db.Joins("join assets on assets.id = bills.asset_id")

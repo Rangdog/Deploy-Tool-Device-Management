@@ -581,7 +581,7 @@ func (h *AssetsHandler) FilterAssetDashboard(c *gin.Context) {
 			log.Error("Happened error when filter asset. Error", err)
 			pkg.PanicExeption(constant.UnknownError, "Happened error when filter asset")
 		}
-		if user.Role.Slug != "viewer" {
+		if user.Role.Slug != "employee" {
 			if *filter.Export == "csv" {
 				data, _ := GenerateCSV(assets)
 				c.Header("Content-Disposition", "attachment; filename=assets.csv")
@@ -659,12 +659,12 @@ func GeneratePDF(assets []*entity.Assets) ([]byte, error) {
 }
 
 // Asset godoc
-// @Summary Get asset by category of department
-// @Description Get asset by category of department
+// @Summary Get asset by category of manager department
+// @Description Get asset by category of manager department
 // @Tags Assets
 // @Accept json
 // @Produce json
-// @Param        asset   query   dto.GetAssetsByCateOfDepartmentRequest   false  "category id and department id"
+// @Param        asset   query   dto.GetAssetsByCateOfDepartmentRequest   false  "category id"
 // @param Authorization header string true "Authorization"
 // @Router /api/assets/request-transfer [GET]
 // @securityDefinitions.apiKey token
@@ -679,7 +679,7 @@ func (h *AssetsHandler) GetAssetsByCateOfDepartment(c *gin.Context) {
 		log.Error("Happened error when mapping request from FE. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest)
 	}
-	assets, err := h.service.GetAssetsByCateOfDepartment(userId, request.CategoryId, request.DepartmentId)
+	assets, err := h.service.GetAssetsByCateOfDepartment(userId, request.CategoryId)
 	if err != nil {
 		log.Error("Happened error when get assets. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when get assets")

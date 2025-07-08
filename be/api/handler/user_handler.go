@@ -472,8 +472,8 @@ func (h *UserHandler) UpdateRoleUser(c *gin.Context) {
 }
 
 // Role godoc
-// @Summary      Get all user role viewer by department_id
-// @Description  Get all user role viewer by department_id
+// @Summary      Get all user role employee by department_id
+// @Description  Get all user role employee by department_id
 // @Tags         Users
 // @Accept       json
 // @Produce      json
@@ -486,13 +486,14 @@ func (h *UserHandler) UpdateRoleUser(c *gin.Context) {
 // @Security JWT
 func (h *UserHandler) GetAllUserOfDepartment(c *gin.Context) {
 	defer pkg.PanicHandler(c)
+	userId := utils.GetUserIdFromContext(c)
 	idStr := c.Param("department_id")
 	departmentId, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
 		log.Error("Happened error when convert assetId to int64. Error", err)
 		pkg.PanicExeption(constant.InvalidRequest, "Happened error when convert assetId to int64")
 	}
-	users, err := h.service.GetAllUserOfDepartment(departmentId)
+	users, err := h.service.GetAllUserOfDepartment(userId, departmentId)
 	if err != nil {
 		log.Error("Happened error when get all user of department. Error", err)
 		pkg.PanicExeption(constant.UnknownError, "Happened error when get all user of department")

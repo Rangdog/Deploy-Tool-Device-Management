@@ -47,8 +47,7 @@ type DashboardSummary struct {
 }
 
 type GetAssetsByCateOfDepartmentRequest struct {
-	CategoryId   int64 `form:"categoryId"`
-	DepartmentId int64 `form:"departmentId"`
+	CategoryId int64 `form:"categoryId"`
 }
 
 type RetiredAssetRequest struct {

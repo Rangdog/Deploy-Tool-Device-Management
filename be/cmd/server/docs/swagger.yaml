@@ -583,13 +583,10 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get asset by category of department
+      description: Get asset by category of manager department
       parameters:
       - in: query
         name: categoryId
-        type: integer
-      - in: query
-        name: departmentId
         type: integer
       - description: Authorization
         in: header
@@ -601,7 +598,7 @@ paths:
       responses: {}
       security:
       - JWT: []
-      summary: Get asset by category of department
+      summary: Get asset by category of manager department
       tags:
       - Assets
   /api/assignments/{id}:
@@ -818,7 +815,7 @@ paths:
         type: string
       - description: Description
         in: formData
-        name: status
+        name: statusBill
         required: true
         type: string
       - description: File to upload
@@ -924,7 +921,7 @@ paths:
         name: companyId
         type: integer
       - in: query
-        name: status
+        name: statusBill
         type: string
       - description: Authorization
         in: header
@@ -1641,7 +1638,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get all user role viewer by department_id
+      description: Get all user role employee by department_id
       parameters:
       - description: department_id
         in: path
@@ -1658,7 +1655,7 @@ paths:
       responses: {}
       security:
       - JWT: []
-      summary: Get all user role viewer by department_id
+      summary: Get all user role employee by department_id
       tags:
       - Users
   /api/user/forget-password:

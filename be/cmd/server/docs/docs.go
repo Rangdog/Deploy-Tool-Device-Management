@@ -450,7 +450,7 @@ const docTemplate = `{
                         "JWT": []
                     }
                 ],
-                "description": "Get asset by category of department",
+                "description": "Get asset by category of manager department",
                 "consumes": [
                     "application/json"
                 ],
@@ -460,16 +460,11 @@ const docTemplate = `{
                 "tags": [
                     "Assets"
                 ],
-                "summary": "Get asset by category of department",
+                "summary": "Get asset by category of manager department",
                 "parameters": [
                     {
                         "type": "integer",
                         "name": "categoryId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "name": "departmentId",
                         "in": "query"
                     },
                     {
@@ -987,7 +982,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Description",
-                        "name": "status",
+                        "name": "statusBill",
                         "in": "formData",
                         "required": true
                     },
@@ -1080,7 +1075,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "name": "status",
+                        "name": "statusBill",
                         "in": "query"
                     },
                     {
@@ -2209,7 +2204,7 @@ const docTemplate = `{
                         "JWT": []
                     }
                 ],
-                "description": "Get all user role viewer by department_id",
+                "description": "Get all user role employee by department_id",
                 "consumes": [
                     "application/json"
                 ],
@@ -2219,7 +2214,7 @@ const docTemplate = `{
                 "tags": [
                     "Users"
                 ],
-                "summary": "Get all user role viewer by department_id",
+                "summary": "Get all user role employee by department_id",
                 "parameters": [
                     {
                         "type": "string",

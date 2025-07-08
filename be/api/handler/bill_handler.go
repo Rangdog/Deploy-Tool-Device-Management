@@ -28,7 +28,7 @@ func NewBillHandler(service *service.BillsService) *BillsHandler {
 // @Produce      json
 // @Param assetId formData string true "Asset ID"
 // @Param description formData string false "Description"
-// @Param status formData string true "Description"
+// @Param statusBill formData string true "Description"
 // @Param file formData file false "File to upload"
 // @Param image formData file false "Image to upload"
 // @param Authorization header string true "Authorization"
@@ -42,7 +42,7 @@ func (h *BillsHandler) Create(c *gin.Context) {
 	var status string
 	assetIdStr := c.PostForm("assetId")
 	description := c.PostForm("description")
-	statusStr := c.PostForm("status")
+	statusStr := c.PostForm("statusBill")
 	assetId, err := utils.ParseStrToInt64(assetIdStr)
 	if err != nil {
 		log.Info("Error: ", err.Error())
