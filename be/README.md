@@ -80,104 +80,130 @@ docker run -p 8080:8080 device-manager
 
 ## 🔧 API Overview
 
-Auth
-Method	Endpoint	Description
-POST	/api/auth/login	Đăng nhập
-POST	/api/auth/register	Đăng ký user
-POST	/api/auth/logout	Đăng xuất
-POST	/api/auth/refresh	Refresh token
+### **Auth**
 
-Assets
-Method	Endpoint	Description
-GET	/api/assets	Lấy danh sách thiết bị
-POST	/api/assets	Tạo thiết bị mới
-GET	/api/assets/{id}	Lấy thiết bị theo id
-PUT	/api/assets/{id}	Cập nhật thiết bị
-DELETE	/api/assets/{id}	Xoá thiết bị
-PATCH	/api/assets-retired/{id}	Nghỉ hưu thiết bị
-GET	/api/assets/filter	Lọc thiết bị
-GET	/api/assets/filter-dashboard	Dashboard thiết bị
-GET	/api/assets-log/{asset_id}	Lịch sử thiết bị
-GET	/api/assets/maintenance-schedules	Thiết bị chưa có lịch bảo trì
+| Method | Endpoint           | Description   |
+| ------ | ------------------ | ------------- |
+| POST   | /api/auth/login    | Đăng nhập     |
+| POST   | /api/auth/register | Đăng ký user  |
+| POST   | /api/auth/logout   | Đăng xuất     |
+| POST   | /api/auth/refresh  | Refresh token |
 
-Assignments
-Method	Endpoint	Description
-GET	/api/assignments/filter	Lọc danh sách bàn giao
-GET	/api/assignments/{id}	Lấy bàn giao theo id
-PUT	/api/assignments/{id}	Cập nhật bàn giao
+### **Assets**
 
-Bills
-Method	Endpoint	Description
-POST	/api/bills	Tạo bill
-GET	/api/bills-un-paid/	Lấy bill chưa thanh toán
-GET	/api/bills/filter	Lọc bills
-GET	/api/bills/{billNumber}	Lấy bill theo số
-PATCH	/api/bills/{billNumber}	Cập nhật trạng thái bill
+| Method | Endpoint                    | Description             |
+| ------ | --------------------------- | ----------------------- |
+| GET    | /api/assets                 | Lấy danh sách thiết bị |
+| POST   | /api/assets                 | Tạo thiết bị mới       |
+| GET    | /api/assets/{id}            | Lấy thiết bị theo id   |
+| PUT    | /api/assets/{id}            | Cập nhật thiết bị      |
+| DELETE | /api/assets/{id}            | Xoá thiết bị           |
+| PATCH  | /api/assets-retired/{id}    | Nghỉ hưu thiết bị      |
+| GET    | /api/assets/filter          | Lọc thiết bị           |
+| GET    | /api/assets/filter-dashboard| Dashboard thiết bị     |
+| GET    | /api/assets-log/{asset_id}  | Lịch sử thiết bị       |
+| GET    | /api/assets/maintenance-schedules | Thiết bị chưa có lịch bảo trì |
 
-Categories
-Method	Endpoint	Description
-GET	/api/categories	Lấy danh sách category
-POST	/api/categories	Tạo category
-DELETE	/api/categories/{id}	Xoá category
+### **Assignments**
 
-Departments & Companies
-Method	Endpoint	Description
-GET	/api/departments	Lấy danh sách phòng ban
-POST	/api/departments	Tạo phòng ban
-DELETE	/api/departments/{id}	Xoá phòng ban
-POST	/api/company	Tạo công ty
-GET	/api/company/{id}	Lấy công ty theo id
+| Method | Endpoint                | Description             |
+| ------ | ----------------------- | ----------------------- |
+| GET    | /api/assignments/filter | Lọc danh sách bàn giao |
+| GET    | /api/assignments/{id}   | Lấy bàn giao theo id   |
+| PUT    | /api/assignments/{id}   | Cập nhật bàn giao      |
 
-Locations
-Method	Endpoint	Description
-GET	/api/locations	Lấy danh sách location
-POST	/api/locations	Tạo location
-DELETE	/api/locations/{id}	Xoá location
+### **Bills**
 
-Maintenance Schedules
-Method	Endpoint	Description
-GET	/api/maintenance-schedules	Lấy danh sách lịch bảo trì
-POST	/api/maintenance-schedules	Tạo lịch bảo trì
-GET	/api/maintenance-schedules/{id}	Lấy lịch bảo trì theo id
-PATCH	/api/maintenance-schedules/{id}	Cập nhật lịch bảo trì
-DELETE	/api/maintenance-schedules/{id}	Xoá lịch bảo trì
+| Method | Endpoint                 | Description              |
+| ------ | ------------------------ | ------------------------ |
+| POST   | /api/bills               | Tạo bill                |
+| GET    | /api/bills-un-paid/      | Lấy bill chưa thanh toán |
+| GET    | /api/bills/filter        | Lọc bills               |
+| GET    | /api/bills/{billNumber}  | Lấy bill theo số        |
+| PATCH  | /api/bills/{billNumber}  | Cập nhật trạng thái bill |
 
-Notifications
-Method	Endpoint	Description
-GET	/api/notifications	Lấy thông báo
-PUT	/api/notifications/{id}	Cập nhật thông báo
+### **Categories**
 
-Request Transfer
-Method	Endpoint	Description
-POST	/api/request-transfer	Gửi request transfer
-PATCH	/api/request-transfer/confirm/{id}	Duyệt transfer
-PATCH	/api/request-transfer/deny/{id}	Từ chối transfer
-GET	/api/request-transfer/filter	Lọc request transfer
-GET	/api/request-transfer/{id}	Lấy request transfer theo id
+| Method | Endpoint              | Description            |
+| ------ | --------------------- | ---------------------- |
+| GET    | /api/categories      | Lấy danh sách category |
+| POST   | /api/categories      | Tạo category           |
+| DELETE | /api/categories/{id} | Xoá category           |
 
-Users
-Method	Endpoint	Description
-GET	/api/users	Lấy danh sách user
-GET	/api/users/not-dep	User chưa có phòng ban
-PATCH	/api/users/role	Cập nhật role user
-PATCH	/api/user/password-reset	Reset password
-PATCH	/api/user/information	Cập nhật thông tin user
-PATCH	/api/user/department	Cập nhật phòng ban user
-PATCH	/api/user/manager-department/{user_id}	Cập nhật manager department
-PATCH	/api/user/can-export/{user_id}	Cập nhật can-export
-GET	/api/user/session	Lấy session user
-POST	/api/user/forget-password	Gửi email reset password
-DELETE	/api/user/{email}	Xoá user theo email
+### **Departments & Companies**
 
-Roles
-Method	Endpoint	Description
-GET	/api/roles	Lấy danh sách roles
+| Method | Endpoint               | Description           |
+| ------ | ---------------------- | --------------------- |
+| GET    | /api/departments      | Lấy danh sách phòng ban |
+| POST   | /api/departments      | Tạo phòng ban         |
+| DELETE | /api/departments/{id} | Xoá phòng ban         |
+| POST   | /api/company         | Tạo công ty           |
+| GET    | /api/company/{id}    | Lấy công ty theo id   |
 
-Cron Jobs
-Method	Endpoint	Description
-GET	/api/CheckAndSenMaintenanceNotification	Gửi notification bảo trì
-GET	/api/SendEmailsForWarrantyExpiry	Gửi email hết hạn bảo hành
-GET	/api/UpdateStatusWhenFinishMaintenance	Cập nhật trạng thái sau bảo trì
+### **Locations**
+
+| Method | Endpoint             | Description            |
+| ------ | -------------------- | ---------------------- |
+| GET    | /api/locations      | Lấy danh sách location |
+| POST   | /api/locations      | Tạo location           |
+| DELETE | /api/locations/{id} | Xoá location           |
+
+### **Maintenance Schedules**
+
+| Method | Endpoint                        | Description                   |
+| ------ | ------------------------------- | ----------------------------- |
+| GET    | /api/maintenance-schedules     | Lấy danh sách lịch bảo trì   |
+| POST   | /api/maintenance-schedules     | Tạo lịch bảo trì             |
+| GET    | /api/maintenance-schedules/{id} | Lấy lịch bảo trì theo id    |
+| PATCH  | /api/maintenance-schedules/{id} | Cập nhật lịch bảo trì       |
+| DELETE | /api/maintenance-schedules/{id} | Xoá lịch bảo trì            |
+
+### **Notifications**
+
+| Method | Endpoint                 | Description          |
+| ------ | ------------------------ | -------------------- |
+| GET    | /api/notifications      | Lấy thông báo        |
+| PUT    | /api/notifications/{id} | Cập nhật thông báo   |
+
+### **Request Transfer**
+
+| Method | Endpoint                        | Description              |
+| ------ | ------------------------------- | ------------------------ |
+| POST   | /api/request-transfer          | Gửi request transfer    |
+| PATCH  | /api/request-transfer/confirm/{id} | Duyệt transfer          |
+| PATCH  | /api/request-transfer/deny/{id} | Từ chối transfer        |
+| GET    | /api/request-transfer/filter  | Lọc request transfer    |
+| GET    | /api/request-transfer/{id}    | Lấy request transfer theo id |
+
+### **Users**
+
+| Method | Endpoint                      | Description                  |
+| ------ | ----------------------------- | ---------------------------- |
+| GET    | /api/users                   | Lấy danh sách user         |
+| GET    | /api/users/not-dep           | User chưa có phòng ban     |
+| PATCH  | /api/users/role              | Cập nhật role user         |
+| PATCH  | /api/user/password-reset     | Reset password             |
+| PATCH  | /api/user/information        | Cập nhật thông tin user    |
+| PATCH  | /api/user/department         | Cập nhật phòng ban user    |
+| PATCH  | /api/user/manager-department/{user_id} | Cập nhật manager department |
+| PATCH  | /api/user/can-export/{user_id} | Cập nhật can-export        |
+| GET    | /api/user/session            | Lấy session user           |
+| POST   | /api/user/forget-password    | Gửi email reset password   |
+| DELETE | /api/user/{email}            | Xoá user theo email        |
+
+### **Roles**
+
+| Method | Endpoint    | Description         |
+| ------ | ----------- | ------------------- |
+| GET    | /api/roles | Lấy danh sách roles |
+
+### **Cron Jobs**
+
+| Method | Endpoint                             | Description                    |
+| ------ | ------------------------------------- | ------------------------------ |
+| GET    | /api/CheckAndSenMaintenanceNotification | Gửi notification bảo trì      |
+| GET    | /api/SendEmailsForWarrantyExpiry      | Gửi email hết hạn bảo hành    |
+| GET    | /api/UpdateStatusWhenFinishMaintenance | Cập nhật trạng thái sau bảo trì |
 
 ---
 
