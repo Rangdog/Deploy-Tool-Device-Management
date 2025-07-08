@@ -16,9 +16,8 @@ import {
   SelectValue,
   Input,
   Label,
-  Badge,
 } from '@/components/ui'
-import { Plus, Receipt, File, Image, X, Shield } from 'lucide-react'
+import { Plus, Receipt, File, Image, X } from 'lucide-react'
 import { createBill } from '../api/create-bill'
 import { getAllAssets } from '@/features/assets/api/get-all-assets'
 import { createBillSchema, type CreateBillFormType } from '../model/create-bill-schema'
@@ -67,9 +66,6 @@ export const CreateBillModal = ({ onBillCreated }: CreateBillModalProps) => {
     resolver: zodResolver(createBillSchema),
     defaultValues: {
       assetId: '',
-      assetName: '',
-      categoryName: '',
-      cost: 0,
       description: '',
       status: 'Unpaid',
       fileAttachment: '',
@@ -124,15 +120,7 @@ export const CreateBillModal = ({ onBillCreated }: CreateBillModalProps) => {
   useEffect(() => {
     if (selectedAsset) {
       const asset = assets.find((a) => a.id === selectedAsset)
-      if (asset) {
-        setValue('assetName', asset.assetName)
-        setValue('categoryName', asset.category.categoryName)
-        setValue('cost', asset.cost)
-      }
-    } else {
-      setValue('assetName', '')
-      setValue('categoryName', '')
-      setValue('cost', 0)
+      console.log('🚀 ~ useEffect ~ asset:', asset)
     }
   }, [selectedAsset, assets, setValue])
 
@@ -168,14 +156,15 @@ export const CreateBillModal = ({ onBillCreated }: CreateBillModalProps) => {
       Inactive: 'bg-gray-100 text-gray-800',
       Maintenance: 'bg-yellow-100 text-yellow-800',
       Retired: 'bg-red-100 text-red-800',
-      New: 'bg-blue-100 text-blue-800',
-      'In Use': 'bg-green-100 text-green-800',
+      New: 'bg-blue-100 text-green-800',
+      'In Use': 'bg-green-100 text-blue-800',
     } as const
     return colors[status as keyof typeof colors] || colors.Active
   }
+  console.log('🚀 ~ getAssetStatusColor ~ getAssetStatusColor:', getAssetStatusColor)
 
   const onSubmit = async (data: CreateBillFormType) => {
-    console.log('🚀 ~ onSubmit ~ data:', data.assetId)
+    console.log('🚀 ~ onSubmit ~ data:', data)
     setIsSubmitting(true)
 
     try {
@@ -190,64 +179,20 @@ export const CreateBillModal = ({ onBillCreated }: CreateBillModalProps) => {
       const currentUserId = getCurrentUserId()
       console.log('🚀 ~ onSubmit ~ currentUserId:', currentUserId)
 
-      const buildFormDataFromCreateBillRequest = (data: CreateBillRequest): FormData => {
-        const formData = new FormData()
-
-        formData.append('assetId', data.assetId.toString())
-        formData.append('cost', data.cost.toString())
-        formData.append('description', data.description.trim())
-
-        if (data.status) {
-          formData.append('status', data.status)
-        }
-        if (data.categoryId) {
-          formData.append('categoryId', data.categoryId.toString())
-        }
-
-        if (data.fileAttachment) {
-          formData.append('fileAttachment', data.fileAttachment)
-        }
-        if (data.imageUpload) {
-          formData.append('imageUpload', data.imageUpload)
-        }
-
-        return formData
-      }
-
-      // const formData = new FormData()
-      // formData.append('assetId', data.assetId)
-      // formData.append('cost', data.cost.toString())
-      // formData.append('description', data.description.trim())
-      // formData.append('status', data.status)
-      // formData.append('categoryId', selectedAssetData.category.id.toString())
-      // formData.append('createdBy', currentUserId.toString())
-
-      // if (selectedFiles.fileAttachment) {
-      //   formData.append('fileAttachment', selectedFiles.fileAttachment)
-      // }
-      // if (selectedFiles.imageUpload) {
-      //   formData.append('imageUpload', selectedFiles.imageUpload)
-      // }
-      // console.log('🚀 ~ onSubmit ~ formData:', formData)
       const formValues: CreateBillRequest = {
         assetId: parseInt(data.assetId, 10),
-        cost: data.cost,
         description: data.description,
-        categoryId: selectedAssetData.category.id,
         status: data.status,
         fileAttachment: selectedFiles.fileAttachment || undefined,
         imageUpload: selectedFiles.imageUpload || undefined,
       }
+      console.log('🚀 ~ onSubmit ~ formValues:', formValues)
 
-      const formData1 = buildFormDataFromCreateBillRequest(formValues)
-      console.log('🚀 ~ onSubmit ~ formData1:', formData1)
       const formData = new FormData()
 
       formData.append('assetId', parseInt(data.assetId).toString())
-      formData.append('cost', data.cost.toString())
       formData.append('description', data.description.trim())
       formData.append('status', data.status)
-      formData.append('categoryId', selectedAssetData.category.id.toString())
       for (const [key, value] of formData.entries()) {
         console.log(`${key}:`, value)
       }
@@ -268,27 +213,15 @@ export const CreateBillModal = ({ onBillCreated }: CreateBillModalProps) => {
           id: response.data?.data?.id || Date.now(),
           billNumber: response.data?.data?.billNumber || `BILL-${Date.now()}`,
           assetId: parseInt(data.assetId),
-          amount: data.cost,
+          amount: selectedAssetData.cost,
           description: data.description,
           status: data.status,
-          categoryId: selectedAssetData.category.id,
           companyId: response.data?.data?.companyId || 1,
           createdBy: response.data?.data?.createdBy || 1,
           createAt: response.data?.data?.createdAt || new Date().toISOString(),
           updateAt: response.data?.data?.updatedAt || new Date().toISOString(),
           fileAttachment: response.data?.data?.fileAttachment,
           imageUpload: response.data?.data?.imageUpload,
-
-          assets: {
-            id: parseInt(selectedAssetData.id),
-            assetName: data.assetName,
-            cost: data.cost,
-            status: selectedAssetData.status,
-            category: {
-              id: selectedAssetData.category.id,
-              categoryName: data.categoryName,
-            },
-          },
         }
 
         onBillCreated(newBill)
@@ -373,39 +306,6 @@ export const CreateBillModal = ({ onBillCreated }: CreateBillModalProps) => {
                 {errors.assetId && <p className='text-sm text-red-500'>{errors.assetId.message}</p>}
               </div>
 
-              {selectedAssetData && (
-                <div className='space-y-3'>
-                  <Label>Asset Information</Label>
-                  <div className='space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-4'>
-                    <div className='flex items-center justify-between border-b border-gray-200 py-2 last:border-b-0'>
-                      <span className='text-sm font-medium text-gray-700'>Asset Name:</span>
-                      <span className='text-sm font-medium text-gray-900'>{watch('assetName')}</span>
-                    </div>
-
-                    <div className='flex items-center justify-between border-b border-gray-200 py-2 last:border-b-0'>
-                      <span className='text-sm font-medium text-gray-700'>Category:</span>
-                      <span className='text-sm text-gray-900'>{watch('categoryName')}</span>
-                    </div>
-
-                    <div className='flex items-center justify-between border-b border-gray-200 py-2 last:border-b-0'>
-                      <span className='text-sm font-medium text-gray-700'>Cost:</span>
-                      <span className='text-sm font-semibold text-green-600'>${watch('cost').toLocaleString()}</span>
-                    </div>
-
-                    <div className='flex items-center justify-between py-2'>
-                      <span className='text-sm font-medium text-gray-700'>Status:</span>
-                      <Badge
-                        className={getAssetStatusColor(selectedAssetData.status)}
-                        variant='outline'
-                      >
-                        <Shield className='mr-1 h-3 w-3' />
-                        {selectedAssetData.status}
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-              )}
-
               <div className='space-y-2'>
                 <Label htmlFor='status'>Bill Status</Label>
                 <Select
@@ -447,8 +347,8 @@ export const CreateBillModal = ({ onBillCreated }: CreateBillModalProps) => {
 
                 <div className='space-y-2'>
                   <div className='flex items-center gap-2'>
-                    <File className='h-4 w-4 text-gray-500' />
-                    <span className='text-sm font-medium text-gray-700'>Document</span>
+                    <File className='h-4 w-4 text-gray-500 dark:text-white' />
+                    <span className='text-sm font-medium text-gray-700 dark:text-white'>Document</span>
                   </div>
 
                   <div className='flex items-center gap-2'>
@@ -481,8 +381,8 @@ export const CreateBillModal = ({ onBillCreated }: CreateBillModalProps) => {
 
                 <div className='space-y-2'>
                   <div className='flex items-center gap-2'>
-                    <Image className='h-4 w-4 text-gray-500' />
-                    <span className='text-sm font-medium text-gray-700'>Image</span>
+                    <Image className='h-4 w-4 text-gray-500 dark:text-white' />
+                    <span className='text-sm font-medium text-gray-700 dark:text-white'>Image</span>
                   </div>
 
                   <div className='flex items-center gap-2'>
@@ -515,20 +415,6 @@ export const CreateBillModal = ({ onBillCreated }: CreateBillModalProps) => {
               </div>
             </div>
           </div>
-
-          {/* Hidden fields for validation */}
-          <input
-            type='hidden'
-            {...register('assetName')}
-          />
-          <input
-            type='hidden'
-            {...register('categoryName')}
-          />
-          <input
-            type='hidden'
-            {...register('cost', { valueAsNumber: true })}
-          />
 
           <DialogFooter className='flex gap-2'>
             <Button

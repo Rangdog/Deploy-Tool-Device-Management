@@ -254,9 +254,9 @@ export const BillPrintLayout = ({ bill }: BillPrintLayoutProps) => {
                 <InfoRow
                   icon={Shield}
                   label='Status'
-                  value={bill.status}
+                  value={bill.status || 'Unpaid'}
                   badge={true}
-                  badgeClassName={getStatusColor(bill.status)}
+                  badgeClassName={getStatusColor(bill.status || 'Unpaid')}
                 />
                 <InfoRow
                   icon={DollarSign}

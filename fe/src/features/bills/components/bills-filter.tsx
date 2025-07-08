@@ -53,8 +53,8 @@ export const BillsFilter = ({ filters, setFilters, onReset }: BillsFilterProps) 
   }, [])
 
   const statusOptions = [
-    { id: 'Unpaid', categoryName: 'Unpaid' },
-    { id: 'Paid', categoryName: 'Paid' },
+    { id: 'Unpaid', statusName: 'Unpaid' },
+    { id: 'Paid', statusName: 'Paid' },
   ]
 
   const hasActiveFilters = Object.values(filters).some((value) => value !== null && value !== '')
@@ -75,7 +75,7 @@ export const BillsFilter = ({ filters, setFilters, onReset }: BillsFilterProps) 
               value={filters.billNumber || ''}
               onChange={(e) => setFilters({ ...filters, billNumber: e.target.value || '' })}
               placeholder='Search by bill number...'
-              className='h-9'
+              className='mt-2 h-9'
             />
           </div>
 
@@ -86,7 +86,7 @@ export const BillsFilter = ({ filters, setFilters, onReset }: BillsFilterProps) 
               onValueChange={(value) => setFilters({ ...filters, categoryId: value || null })}
               disabled={isLoading}
             >
-              <SelectTrigger className='h-10'>
+              <SelectTrigger className='mt-2 h-10'>
                 <SelectValue placeholder='Select category' />
               </SelectTrigger>
               <SelectContent>
@@ -106,9 +106,9 @@ export const BillsFilter = ({ filters, setFilters, onReset }: BillsFilterProps) 
             <label className='text-sm font-medium'>Status</label>
             <Select
               value={filters.status || ''}
-              onValueChange={(value) => setFilters({ ...filters, status: value || null })}
+              onValueChange={(value) => setFilters({ ...filters, status: value as 'Unpaid' | 'Paid' | null })}
             >
-              <SelectTrigger className='h-10'>
+              <SelectTrigger className='mt-2 h-10'>
                 <SelectValue placeholder='Select status' />
               </SelectTrigger>
               <SelectContent>
@@ -117,7 +117,7 @@ export const BillsFilter = ({ filters, setFilters, onReset }: BillsFilterProps) 
                     key={option.id}
                     value={option.id}
                   >
-                    {option.categoryName}
+                    {option.statusName}
                   </SelectItem>
                 ))}
               </SelectContent>
