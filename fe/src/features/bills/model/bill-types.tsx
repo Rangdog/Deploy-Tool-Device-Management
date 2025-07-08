@@ -4,7 +4,7 @@ export interface BillType {
   assetId: number
   description: string
   status: 'Unpaid' | 'Paid'
-  categoryId?: number
+  // categoryId?: number
   companyId: number
   amount: number
   createdBy: number
@@ -44,9 +44,9 @@ export interface BillType {
 
 export type CreateBillRequest = {
   assetId: number
-  cost: number
+  // cost: number
   description: string
-  categoryId?: number
+  // categoryId?: number
   status?: string
   fileAttachment?: File
   imageUpload?: File
@@ -56,7 +56,7 @@ export interface BillFilterType {
   billNumber: string | ''
   categoryId: string | null
   companyId: string | null
-  status: string | null
+  status: 'Unpaid' | 'Paid' | null
 }
 
 export interface MonthlyBillSummary {

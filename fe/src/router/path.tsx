@@ -23,6 +23,7 @@ import { ProtectedRoute, AuthRoute } from './auth-guard'
 import { BillsManagement } from '@/features/bills'
 import Layout from '@/layout/layout'
 import { AssignDepartmentForUserPage, AssignRoleForUserPage, EditProfilePage } from '@/pages/user'
+import BillDetailPage from '@/pages/bills/bill-detail-page'
 
 export const router = createBrowserRouter([
   {
@@ -134,6 +135,10 @@ export const router = createBrowserRouter([
             path: 'bills',
             element: <BillsManagement />,
           },
+          {
+            path: 'bills/:billNumber',
+            element: <BillDetailPage />,
+          },
         ],
       },
     ],
@@ -166,6 +171,7 @@ export const AppPaths = {
   STATISTICS_REPORTS: '/statistics-reports',
   ASSETS: '/assets',
   BILLS: '/bills',
+  BILL_DETAIL: '/bills/:billNumber',
   ASSET_COMPARISON: '/assets/asset-comparison',
   CREATE_ASSET: '/assets/create-asset',
   ASSIGNMENTS: '/assignments',

@@ -12,12 +12,15 @@ import { BillDetailModal } from './components/bill-detail-modal'
 import type { BillType, BillFilterType } from './model/bill-types'
 import { tryCatch } from '@/utils'
 import Cookies from 'js-cookie'
+import { useSearchParams } from 'react-router-dom'
 
 export const BillsManagement = () => {
   const [bills, setBills] = useState<BillType[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [selectedBill, setSelectedBill] = useState<BillType | null>(null)
   const [showBillDetail, setShowBillDetail] = useState(false)
+  const [searchParams, setSearchParams] = useSearchParams()
+  console.log('🚀 ~ BillsManagement ~ searchParams:', searchParams)
 
   const currentUser = useAppSelector((state) => state.auth.user)
 
@@ -76,6 +79,7 @@ export const BillsManagement = () => {
 
           return {
             ...bill,
+            status: bill.status || 'Unpaid',
             createdAt: bill.createdAt || new Date().toISOString(),
             updatedAt: bill.updatedAt || new Date().toISOString(),
             asset: assetData,
@@ -99,7 +103,13 @@ export const BillsManagement = () => {
   useEffect(() => {
     fetchBills()
   }, [debouncedFilters])
-
+  useEffect(() => {
+    const params: any = {}
+    if (filters.billNumber) params.billNumber = filters.billNumber
+    if (filters.categoryId) params.categoryId = filters.categoryId
+    if (filters.status) params.status = filters.status
+    setSearchParams(params)
+  }, [filters])
   const handleResetFilters = () => {
     setFilters({
       billNumber: '',
@@ -207,8 +217,8 @@ export const BillsManagement = () => {
   }
 
   const totalCost = bills.reduce((sum, bill) => sum + (bill.assets?.cost || bill.amount || 0), 0)
-  const unpaidCount = bills.filter((b) => b.status === 'Unpaid').length
-  const paidCount = bills.filter((b) => b.status === 'Paid').length
+  const unpaidCount = bills.filter((bill) => bill.status === 'Unpaid').length
+  const paidCount = bills.filter((bill) => bill.status === 'Paid').length
   const highestBill = bills.length
     ? bills.reduce((max, bill) =>
         (bill.assets?.cost || bill.amount || 0) > (max.assets?.cost || max.amount || 0) ? bill : max
@@ -222,6 +232,12 @@ export const BillsManagement = () => {
         (bill.assets?.cost || bill.amount || 0) < (min.assets?.cost || min.amount || 0) ? bill : min
       )
     : null
+  const handleBillUpdated = (updatedBillNumber: string) => {
+    setBills((currentBills) =>
+      currentBills.map((bill) => (bill.billNumber === updatedBillNumber ? { ...bill, status: 'Paid' } : bill))
+    )
+  }
+
   return (
     <div className='space-y-4 p-4 sm:space-y-6 sm:p-6'>
       <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
@@ -276,6 +292,9 @@ export const BillsManagement = () => {
           </CardHeader>
           <CardContent>
             <div className='text-2xl font-bold text-red-600'>{unpaidCount}</div>
+            <p className='text-muted-foreground truncate text-xs'>
+              {bills.length > 0 ? `${((unpaidCount / bills.length) * 100).toFixed(1)}% of total bills` : 'No bills'}
+            </p>
           </CardContent>
           <div className='absolute bottom-0 left-0 h-1 w-full bg-red-500' />
         </Card>
@@ -289,6 +308,9 @@ export const BillsManagement = () => {
           </CardHeader>
           <CardContent>
             <div className='text-2xl font-bold text-green-600'>{paidCount}</div>
+            <p className='text-muted-foreground truncate text-xs'>
+              {bills.length > 0 ? `${((paidCount / bills.length) * 100).toFixed(1)}% of total bills` : 'No bills'}
+            </p>
           </CardContent>
           <div className='absolute bottom-0 left-0 h-1 w-full bg-green-500' />
         </Card>
@@ -348,6 +370,7 @@ export const BillsManagement = () => {
         bills={bills}
         onViewBill={handleViewBill}
         isLoading={isLoading}
+        onStatusChange={handleBillUpdated}
       />
 
       <BillDetailModal
