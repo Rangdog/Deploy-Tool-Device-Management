@@ -1,41 +1,35 @@
-Device Manager
+# Device Manager
 
-📝 Mô tả
+## 📝 Mô tả
 
 Device Manager là dự án quản lý thiết bị, sử dụng:
 
-Go + Gin
+- Go + Gin
+- PostgreSQL (GORM migrate)
+- Redis
+- JWT Authentication
+- Robfig cron
+- Goroutine + channel
 
-PostgreSQL (GORM migrate)
+Deploy trên **Railway**.
 
-Redis
+---
 
-JWT Authentication
+## 🚀 Tech stack
 
-Robfig cron
+- Go v1.xx
+- Gin – HTTP framework
+- GORM – ORM cho PostgreSQL
+- Redis – Cache, pubsub
+- Robfig cron – Scheduler jobs
+- JWT – Authentication
+- Docker + Railway
 
-Goroutine + channel
+---
 
-Deploy trên Railway.
+## 📁 Cấu trúc thư mục
 
-🚀 Tech stack
-
-Go v1.xx
-
-Gin – HTTP framework
-
-GORM – ORM cho PostgreSQL
-
-Redis – Cache, pubsub
-
-Robfig cron – Scheduler jobs
-
-JWT – Authentication
-
-Docker + Railway
-
-📁 Cấu trúc thư mục
-
+```
 .
 ├── .github/workflows/   # CI/CD workflows
 ├── .vscode/             # VSCode config
@@ -57,9 +51,13 @@ Docker + Railway
 ├── Dockerfile
 ├── go.mod
 └── go.sum
+```
 
-⚙️ Cài đặt
+---
 
+## ⚙️ Cài đặt
+
+```bash
 # Clone repo
 git clone https://github.com/Khalac/Tool-Device-Management
 cd be
@@ -69,88 +67,95 @@ go mod tidy
 
 # Chạy ứng dụng
 go run cmd/server/main.go
+```
 
 Hoặc chạy bằng Docker:
 
+```bash
 docker build -t device-manager .
 docker run -p 8080:8080 device-manager
+```
 
-🔧 API Overview
+---
 
-(Danh sách API rút gọn để tránh dài, có thể copy từ phần trên khi cần)
+## 🔧 API Overview
 
-✅ Database Migration
+*(Danh sách API rút gọn để tránh dài, có thể copy từ phần trên khi cần)*
 
-Sử dụng GORM AutoMigrate trong config/db.go hoặc main.go:
+---
 
+## ✅ Database Migration
+
+Sử dụng **GORM AutoMigrate** trong `config/db.go` hoặc `main.go`:
+
+```go
 db.AutoMigrate(&entity.Device{}, &entity.User{}, ...)
+```
 
-🔄 Cron Jobs
+---
 
-Được định nghĩa trong package cron/, sử dụng:
+## 🔄 Cron Jobs
 
+Được định nghĩa trong package `cron/`, sử dụng:
+
+```go
 import "github.com/robfig/cron/v3"
+```
 
 Ví dụ: cron chạy mỗi 5 phút cập nhật trạng thái thiết bị.
 
-🧵 Concurrency
+---
 
-Dự án sử dụng goroutine + channel cho worker pool xử lý đồng thời. Các implement concurrency nằm trong internal/service/ hoặc pkg/.
+## 🧵 Concurrency
 
-🔐 Environment Variables
+Dự án sử dụng **goroutine + channel** cho worker pool xử lý đồng thời. Các implement concurrency nằm trong `internal/service/` hoặc `pkg/`.
 
-Key
+---
 
-Mô tả
+## 🔐 Environment Variables
 
-PORT
+| Key          | Mô tả              |
+| ------------ | ------------------ |
+| PORT         | Cổng server        |
+| DB\_USER     | Database username  |
+| DB\_PASSWORD | Database password  |
+| DB\_NAME     | Tên database       |
+| DB\_HOST     | Địa chỉ DB         |
+| REDIS\_URL   | Redis URL          |
+| JWT\_SECRET  | Secret key cho JWT |
 
-Cổng server
+Tạo file `.env` dựa trên `.env.template`.
 
-DB_USER
+---
 
-Database username
+## 🛠️ Testing
 
-DB_PASSWORD
-
-Database password
-
-DB_NAME
-
-Tên database
-
-DB_HOST
-
-Địa chỉ DB
-
-REDIS_URL
-
-Redis URL
-
-JWT_SECRET
-
-Secret key cho JWT
-
-Tạo file .env dựa trên .env.template.
-
-🛠️ Testing
-
+```bash
 go test ./...
+```
 
-✨ Deploy
+---
 
-Deploy bằng Railway:
+## ✨ Deploy
 
-Kết nối GitHub repo
+Deploy bằng **Railway**:
 
-Thiết lập environment variables theo .env.template
+1. Kết nối GitHub repo
+2. Thiết lập environment variables theo `.env.template`
+3. Railway auto build & deploy container
 
-Railway auto build & deploy container
+---
 
-📄 License
+## 📄 License
 
 MIT
 
-🤝 Contributing
+---
+
+## 🤝 Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+---
+
+
