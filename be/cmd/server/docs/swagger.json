@@ -961,7 +961,7 @@
                 "summary": "Create bill",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Asset ID",
                         "name": "assetId",
                         "in": "formData",
@@ -974,7 +974,7 @@
                         "in": "formData"
                     },
                     {
-                        "type": "boolean",
+                        "type": "string",
                         "description": "Description",
                         "name": "status",
                         "in": "formData",

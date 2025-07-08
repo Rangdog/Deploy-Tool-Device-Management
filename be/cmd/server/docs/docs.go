@@ -972,7 +972,7 @@ const docTemplate = `{
                 "summary": "Create bill",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Asset ID",
                         "name": "assetId",
                         "in": "formData",
@@ -985,7 +985,7 @@ const docTemplate = `{
                         "in": "formData"
                     },
                     {
-                        "type": "boolean",
+                        "type": "string",
                         "description": "Description",
                         "name": "status",
                         "in": "formData",

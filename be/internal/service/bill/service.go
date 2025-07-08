@@ -24,7 +24,7 @@ func NewBillService(repo bill.BillsRepository, assetRepo assets.AssetsRepository
 	return &BillsService{repo: repo, assetRepo: assetRepo, userRepo: userRepo}
 }
 
-func (service *BillsService) Create(userId int64, assetId int64, description string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, status bool) (*entity.Bill, error) {
+func (service *BillsService) Create(userId int64, assetId int64, description string, image *multipart.FileHeader, fileAttachment *multipart.FileHeader, status string) (*entity.Bill, error) {
 	uploader := utils.NewSupabaseUploader()
 	var imageUrl string
 	var fileUrl string
@@ -60,12 +60,6 @@ func (service *BillsService) Create(userId int64, assetId int64, description str
 	if err != nil {
 		return nil, err
 	}
-	var statusStr string
-	if status {
-		statusStr = "Paid"
-	} else {
-		statusStr = "UnPaid"
-	}
 	bill := entity.Bill{
 		AssetId:            assetId,
 		Description:        description,
@@ -75,7 +69,7 @@ func (service *BillsService) Create(userId int64, assetId int64, description str
 		CompanyId:          asset.CompanyId,
 		FileAttachmentBill: &fileUrl,
 		ImageUploadBill:    &imageUrl,
-		StatusBill:         statusStr,
+		StatusBill:         status,
 	}
 	billCreate, err := service.repo.Create(&bill)
 	if err != nil {

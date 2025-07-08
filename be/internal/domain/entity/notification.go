@@ -6,7 +6,7 @@ type Notifications struct {
 	Id         int64      `gorm:"primaryKey;autoIncrement" json:"id"`
 	Content    *string    `json:"content"`
 	Status     *string    `json:"status"`
-	UserId     *int64     `json:"userId"`
+	UserId     *int64     `gorm:"index" json:"userId"`
 	Type       *string    `json:"type"`
 	AssetId    *int64     `json:"assetId"`
 	NotifyDate *time.Time `json:"notifyDate"`

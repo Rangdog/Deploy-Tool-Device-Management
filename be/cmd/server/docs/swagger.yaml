@@ -811,7 +811,7 @@ paths:
         in: formData
         name: assetId
         required: true
-        type: integer
+        type: string
       - description: Description
         in: formData
         name: description
@@ -820,7 +820,7 @@ paths:
         in: formData
         name: status
         required: true
-        type: boolean
+        type: string
       - description: File to upload
         in: formData
         name: file

@@ -26,9 +26,9 @@ func NewBillHandler(service *service.BillsService) *BillsHandler {
 // @Tags         Bills
 // @Accept       json
 // @Produce      json
-// @Param assetId formData int true "Asset ID"
+// @Param assetId formData string true "Asset ID"
 // @Param description formData string false "Description"
-// @Param status formData bool true "Description"
+// @Param status formData string true "Description"
 // @Param file formData file false "File to upload"
 // @Param image formData file false "Image to upload"
 // @param Authorization header string true "Authorization"
@@ -39,6 +39,7 @@ func NewBillHandler(service *service.BillsService) *BillsHandler {
 // @Security JWT
 func (h *BillsHandler) Create(c *gin.Context) {
 	defer pkg.PanicHandler(c)
+	var status string
 	assetIdStr := c.PostForm("assetId")
 	description := c.PostForm("description")
 	statusStr := c.PostForm("status")
@@ -47,8 +48,10 @@ func (h *BillsHandler) Create(c *gin.Context) {
 		log.Info("Error: ", err.Error())
 		pkg.PanicExeption(constant.InvalidRequest, "Invalid assetId format")
 	}
-	status, err := utils.ParseStrToBool(statusStr)
-	if err != nil {
+	// handler status string
+	if statusStr == "Unpaid" || statusStr == "Paid" {
+		status = statusStr
+	} else {
 		log.Info("Error: ", err.Error())
 		pkg.PanicExeption(constant.InvalidRequest, "Invalid status format")
 	}
