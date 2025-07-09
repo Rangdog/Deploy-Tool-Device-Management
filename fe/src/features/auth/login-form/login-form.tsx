@@ -2,7 +2,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { type DataLoginType, loginSchema } from './model/schema'
 import { Form, FormButtonSubmit, FormInput } from '@/components/ui'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useAppDispatch } from '@/hooks'
 import { logIn } from '../slice'
@@ -23,6 +23,9 @@ const LoginForm = () => {
       rememberMe: false,
     },
   })
+  const location = useLocation()
+  const params = new URLSearchParams(location.search)
+  const redirectPath = params.get('redirect')
 
   const onSubmit = async (data: DataLoginType) => {
     setIsPending(true)
@@ -39,7 +42,7 @@ const LoginForm = () => {
     Cookies.set('accessToken', result.data.access_token)
     Cookies.set('refreshToken', result.data.refresh_token)
     toast.success('Login successfully')
-    navigate('/')
+    navigate(redirectPath || '/', { replace: true })
     setIsPending(false)
   }
   return (
