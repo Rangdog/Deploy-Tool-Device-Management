@@ -35,10 +35,14 @@ interface AssetWithCategory {
   id: string
   assetName: string
   cost: number
-  status: string
+  status: 'New' | 'In Use' | 'Under Maintenance' | 'Retired' | 'Disposed'
   category: {
     id: number
     categoryName: string
+  }
+  department: {
+    id: number
+    departmentName: string
   }
 }
 
@@ -67,7 +71,7 @@ export const CreateBillModal = ({ onBillCreated }: CreateBillModalProps) => {
     defaultValues: {
       assetId: '',
       description: '',
-      status: 'Unpaid',
+      statusBill: 'Unpaid',
       fileAttachment: '',
       imageUpload: '',
     },
@@ -93,8 +97,9 @@ export const CreateBillModal = ({ onBillCreated }: CreateBillModalProps) => {
               id: asset.id.toString(),
               assetName: asset.assetName,
               cost: asset.cost || 0,
-              status: asset.status || 'Active',
+              status: asset.status || 'New',
               category: asset.category || { id: 0, categoryName: 'No Category' },
+              department: asset.department || { id: 0, departmentName: 'No Department' },
             }))
             setAssets(mappedAssets)
           } else {
@@ -125,6 +130,7 @@ export const CreateBillModal = ({ onBillCreated }: CreateBillModalProps) => {
   }, [selectedAsset, assets, setValue])
 
   const selectedAssetData = selectedAsset ? assets.find((a) => a.id === selectedAsset) : null
+  console.log('🚀 ~ CreateBillModal ~ selectedAssetData:', selectedAssetData?.status)
 
   const handleFileUpload = (type: 'fileAttachment' | 'imageUpload', file: File | null) => {
     if (file) {
@@ -150,16 +156,15 @@ export const CreateBillModal = ({ onBillCreated }: CreateBillModalProps) => {
     }
   }
 
-  const getAssetStatusColor = (status: string) => {
+  const getAssetStatusColor = (status: 'New' | 'In Use' | 'Under Maintenance' | 'Retired' | 'Disposed') => {
     const colors = {
-      Active: 'bg-green-100 text-green-800',
-      Inactive: 'bg-gray-100 text-gray-800',
-      Maintenance: 'bg-yellow-100 text-yellow-800',
-      Retired: 'bg-red-100 text-red-800',
-      New: 'bg-blue-100 text-green-800',
-      'In Use': 'bg-green-100 text-blue-800',
+      New: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+      'In Use': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+      UnderMaintenance: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200',
+      Retired: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+      Disposed: 'bg-red-100 text-red-800',
     } as const
-    return colors[status as keyof typeof colors] || colors.Active
+    return colors[status as keyof typeof colors] || colors.New
   }
   console.log('🚀 ~ getAssetStatusColor ~ getAssetStatusColor:', getAssetStatusColor)
 
@@ -182,7 +187,7 @@ export const CreateBillModal = ({ onBillCreated }: CreateBillModalProps) => {
       const formValues: CreateBillRequest = {
         assetId: parseInt(data.assetId, 10),
         description: data.description,
-        status: data.status,
+        statusBill: data.statusBill,
         fileAttachment: selectedFiles.fileAttachment || undefined,
         imageUpload: selectedFiles.imageUpload || undefined,
       }
@@ -192,7 +197,7 @@ export const CreateBillModal = ({ onBillCreated }: CreateBillModalProps) => {
 
       formData.append('assetId', parseInt(data.assetId).toString())
       formData.append('description', data.description.trim())
-      formData.append('status', data.status)
+      formData.append('statusBill', data.statusBill)
       for (const [key, value] of formData.entries()) {
         console.log(`${key}:`, value)
       }
@@ -215,7 +220,7 @@ export const CreateBillModal = ({ onBillCreated }: CreateBillModalProps) => {
           assetId: parseInt(data.assetId),
           amount: selectedAssetData.cost,
           description: data.description,
-          status: data.status,
+          statusBill: data.statusBill,
           companyId: response.data?.data?.companyId || 1,
           createdBy: response.data?.data?.createdBy || 1,
           createAt: response.data?.data?.createdAt || new Date().toISOString(),
@@ -305,12 +310,75 @@ export const CreateBillModal = ({ onBillCreated }: CreateBillModalProps) => {
                 </Select>
                 {errors.assetId && <p className='text-sm text-red-500'>{errors.assetId.message}</p>}
               </div>
+              {selectedAssetData && (
+                <div className='bg-background space-y-3'>
+                  <Label className='mb-3'>Asset Information</Label>
+                  <div className='dark:bg-background space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-2.5 dark:border-gray-500'>
+                    <div className='flex items-center justify-between border-b border-gray-200 py-1.5 last:border-b-0 dark:border-gray-500'>
+                      <span className='text-sm font-medium text-gray-700 dark:text-white'>Asset Name:</span>
+                      <span
+                        className='max-w-[160px] truncate text-sm font-medium text-gray-900 dark:text-white'
+                        title={selectedAssetData.assetName}
+                      >
+                        {selectedAssetData.assetName}
+                      </span>
+                    </div>
 
+                    <div className='flex items-center justify-between border-b border-gray-200 py-1.5 last:border-b-0 dark:border-gray-500'>
+                      <span className='text-sm font-medium text-gray-700 dark:text-white'>Category:</span>
+                      <span className='text-sm font-medium text-gray-900 dark:text-white'>
+                        {selectedAssetData.category.categoryName}
+                      </span>
+                    </div>
+
+                    <div className='flex items-center justify-between border-b border-gray-200 py-1.5 last:border-b-0 dark:border-gray-500'>
+                      <span className='text-sm font-medium text-gray-700 dark:text-white'>Department:</span>
+                      <span className='text-sm font-medium text-gray-900 dark:text-white'>
+                        {selectedAssetData.department.departmentName}
+                      </span>
+                    </div>
+                    <div className='flex items-center justify-between border-b border-gray-200 py-1.5 last:border-b-0 dark:border-gray-500'>
+                      <span className='text-sm font-medium text-gray-700 dark:text-white'>Cost:</span>
+                      <span className='text-sm font-semibold text-green-600 dark:text-green-400'>
+                        ${selectedAssetData.cost.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className='flex items-center justify-between py-1.5 dark:border-gray-500'>
+                      <span className='text-sm font-medium text-gray-700 dark:text-white'>Status:</span>
+                      <span
+                        className={`flex items-center justify-center rounded-full px-3 py-0.5 text-xs font-semibold dark:text-white ${getAssetStatusColor(
+                          selectedAssetData.status
+                        )}`}
+                      >
+                        {selectedAssetData.status}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className='space-y-6'>
               <div className='space-y-2'>
-                <Label htmlFor='status'>Bill Status</Label>
+                <Label htmlFor='description'>Description *</Label>
+                <Input
+                  id='description'
+                  placeholder='Enter bill description...'
+                  className='h-9'
+                  {...register('description')}
+                />
+                {errors.description && <p className='text-sm text-red-500'>{errors.description.message}</p>}
+              </div>
+              <div className='space-y-2'>
+                <Label
+                  htmlFor='status'
+                  className='mb-3'
+                >
+                  Bill Status
+                </Label>
                 <Select
-                  value={watch('status')}
-                  onValueChange={(value) => setValue('status', value as any)}
+                  value={watch('statusBill')}
+                  onValueChange={(value) => setValue('statusBill', value as any)}
                 >
                   <SelectTrigger className='h-11 w-full'>
                     <SelectValue placeholder='Select status' />
@@ -326,22 +394,8 @@ export const CreateBillModal = ({ onBillCreated }: CreateBillModalProps) => {
                     ))}
                   </SelectContent>
                 </Select>
-                {errors.status && <p className='text-sm text-red-500'>{errors.status.message}</p>}
+                {errors.statusBill && <p className='text-sm text-red-500'>{errors.statusBill.message}</p>}
               </div>
-            </div>
-
-            <div className='space-y-6'>
-              <div className='space-y-2'>
-                <Label htmlFor='description'>Description *</Label>
-                <Input
-                  id='description'
-                  placeholder='Enter bill description...'
-                  className='h-9'
-                  {...register('description')}
-                />
-                {errors.description && <p className='text-sm text-red-500'>{errors.description.message}</p>}
-              </div>
-
               <div className='space-y-4'>
                 <Label>File Attachments (Optional)</Label>
 

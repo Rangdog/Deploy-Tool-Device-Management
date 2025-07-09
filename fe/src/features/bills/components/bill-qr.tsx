@@ -19,12 +19,12 @@ export const BillQR = ({ bill }: BillQRProps) => {
   }
 
   return (
-    <div className='flex h-[200px] w-full flex-col items-center justify-center rounded-md border border-dashed bg-gray-50'>
+    <div className='flex w-full flex-col items-center justify-center rounded-md border-dashed bg-gray-50 dark:bg-gray-800'>
       <QRCodeSVG
         value={billUrl}
-        size={80}
+        size={40}
       />
-      <p className='mt-2 px-2 text-center text-xs break-all text-gray-400'>{billUrl}</p>
+      {/* <p className='mt-2 px-2 text-center text-xs break-all text-gray-400'>{billUrl}</p> */}
     </div>
   )
 }

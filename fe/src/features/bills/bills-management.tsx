@@ -43,7 +43,7 @@ export const BillsManagement = () => {
     billNumber: '',
     categoryId: null,
     companyId: null,
-    status: null,
+    statusBill: null,
   })
 
   const debouncedFilters = useDebounce(filters, 500)
@@ -79,7 +79,7 @@ export const BillsManagement = () => {
 
           return {
             ...bill,
-            status: bill.status || 'Unpaid',
+            status: bill.status || 'Unpaid' || 'Paid',
             createdAt: bill.createdAt || new Date().toISOString(),
             updatedAt: bill.updatedAt || new Date().toISOString(),
             asset: assetData,
@@ -107,7 +107,7 @@ export const BillsManagement = () => {
     const params: any = {}
     if (filters.billNumber) params.billNumber = filters.billNumber
     if (filters.categoryId) params.categoryId = filters.categoryId
-    if (filters.status) params.status = filters.status
+    if (filters.statusBill) params.statusBill = filters.statusBill
     setSearchParams(params)
   }, [filters])
   const handleResetFilters = () => {
@@ -115,7 +115,7 @@ export const BillsManagement = () => {
       billNumber: '',
       categoryId: null,
       companyId: null,
-      status: null,
+      statusBill: null,
     })
   }
 
@@ -166,7 +166,7 @@ export const BillsManagement = () => {
       assetName: bill.assets?.assetName || 'N/A',
       description: bill.description,
       cost: bill.assets?.cost || bill.amount || 0,
-      status: bill.status,
+      status: bill.statusBill,
       categoryName: bill.assets?.category?.categoryName || 'N/A',
       createdBy: bill.creator?.fullName || 'Unknown',
       createdAt: new Date(bill.createAt).toLocaleDateString(),
@@ -217,8 +217,8 @@ export const BillsManagement = () => {
   }
 
   const totalCost = bills.reduce((sum, bill) => sum + (bill.assets?.cost || bill.amount || 0), 0)
-  const unpaidCount = bills.filter((bill) => bill.status === 'Unpaid').length
-  const paidCount = bills.filter((bill) => bill.status === 'Paid').length
+  const unpaidCount = bills.filter((bill) => bill.statusBill === 'Unpaid').length
+  const paidCount = bills.filter((bill) => bill.statusBill === 'Paid').length
   const highestBill = bills.length
     ? bills.reduce((max, bill) =>
         (bill.assets?.cost || bill.amount || 0) > (max.assets?.cost || max.amount || 0) ? bill : max
@@ -232,9 +232,10 @@ export const BillsManagement = () => {
         (bill.assets?.cost || bill.amount || 0) < (min.assets?.cost || min.amount || 0) ? bill : min
       )
     : null
-  const handleBillUpdated = (updatedBillNumber: string) => {
+  const handleBillUpdated = (updatedBillNumber: string, billId: number, newStatus: 'Unpaid' | 'Paid') => {
+    console.log('🚀 ~ handleBillUpdated ~ billId:', billId)
     setBills((currentBills) =>
-      currentBills.map((bill) => (bill.billNumber === updatedBillNumber ? { ...bill, status: 'Paid' } : bill))
+      currentBills.map((bill) => (bill.billNumber === updatedBillNumber ? { ...bill, statusBill: newStatus } : bill))
     )
   }
 
