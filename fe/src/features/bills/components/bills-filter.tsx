@@ -105,8 +105,8 @@ export const BillsFilter = ({ filters, setFilters, onReset }: BillsFilterProps) 
           <div className='space-y-2'>
             <label className='text-sm font-medium'>Status</label>
             <Select
-              value={filters.status || ''}
-              onValueChange={(value) => setFilters({ ...filters, status: value as 'Unpaid' | 'Paid' | null })}
+              value={filters.statusBill || ''}
+              onValueChange={(value) => setFilters({ ...filters, statusBill: value as 'Unpaid' | 'Paid' | null })}
             >
               <SelectTrigger className='mt-2 h-10'>
                 <SelectValue placeholder='Select status' />

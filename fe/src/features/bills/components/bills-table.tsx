@@ -70,25 +70,22 @@ export const BillsTable = ({ bills, isLoading, onStatusChange }: BillsTableProps
   console.log('🚀 ~ handlePrintBill ~ handlePrintBill:', handlePrintBill)
 
   const toggleBillStatus = (bill: BillType) => {
-    const newStatus = bill.status === 'Paid' ? 'Unpaid' : 'Paid'
+    const newStatus = bill.statusBill === 'Paid' ? 'Unpaid' : 'Paid'
     if (onStatusChange) {
-      console.log(`Updating bill ${bill.id} from ${bill.status} to ${newStatus}`)
+      console.log(`Updating bill ${bill.id} from ${bill.statusBill} to ${newStatus}`)
       onStatusChange(bill.billNumber, bill.id, newStatus)
       toast.success(`Bill ${bill.billNumber || `BILL-${bill.id}`} marked as ${newStatus}`)
     }
   }
+  console.log('🚀 ~ toggleBillStatus ~ toggleBillStatus:', toggleBillStatus)
 
-  const getStatusBadge = (status: string, bill: BillType) => {
+  const getStatusBadge = (status: string) => {
     const statusConfig = {
       Unpaid: {
-        variant: 'secondary',
-        color: 'bg-red-100 text-red-800 hover:bg-red-200 cursor-pointer transition-colors',
-        hoverText: 'Click to mark as Paid',
+        color: 'bg-red-100 text-red-800',
       },
       Paid: {
-        variant: 'success',
-        color: 'bg-green-100 text-green-800 hover:bg-green-200 cursor-pointer transition-colors',
-        hoverText: 'Click to mark as Unpaid',
+        color: 'bg-green-100 text-green-800',
       },
     } as const
 
@@ -97,10 +94,8 @@ export const BillsTable = ({ bills, isLoading, onStatusChange }: BillsTableProps
     return (
       <Badge
         className={config.color}
-        title={config.hoverText}
         onClick={(e) => {
           e.stopPropagation()
-          toggleBillStatus(bill)
         }}
       >
         {status || 'Unpaid'}
@@ -150,6 +145,13 @@ export const BillsTable = ({ bills, isLoading, onStatusChange }: BillsTableProps
   const handleStatusUpdate = async () => {
     if (!selectedBill) return
 
+    if (selectedBill.statusBill === 'Paid') {
+      toast.error('Cannot update status of paid bills')
+      setShowConfirmModal(false)
+      setSelectedBill(null)
+      return
+    }
+
     setUpdatingStatus(true)
     try {
       await updateBillStatus(selectedBill.billNumber, 'Paid')
@@ -192,7 +194,7 @@ export const BillsTable = ({ bills, isLoading, onStatusChange }: BillsTableProps
       header: 'Description',
       cell: ({ row }: any) => (
         <div
-          className='max-w-[200px] truncate'
+          className='w-[100px] truncate'
           title={row.original.description}
         >
           {row.original.description || 'No description'}
@@ -209,13 +211,13 @@ export const BillsTable = ({ bills, isLoading, onStatusChange }: BillsTableProps
     {
       accessorKey: 'status',
       header: 'Status',
-      cell: ({ row }: any) => getStatusBadge(row.original.status, row.original),
+      cell: ({ row }: any) => getStatusBadge(row.original.statusBill),
     },
     {
       accessorKey: 'createAt',
       header: 'Created Date',
       cell: ({ row }: any) => (
-        <div className='text-muted-foreground flex items-center gap-1 text-sm'>
+        <div className='flex items-center gap-1 text-sm dark:text-white'>
           <Calendar className='h-3 w-3' />
           {formatDate(row.original.createAt)}
         </div>
@@ -226,6 +228,7 @@ export const BillsTable = ({ bills, isLoading, onStatusChange }: BillsTableProps
       header: 'Actions',
       cell: ({ row }: any) => {
         const bill = row.original
+        const isPaid = bill.statusBill === 'Paid'
 
         return (
           <div className='flex items-center gap-2'>
@@ -241,17 +244,24 @@ export const BillsTable = ({ bills, isLoading, onStatusChange }: BillsTableProps
               <Eye className='h-4 w-4' />
             </Button>
 
-            <Button
-              variant='outline'
-              size='sm'
-              onClick={() => {
-                setSelectedBill(bill)
-                setShowConfirmModal(true)
-              }}
-              title={`Mark as ${bill.status === 'Paid' ? 'Unpaid' : 'Paid'}`}
+            <div
+              className='group relative'
+              title={isPaid ? 'Bills that have been paid cannot be updated' : ''}
             >
-              <Edit className='h-4 w-4' />
-            </Button>
+              <Button
+                variant='outline'
+                size='sm'
+                onClick={() => {
+                  setSelectedBill(bill)
+                  setShowConfirmModal(true)
+                }}
+                title='Update Status'
+                disabled={isPaid}
+                className={` ${isPaid ? 'cursor-not-allowed opacity-50' : ''} group-hover:relative`}
+              >
+                <Edit className='h-4 w-4' />
+              </Button>
+            </div>
 
             <BillPrintButton bill={bill} />
           </div>

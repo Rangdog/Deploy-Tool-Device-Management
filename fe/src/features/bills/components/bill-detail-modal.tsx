@@ -1,36 +1,7 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  Badge,
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-  Button,
-} from '@/components/ui'
-import {
-  Receipt,
-  Calendar,
-  FileText,
-  Building2,
-  Tag,
-  User,
-  Mail,
-  Hash,
-  Shield,
-  Paperclip,
-  Image as ImageIcon,
-  QrCode,
-  Package,
-  Clock,
-  AlertCircle,
-  ExternalLink,
-  Edit,
-} from 'lucide-react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, Badge } from '@/components/ui'
+import { Receipt, Paperclip, Image as ImageIcon } from 'lucide-react'
 import type { BillType } from '../model/bill-types'
 import { BillQR } from './bill-qr'
-import { toast } from 'sonner'
 
 interface BillDetailModalProps {
   bill: BillType | null
@@ -39,38 +10,39 @@ interface BillDetailModalProps {
   onStatusChange?: (billId: number, newStatus: 'Unpaid' | 'Paid') => void
 }
 
-export const BillDetailModal = ({ bill, open, onClose, onStatusChange }: BillDetailModalProps) => {
+export const BillDetailModal = ({ bill, open, onClose }: BillDetailModalProps) => {
   if (!bill) return null
-  const toggleStatus = () => {
-    if (bill && onStatusChange) {
-      const newStatus = bill.status === 'Paid' ? 'Unpaid' : 'Paid'
-      onStatusChange(bill.id, newStatus)
-      toast.success(`Bill marked as ${newStatus}`)
-    }
-  }
+
+  // const toggleStatus = () => {
+  //   if (bill && onStatusChange) {
+  //     const newStatus = bill.statusBill === 'Paid' ? 'Unpaid' : 'Paid'
+  //     onStatusChange(bill.id, newStatus)
+  //     toast.success(`Bill marked as ${newStatus}`)
+  //   }
+  // }
 
   const getStatusColor = (status: string) => {
     const colors = {
-      Unpaid: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
+      Unpaid: 'bg-red-100 text-red-800 dark:bg-red-400 dark:text-red-700',
       Paid: 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-200',
     } as const
     return colors[status as keyof typeof colors] || colors.Unpaid
   }
 
-  const formatDate = (dateString: string) => {
-    try {
-      if (!dateString) return 'N/A'
-      return new Date(dateString).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      })
-    } catch {
-      return 'N/A'
-    }
-  }
+  // const formatDate = (dateString: string) => {
+  //   try {
+  //     if (!dateString) return 'N/A'
+  //     return new Date(dateString).toLocaleDateString('en-US', {
+  //       year: 'numeric',
+  //       month: 'short',
+  //       day: 'numeric',
+  //       hour: '2-digit',
+  //       minute: '2-digit',
+  //     })
+  //   } catch {
+  //     return 'N/A'
+  //   }
+  // }
 
   const formatDateShort = (dateString: string) => {
     try {
@@ -99,7 +71,6 @@ export const BillDetailModal = ({ bill, open, onClose, onStatusChange }: BillDet
     }
     return bill.amount || 0
   }
-  console.log('🚀 ~ getAssetCost ~ getAssetCost:', getAssetCost)
 
   const handleOpenChange = (newOpen: boolean) => {
     if (!newOpen) {
@@ -107,34 +78,33 @@ export const BillDetailModal = ({ bill, open, onClose, onStatusChange }: BillDet
     }
   }
 
-  const getCreatorInitials = () => {
-    const name = bill.creator?.fullName || 'Unknown User'
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2)
-  }
+  // const getCreatorInitials = () => {
+  //   const name = bill.creator?.fullName || 'Unknown User'
+  //   return name
+  //     .split(' ')
+  //     .map((n) => n[0])
+  //     .join('')
+  //     .toUpperCase()
+  //     .slice(0, 2)
+  // }
 
-  const isWarrantyExpired = (warrantyDate?: string) => {
-    if (!warrantyDate) return false
-    return new Date(warrantyDate) < new Date()
-  }
+  // const isWarrantyExpired = (warrantyDate?: string) => {
+  //   if (!warrantyDate) return false
+  //   return new Date(warrantyDate) < new Date()
+  // }
 
-  const getLastUpdated = () => {
-    if (!bill.updateAt || bill.updateAt === bill.createAt) {
-      return bill.createAt
-    }
-    return bill.updateAt
-  }
+  // const getLastUpdated = () => {
+  //   if (!bill.updateAt || bill.updateAt === bill.createAt) {
+  //     return bill.createAt
+  //   }
+  //   return bill.updateAt
+  // }
+
   const hasFileAttachment = () => {
-    console.log('🚀 ~ hasFileAttachment ~ hasFileAttachment:', hasFileAttachment)
     return bill.fileAttachment && bill.fileAttachment.trim() !== '' && bill.fileAttachment !== 'null'
   }
 
   const hasImageUpload = () => {
-    console.log('🚀 ~ hasImageUpload ~ hasImageUpload:', hasImageUpload)
     return bill.imageUpload && bill.imageUpload.trim() !== '' && bill.imageUpload !== 'null'
   }
 
@@ -147,41 +117,67 @@ export const BillDetailModal = ({ bill, open, onClose, onStatusChange }: BillDet
       }
     }
   }
-  console.log('🚀 ~ openFile ~ openFile:', openFile)
-  const InfoRow = ({
-    icon: Icon,
-    label,
-    value,
-    valueClassName = '',
-    badge = false,
-    badgeClassName = '',
-  }: {
-    icon: any
-    label: string
-    value: string | number
-    valueClassName?: string
-    badge?: boolean
-    badgeClassName?: string
-  }) => (
-    <div className='flex items-start gap-3 border-b border-gray-100 py-3 last:border-b-0 dark:border-gray-700'>
-      <Icon className='mt-0.5 h-4 w-4 text-gray-500 dark:text-gray-400' />
-      <div className='text-sm text-gray-700 dark:text-gray-300'>
-        <span className='font-medium'>{label}: </span>
-        {badge ? (
-          <Badge
-            className={`${badgeClassName} ml-1`}
-            variant='outline'
-          >
-            {value}
-          </Badge>
-        ) : (
-          <span className={`text-gray-900 dark:text-gray-100 ${valueClassName}`}>{value}</span>
-        )}
-      </div>
-    </div>
-  )
 
-  console.log('🚀 ~ BillDetailModal ~ status:', status)
+  // const InfoRow = ({
+  //   label,
+  //   value,
+  //   valueClassName = '',
+  //   badge = false,
+  //   badgeClassName = '',
+  // }: {
+  //   label: string
+  //   value: string | number
+  //   valueClassName?: string
+  //   badge?: boolean
+  //   badgeClassName?: string
+  // }) => (
+  //   <div className='flex items-start gap-3 border-gray-100 py-3 last:border-b-0 dark:border-gray-700'>
+  //     <div className='text-sm text-gray-700 dark:text-gray-300'>
+  //       <span className='font-medium'>{label}: </span>
+  //       {badge ? (
+  //         <Badge
+  //           className={`${badgeClassName} ml-1`}
+  //           variant='outline'
+  //         >
+  //           {value}
+  //         </Badge>
+  //       ) : (
+  //         <span className={`text-gray-900 dark:text-gray-100 ${valueClassName}`}>{value}</span>
+  //       )}
+  //     </div>
+  //   </div>
+  // )
+
+  const sellerInfo = {
+    companyName: 'SUNRISE SOFTWARE SOLUTIONS CORPORATION',
+    taxCode: '0305089644',
+    address: '307/12 Nguyen Van Troi, Ward 1, Tan Binh District, HCMC, Viet Nam',
+    phoneNumber: '028-35471411',
+    accountNumber: '1982738238232',
+  }
+
+  const buyerInfo = {
+    name: bill.creator?.fullName || 'John Doe',
+    taxCode: '',
+    address: '533/8 Nguyen Tri Phuong, Ward 8, District 10, Ho Chi Minh City',
+    phoneNumber: '032-35471411',
+    accountNumber: '4568239472356',
+    paymentMethod: 'Bank Transfer',
+  }
+
+  const items = [
+    {
+      stt: 1,
+      assetName: getAssetName(),
+      category: getCategoryName(),
+      quantity: 1,
+      unitPrice: getAssetCost(),
+      amount: getAssetCost(),
+    },
+  ]
+
+  const totalAmount = items.reduce((sum, item) => sum + item.amount, 0)
+
   return (
     <Dialog
       open={open}
@@ -193,269 +189,226 @@ export const BillDetailModal = ({ bill, open, onClose, onStatusChange }: BillDet
           <div className='flex items-center justify-between'>
             <DialogTitle className='flex items-center gap-3 text-xl font-bold text-gray-900 dark:text-gray-100'>
               <Receipt className='h-5 w-5' />
-              Bill Details - {bill.billNumber}
+              SALES INVOICE - {bill.billNumber}
             </DialogTitle>
-            <Button
-              variant='outline'
-              size='sm'
-              onClick={toggleStatus}
-              className='flex items-center gap-2'
-            >
-              <Edit className='h-4 w-4' />
-              Mark as {bill.status === 'Paid' ? 'Unpaid' : 'Paid'}
-            </Button>
           </div>
         </DialogHeader>
 
         <div className='rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
-          <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
-            <div className='flex items-center gap-4'>
+          <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
+            <div className='flex-shrink-0'>
               <img
                 src='https://www.s3corp.com.vn/images/S3CORP.svg?w=128&q=75'
                 alt='Company Logo'
-                className='h-12 w-auto object-contain'
+                className='h-14 w-auto object-contain'
               />
+            </div>
+
+            <div className='flex flex-1 flex-col items-center justify-center text-center'>
+              <div className='bg-red-500 px-4 py-2 text-lg font-bold text-white'>SALES INVOICE</div>
+              <p className='mt-1 text-sm text-gray-700 dark:text-gray-300'>
+                Date: <span className='font-semibold'>{formatDateShort(bill.createAt)}</span>
+              </p>
+            </div>
+
+            <div className='flex items-start gap-4'>
+              <div className='flex flex-col items-end justify-between gap-1'>
+                <p className='text-sm text-gray-600 dark:text-gray-100'>
+                  Form No.: <span className='font-semibold'>2C24TTU</span>
+                </p>
+                <p className='text-sm text-gray-600 dark:text-gray-100'>
+                  Invoice No.: <span className='font-semibold'>{bill.billNumber}</span>
+                </p>
+              </div>
+
               <div>
-                <p className='text-lg font-bold text-gray-900 dark:text-gray-100'>S3Corp.</p>
-                <p className='text-sm text-gray-600 dark:text-gray-400'>
-                  307/12 Nguyen Van Troi, Ward 1, Tan Binh District, HCMC, Viet Nam
-                </p>
-                <p className='text-sm text-gray-600 dark:text-gray-400'>
-                  Email: info@s3corp.com.vn | (+84) 28 3547 1411
-                </p>
-              </div>
-            </div>
-
-            <div className='text-right text-sm text-gray-700 dark:text-gray-300'>
-              <p className='font-medium'>Printed on:</p>
-              <p>{formatDate(bill.createAt)}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className='grid grid-cols-1 gap-6 lg:grid-cols-4'>
-          <div className='space-y-6 lg:col-span-3'>
-            <div className='rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
-              <h3 className='mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100'>
-                <FileText className='h-5 w-5' />
-                General Information
-              </h3>
-              <div className='space-y-0'>
-                <InfoRow
-                  icon={Hash}
-                  label='Bill Number'
-                  value={bill.billNumber}
-                  valueClassName='font-mono font-medium'
-                />
-
-                <InfoRow
-                  icon={Calendar}
-                  label='Created At'
-                  value={formatDate(bill.createAt)}
-                />
-                <InfoRow
-                  icon={Clock}
-                  label='Last Updated'
-                  value={formatDate(getLastUpdated())}
-                />
-                <InfoRow
-                  icon={Shield}
-                  label='Status'
-                  value={bill.status || 'Unpaid'}
-                  badge={true}
-                  badgeClassName={getStatusColor(bill.status || 'Unpaid')}
-                />
-                {/* <InfoRow
-                  icon={DollarSign}
-                  label='Amount'
-                  value={`$${getAssetCost().toLocaleString()}`}
-                  valueClassName='font-bold text-green-600 dark:text-green-400'
-                /> */}
-                {bill.description && (
-                  <InfoRow
-                    icon={FileText}
-                    label='Description'
-                    value={bill.description}
-                    valueClassName='whitespace-pre-wrap break-words'
-                  />
-                )}
-              </div>
-            </div>
-
-            <div className='rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
-              <h3 className='mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100'>
-                <User className='h-5 w-5' />
-                Creator Information
-              </h3>
-              <div className='flex items-center gap-4'>
-                <Avatar className='h-12 w-12'>
-                  <AvatarImage
-                    src={bill.creator?.avatar}
-                    alt={bill.creator?.fullName}
-                  />
-                  <AvatarFallback className='bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-gray-100'>
-                    {getCreatorInitials()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className='flex-1'>
-                  <InfoRow
-                    icon={User}
-                    label='Full Name'
-                    value={bill.creator?.fullName || `User ${bill.createdBy}`}
-                    valueClassName='font-medium'
-                  />
-                  <InfoRow
-                    icon={Mail}
-                    label='Email'
-                    value={bill.creator?.email || 'Email not available'}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className='rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
-              <h3 className='mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100'>
-                <Package className='h-5 w-5' />
-                Asset Information
-              </h3>
-              <div className='space-y-0'>
-                <InfoRow
-                  icon={FileText}
-                  label='Asset Name'
-                  value={getAssetName()}
-                  valueClassName='font-medium'
-                />
-                {bill.assets?.serialNumber && (
-                  <InfoRow
-                    icon={Hash}
-                    label='Serial Number'
-                    value={bill.assets.serialNumber}
-                    valueClassName='font-mono'
-                  />
-                )}
-                <InfoRow
-                  icon={Tag}
-                  label='Category'
-                  value={getCategoryName()}
-                />
-                {/* <InfoRow
-                  icon={DollarSign}
-                  label='Cost'
-                  value={`$${getAssetCost().toLocaleString()}`}
-                /> */}
-                {bill.assets?.department && (
-                  <InfoRow
-                    icon={Building2}
-                    label='Department'
-                    value={bill.assets.department.departmentName}
-                  />
-                )}
-                {bill.assets?.status && (
-                  <InfoRow
-                    icon={Shield}
-                    label='Asset Status'
-                    value={bill.assets.status}
-                    badge={true}
-                    badgeClassName='bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-200'
-                  />
-                )}
-                {bill.assets?.purchaseDate && (
-                  <InfoRow
-                    icon={Calendar}
-                    label='Purchase Date'
-                    value={formatDateShort(bill.assets.purchaseDate)}
-                  />
-                )}
-                {bill.assets?.warrantyExpiry && (
-                  <InfoRow
-                    icon={Clock}
-                    label='Warranty Expiry'
-                    value={`${formatDateShort(bill.assets.warrantyExpiry)} ${isWarrantyExpired(bill.assets.warrantyExpiry) ? '(Expired)' : ''}`}
-                    valueClassName={
-                      isWarrantyExpired(bill.assets.warrantyExpiry) ? 'text-red-600 dark:text-red-400' : ''
-                    }
-                  />
-                )}
-              </div>
-            </div>
-
-            {(bill.fileAttachment || bill.imageUpload) && (
-              <div className='rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
-                <h3 className='mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100'>
-                  <Paperclip className='h-5 w-5' />
-                  File đính kèm
-                </h3>
-                <div className='space-y-0'>
-                  {bill.fileAttachment && (
-                    <InfoRow
-                      icon={FileText}
-                      label='Document'
-                      value={bill.fileAttachment}
-                      valueClassName='truncate max-w-xs'
-                    />
-                  )}
-                  {bill.imageUpload && (
-                    <InfoRow
-                      icon={ImageIcon}
-                      label='Image'
-                      value={bill.imageUpload}
-                      valueClassName='truncate max-w-xs'
-                    />
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className='lg:col-span-1'>
-            <div className='sticky top-4 rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
-              <h3 className='mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100'>
-                <QrCode className='h-5 w-5' />
-                QR Code
-              </h3>
-              <div className='text-center'>
                 <BillQR bill={bill} />
-                <div className='mt-3 space-y-1'>
-                  <p className='text-xs text-gray-500 dark:text-gray-400'>{bill.billNumber}</p>
-                  <a
-                    href={`${window.location.origin}/bills/${bill.billNumber}`}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300'
-                  >
-                    <ExternalLink className='h-3 w-3' />
-                    View Details
-                  </a>
-                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className='rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
-          <h3 className='mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100'>
-            <AlertCircle className='h-5 w-5 text-yellow-500' />
-            Notes / Remarks
+        <div className='rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800'>
+          <h3 className='mb-3 text-sm font-semibold text-gray-900 dark:text-gray-100'>
+            Seller: <span className='font-normal'>{sellerInfo.companyName}</span>
           </h3>
-          <p className='text-sm leading-relaxed text-gray-700 dark:text-gray-300'>
-            Please verify all information carefully. If there are any issues with the billing details, contact the
-            finance department within 3 business days.
-          </p>
+          <div className='grid grid-cols-1 gap-2 text-sm'>
+            <h3 className='font-semibold text-gray-900 dark:text-gray-100'>
+              Tax Code: <span className='font-normal'>{sellerInfo.taxCode}</span>
+            </h3>
+            <h3 className='font-semibold text-gray-900 dark:text-gray-100'>
+              Address: <span className='font-normal'>{sellerInfo.address}</span>
+            </h3>
+            <h3 className='font-semibold text-gray-900 dark:text-gray-100'>
+              Phone: <span className='font-normal'>{sellerInfo.phoneNumber}</span>
+            </h3>
+            <h3 className='border-b pb-2 font-semibold text-gray-900 dark:text-gray-100'>
+              Account No.: <span className='font-normal'>{sellerInfo.accountNumber}</span>
+            </h3>
+            <h3 className='mt-0.5 text-sm font-semibold text-gray-900 dark:text-gray-100'>
+              Buyer: <span className='font-normal'>{buyerInfo.name}</span>
+            </h3>
+            <h3 className='font-semibold text-gray-900 dark:text-gray-100'>
+              Tax Code: <span className='font-normal'>{buyerInfo.taxCode || '_________________'}</span>
+            </h3>
+            <h3 className='font-semibold text-gray-900 dark:text-gray-100'>
+              Address: <span className='font-normal'>{buyerInfo.address}</span>
+            </h3>
+            <h3 className='font-semibold text-gray-900 dark:text-gray-100'>
+              Phone: <span className='font-normal'>{buyerInfo.phoneNumber}</span>
+            </h3>
+            <h3 className='font-semibold text-gray-900 dark:text-gray-100'>
+              Account No.: <span className='font-normal'>{buyerInfo.accountNumber}</span>
+            </h3>
+            <h3 className='font-semibold text-gray-900 dark:text-gray-100'>
+              Payment Method: <span className='font-normal'>{buyerInfo.paymentMethod}</span>
+            </h3>
+          </div>
         </div>
 
-        <div className='rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
+        <div className='rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800'>
+          <div className='overflow-x-auto'>
+            <table className='w-full text-sm'>
+              <thead className='bg-gray-50 dark:bg-gray-700'>
+                <tr className='border-b dark:border-gray-600'>
+                  <th className='border-r px-3 py-2 text-center text-xs font-semibold text-gray-900 dark:border-gray-600 dark:text-gray-300'>
+                    No.
+                  </th>
+                  <th className='border-r px-3 py-2 text-center text-xs font-semibold text-gray-900 dark:border-gray-600 dark:text-gray-300'>
+                    Asset Name
+                  </th>
+                  <th className='border-r px-3 py-2 text-center text-xs font-semibold text-gray-900 dark:border-gray-600 dark:text-gray-300'>
+                    Category
+                  </th>
+                  <th className='border-r px-3 py-2 text-center text-xs font-semibold text-gray-900 dark:border-gray-600 dark:text-gray-300'>
+                    Quantity
+                  </th>
+                  <th className='border-r px-3 py-2 text-center text-xs font-semibold text-gray-900 dark:border-gray-600 dark:text-gray-300'>
+                    Unit Price
+                  </th>
+                  <th className='px-3 py-2 text-center text-xs font-semibold text-gray-900 dark:text-gray-300'>
+                    Amount
+                  </th>
+                </tr>
+              </thead>
+              <tbody className='bg-white dark:bg-gray-800'>
+                {items.map((item, index) => (
+                  <tr
+                    key={index}
+                    className='border-b dark:border-gray-600'
+                  >
+                    <td className='border-r px-3 py-2 text-center dark:border-gray-600'>{item.stt}</td>
+                    <td className='border-r px-3 py-2 text-center dark:border-gray-600'>{item.assetName}</td>
+                    <td className='border-r px-3 py-2 text-center dark:border-gray-600'>{item.category}</td>
+                    <td className='border-r px-3 py-2 text-center dark:border-gray-600'>{item.quantity}</td>
+                    <td className='border-r px-3 py-2 text-center dark:border-gray-600'>
+                      ${item.unitPrice.toLocaleString()}
+                    </td>
+                    <td className='px-3 py-2 text-center'>${item.amount.toLocaleString()}</td>
+                  </tr>
+                ))}
+                {[...Array(3)].map((_, index) => (
+                  <tr
+                    key={`empty-${index}`}
+                    className='border-b dark:border-gray-600'
+                  >
+                    <td className='border-r px-3 py-2 text-center dark:border-gray-600'>&nbsp;</td>
+                    <td className='border-r px-3 py-2 dark:border-gray-600'>&nbsp;</td>
+                    <td className='border-r px-3 py-2 text-center dark:border-gray-600'>&nbsp;</td>
+                    <td className='border-r px-3 py-2 text-center dark:border-gray-600'>&nbsp;</td>
+                    <td className='border-r px-3 py-2 text-right dark:border-gray-600'>&nbsp;</td>
+                    <td className='px-3 py-2 text-right'>&nbsp;</td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot className='bg-gray-50 dark:bg-gray-700'>
+                <tr className='border-b dark:border-gray-600'>
+                  <td
+                    colSpan={2}
+                    className='px-3 py-2 text-left text-sm font-semibold text-gray-900 dark:text-gray-300'
+                  >
+                    <span className='px-3 py-2 text-right dark:border-gray-600'>Status:</span>
+                    <Badge className={getStatusColor(bill.statusBill || 'Unpaid')}>
+                      {bill.statusBill === 'Paid' ? 'Paid' : 'Unpaid'}
+                    </Badge>
+                  </td>
+                  <td
+                    colSpan={3}
+                    className='px-3 py-2 text-right font-semibold dark:border-gray-600'
+                  >
+                    Total Payment:
+                  </td>
+                  <td className='px-3 py-2 text-center font-bold text-green-600'>${totalAmount.toLocaleString()}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+        <div className='px-2 py-0 text-sm text-gray-700 italic dark:text-gray-300'>
+          <p className='font-semibold'>Note:</p>
+          <ul className='list-disc space-y-1 pl-5'>
+            <li>This invoice is valid only when signed and stamped by the seller.</li>
+            <li>Please retain this invoice for warranty and accounting purposes.</li>
+            <li>All prices are inclusive of applicable taxes (if any).</li>
+            <li>Goods/services sold are non-refundable unless otherwise stated.</li>
+            <li>Contact our support team if any discrepancies are found.</li>
+          </ul>
+        </div>
+
+        <div className='rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-800'>
           <div className='grid grid-cols-2 gap-10 pt-6 text-sm text-gray-700 dark:text-gray-300'>
             <div className='text-center'>
-              <p className='mb-12'>Created by</p>
-              <p className='font-semibold underline'>{bill.creator?.fullName || '....................'}</p>
+              <p className='mb-1 font-semibold text-gray-900 dark:text-gray-100'>Buyer</p>
+              <p className='mb-8 text-xs'>(Signature and full name)</p>
+              <div className='border-gray-400 pb-2'>
+                <p className='font-semibold'>_________________</p>
+              </div>
             </div>
             <div className='text-center'>
-              <p className='mb-12'>Approved by</p>
-              <p className='font-semibold underline'>....................</p>
+              <p className='mb-1 font-semibold text-gray-900 dark:text-gray-100'>Seller</p>
+              <p className='mb-8 text-xs'>(Signature and full name)</p>
+              <div className='border-gray-400 pb-2'>
+                <p className='font-semibold'>{bill.creator?.fullName}</p>
+              </div>
             </div>
           </div>
         </div>
+
+        {(hasFileAttachment() || hasImageUpload()) && (
+          <div className='rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
+            <h3 className='mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100'>
+              <Paperclip className='h-5 w-5' />
+              Attachments
+            </h3>
+            <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
+              {hasFileAttachment() && (
+                <div className='flex items-center gap-3'>
+                  <Paperclip className='h-4 w-4 text-gray-500' />
+                  <button
+                    onClick={() => openFile(bill.fileAttachment!, 'file')}
+                    className='text-blue-600 hover:text-blue-800 hover:underline dark:text-blue-400'
+                  >
+                    View Document
+                  </button>
+                </div>
+              )}
+              {hasImageUpload() && (
+                <div className='flex items-center gap-3'>
+                  <ImageIcon className='h-4 w-4 text-gray-500' />
+                  <button
+                    onClick={() => openFile(bill.imageUpload!, 'image')}
+                    className='text-blue-600 hover:text-blue-800 hover:underline dark:text-blue-400'
+                  >
+                    View Image
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   )
 }
+
+export default BillDetailModal
