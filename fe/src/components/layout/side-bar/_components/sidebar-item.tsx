@@ -16,9 +16,9 @@ export const SidebarNav = () => {
   const canCreateAsset = role === 'admin' || (role === 'assetManager' && 'limited scope')
   const canUpdateSchedule = role === 'admin' || role === 'assetManager'
   const canCreateSchedule = role === 'admin' || role === 'assetManager'
-  const canTransferRequests = role === 'admin' || role === 'assetManager'
+  const canTransferRequests = role === 'assetManager'
   const canViewAssignments = role === 'admin' || role === 'assetManager'
-  const canCreateTransfer = role === 'viewer'
+  const canCreateTransfer = role === 'assetManager'
   const canNotViewTransfer = role !== 'viewer'
   const data = {
     navMain: [
@@ -115,8 +115,9 @@ export const SidebarNav = () => {
           {
             title: 'Assign department',
             url: '/user/assign-department',
+            show: false,
           },
-        ],
+        ].filter((item) => item.show !== false),
       },
     ].filter((item) => item.show !== false),
   }

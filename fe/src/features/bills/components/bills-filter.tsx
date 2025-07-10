@@ -52,6 +52,7 @@ export const BillsFilter = ({ filters, setFilters, onReset }: BillsFilterProps) 
     fetchData()
   }, [])
 
+  console.log('🚀 ~ mappedCategories ~ category:', categories)
   const statusOptions = [
     { id: 'Unpaid', statusName: 'Unpaid' },
     { id: 'Paid', statusName: 'Paid' },
@@ -59,6 +60,7 @@ export const BillsFilter = ({ filters, setFilters, onReset }: BillsFilterProps) 
 
   const hasActiveFilters = Object.values(filters).some((value) => value !== null && value !== '')
 
+  console.log('🚀 ~ BillsFilter ~ statusOptions:', statusOptions)
   return (
     <Card>
       <CardHeader className='gap-0 pb-0'>
@@ -79,49 +81,51 @@ export const BillsFilter = ({ filters, setFilters, onReset }: BillsFilterProps) 
             />
           </div>
 
-          <div className='space-y-2'>
-            <label className='text-sm font-medium'>Category</label>
-            <Select
-              value={filters.categoryId || ''}
-              onValueChange={(value) => setFilters({ ...filters, categoryId: value || null })}
-              disabled={isLoading}
-            >
-              <SelectTrigger className='mt-2 h-10'>
-                <SelectValue placeholder='Select category' />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((category) => (
-                  <SelectItem
-                    key={category.id}
-                    value={category.id}
-                  >
-                    {category.categoryName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <div className='flex flex-col gap-4 sm:flex-row sm:gap-2 lg:gap-3'>
+            <div className='w-full space-y-2 sm:flex-1'>
+              <label className='text-sm font-medium'>Category</label>
+              <Select
+                value={filters.categoryId || ''}
+                onValueChange={(value) => setFilters({ ...filters, categoryId: value || null })}
+                disabled={isLoading}
+              >
+                <SelectTrigger className='mt-2 h-10 w-full'>
+                  <SelectValue placeholder='Select category' />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((category) => (
+                    <SelectItem
+                      key={category.id}
+                      value={category.id}
+                    >
+                      {category.categoryName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div className='space-y-2'>
-            <label className='text-sm font-medium'>Status</label>
-            <Select
-              value={filters.statusBill || ''}
-              onValueChange={(value) => setFilters({ ...filters, statusBill: value as 'Unpaid' | 'Paid' | null })}
-            >
-              <SelectTrigger className='mt-2 h-10'>
-                <SelectValue placeholder='Select status' />
-              </SelectTrigger>
-              <SelectContent>
-                {statusOptions.map((option) => (
-                  <SelectItem
-                    key={option.id}
-                    value={option.id}
-                  >
-                    {option.statusName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className='w-full space-y-2 sm:flex-1'>
+              <label className='text-sm font-medium'>Status</label>
+              <Select
+                value={filters.statusBill || ''}
+                onValueChange={(value) => setFilters({ ...filters, statusBill: value as 'Unpaid' | 'Paid' | null })}
+              >
+                <SelectTrigger className='mt-2 h-10 w-full'>
+                  <SelectValue placeholder='Select status' />
+                </SelectTrigger>
+                <SelectContent>
+                  {statusOptions.map((option) => (
+                    <SelectItem
+                      key={option.id}
+                      value={option.id}
+                    >
+                      {option.statusName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className='flex-shrink-0'>

@@ -184,7 +184,7 @@ export const BillDetailModal = ({ bill, open, onClose }: BillDetailModalProps) =
       onOpenChange={handleOpenChange}
       modal={true}
     >
-      <DialogContent className='!h-[90vh] !w-[50vw] !max-w-[1200px] overflow-y-auto bg-white dark:bg-gray-900'>
+      <DialogContent className='!h-[90vh] w-[50vw] !max-w-[1200px] overflow-y-auto bg-white max-[600px]:!w-full sm:w-[80vw] md:w-[70vw] lg:w-[60vw] dark:bg-gray-900'>
         <DialogHeader className='border-b pb-4 dark:border-gray-700'>
           <div className='flex items-center justify-between'>
             <DialogTitle className='flex items-center gap-3 text-xl font-bold text-gray-900 dark:text-gray-100'>
@@ -193,46 +193,46 @@ export const BillDetailModal = ({ bill, open, onClose }: BillDetailModalProps) =
             </DialogTitle>
           </div>
         </DialogHeader>
-
-        <div className='rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
-          <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
-            <div className='flex-shrink-0'>
+        <div className='rounded-lg border border-gray-200 bg-white p-6 max-[600px]:p-3 dark:border-gray-700 dark:bg-gray-800'>
+          <div className='flex flex-col gap-4 max-[500px]:gap-3 sm:flex-row sm:items-start sm:justify-between'>
+            <div className='flex-shrink-0 max-[600px]:flex max-[600px]:justify-center'>
               <img
                 src='https://www.s3corp.com.vn/images/S3CORP.svg?w=128&q=75'
                 alt='Company Logo'
-                className='h-14 w-auto object-contain'
+                className='h-14 w-auto object-contain max-[600px]:h-10'
               />
             </div>
 
             <div className='flex flex-1 flex-col items-center justify-center text-center'>
-              <div className='bg-red-500 px-4 py-2 text-lg font-bold text-white'>SALES INVOICE</div>
-              <p className='mt-1 text-sm text-gray-700 dark:text-gray-300'>
+              <div className='bg-red-500 px-4 py-2 text-lg font-bold text-white max-[600px]:px-3 max-[600px]:py-1.5 max-[600px]:text-base'>
+                SALES INVOICE
+              </div>
+              <p className='mt-1 text-sm text-gray-700 max-[600px]:text-xs dark:text-gray-300'>
                 Date: <span className='font-semibold'>{formatDateShort(bill.createAt)}</span>
               </p>
             </div>
 
-            <div className='flex items-start gap-4'>
-              <div className='flex flex-col items-end justify-between gap-1'>
-                <p className='text-sm text-gray-600 dark:text-gray-100'>
+            <div className='flex items-start gap-4 max-[600px]:flex-col max-[600px]:items-center max-[600px]:gap-2'>
+              <div className='flex flex-col items-end justify-between gap-1 max-[600px]:items-center'>
+                <p className='text-sm text-gray-600 max-[600px]:text-center max-[600px]:text-xs dark:text-gray-100'>
                   Form No.: <span className='font-semibold'>2C24TTU</span>
                 </p>
-                <p className='text-sm text-gray-600 dark:text-gray-100'>
+                <p className='text-sm text-gray-600 max-[600px]:text-center max-[600px]:text-xs dark:text-gray-100'>
                   Invoice No.: <span className='font-semibold'>{bill.billNumber}</span>
                 </p>
               </div>
 
-              <div>
+              <div className='max-[600px]:flex max-[600px]:justify-center'>
                 <BillQR bill={bill} />
               </div>
             </div>
           </div>
         </div>
-
-        <div className='rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800'>
-          <h3 className='mb-3 text-sm font-semibold text-gray-900 dark:text-gray-100'>
+        <div className='rounded-lg border border-gray-200 bg-white p-4 max-[500px]:p-3 dark:border-gray-700 dark:bg-gray-800'>
+          <h3 className='mb-3 text-sm font-semibold text-gray-900 max-[500px]:text-xs dark:text-gray-100'>
             Seller: <span className='font-normal'>{sellerInfo.companyName}</span>
           </h3>
-          <div className='grid grid-cols-1 gap-2 text-sm'>
+          <div className='grid grid-cols-1 gap-2 text-sm max-[500px]:text-xs'>
             <h3 className='font-semibold text-gray-900 dark:text-gray-100'>
               Tax Code: <span className='font-normal'>{sellerInfo.taxCode}</span>
             </h3>
@@ -245,7 +245,7 @@ export const BillDetailModal = ({ bill, open, onClose }: BillDetailModalProps) =
             <h3 className='border-b pb-2 font-semibold text-gray-900 dark:text-gray-100'>
               Account No.: <span className='font-normal'>{sellerInfo.accountNumber}</span>
             </h3>
-            <h3 className='mt-0.5 text-sm font-semibold text-gray-900 dark:text-gray-100'>
+            <h3 className='mt-0.5 text-sm font-semibold text-gray-900 max-[500px]:text-xs dark:text-gray-100'>
               Buyer: <span className='font-normal'>{buyerInfo.name}</span>
             </h3>
             <h3 className='font-semibold text-gray-900 dark:text-gray-100'>
@@ -265,7 +265,6 @@ export const BillDetailModal = ({ bill, open, onClose }: BillDetailModalProps) =
             </h3>
           </div>
         </div>
-
         <div className='rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800'>
           <div className='overflow-x-auto'>
             <table className='w-full text-sm'>
@@ -354,7 +353,6 @@ export const BillDetailModal = ({ bill, open, onClose }: BillDetailModalProps) =
             <li>Contact our support team if any discrepancies are found.</li>
           </ul>
         </div>
-
         <div className='rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-800'>
           <div className='grid grid-cols-2 gap-10 pt-6 text-sm text-gray-700 dark:text-gray-300'>
             <div className='text-center'>
@@ -373,7 +371,6 @@ export const BillDetailModal = ({ bill, open, onClose }: BillDetailModalProps) =
             </div>
           </div>
         </div>
-
         {(hasFileAttachment() || hasImageUpload()) && (
           <div className='rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800'>
             <h3 className='mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100'>
