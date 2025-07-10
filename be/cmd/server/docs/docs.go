@@ -1080,7 +1080,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "name": "status",
+                        "name": "statusBill",
                         "in": "query"
                     },
                     {

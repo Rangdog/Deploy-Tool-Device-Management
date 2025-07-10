@@ -9,7 +9,7 @@ import (
 
 type BillFilter struct {
 	BillNumber *string `form:"billNumber"`
-	Status     *string `form:"status"`
+	Status     *string `form:"statusBill"`
 	CategoryId *string `form:"categoryId"`
 	CompanyId  int64
 }

@@ -924,7 +924,7 @@ paths:
         name: companyId
         type: integer
       - in: query
-        name: status
+        name: statusBill
         type: string
       - description: Authorization
         in: header
