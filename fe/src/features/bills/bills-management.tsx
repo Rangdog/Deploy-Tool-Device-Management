@@ -79,7 +79,7 @@ export const BillsManagement = () => {
 
           return {
             ...bill,
-            status: bill.status || 'Unpaid' || 'Paid',
+            statusBill: bill.statusBill || 'Unpaid' || 'Paid',
             createdAt: bill.createdAt || new Date().toISOString(),
             updatedAt: bill.updatedAt || new Date().toISOString(),
             asset: assetData,
@@ -166,7 +166,7 @@ export const BillsManagement = () => {
       assetName: bill.assets?.assetName || 'N/A',
       description: bill.description,
       cost: bill.assets?.cost || bill.amount || 0,
-      status: bill.statusBill,
+      statusBill: bill.statusBill,
       categoryName: bill.assets?.category?.categoryName || 'N/A',
       createdBy: bill.creator?.fullName || 'Unknown',
       createdAt: new Date(bill.createAt).toLocaleDateString(),
@@ -193,7 +193,7 @@ export const BillsManagement = () => {
           `"${bill.assetName}"`,
           `"${bill.description}"`,
           bill.cost,
-          `"${bill.status}"`,
+          `"${bill.statusBill}"`,
           `"${bill.categoryName}"`,
           `"${bill.createdBy}"`,
           bill.createdAt,
@@ -279,7 +279,7 @@ export const BillsManagement = () => {
           </CardHeader>
           <CardContent>
             <div className='text-2xl font-bold'>{bills.length}</div>
-            <p className='text-muted-foreground text-xs'>${totalCost.toLocaleString()} total value</p>
+            <p className='text-muted-foreground truncate text-xs'>${totalCost.toLocaleString()} total value</p>
           </CardContent>
           <div className='absolute bottom-0 left-0 h-1 w-full bg-gradient-to-r from-blue-500 to-blue-600' />
         </Card>

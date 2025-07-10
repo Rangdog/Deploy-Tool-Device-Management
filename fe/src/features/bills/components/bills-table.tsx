@@ -79,7 +79,7 @@ export const BillsTable = ({ bills, isLoading, onStatusChange }: BillsTableProps
   }
   console.log('🚀 ~ toggleBillStatus ~ toggleBillStatus:', toggleBillStatus)
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (statusBill: string) => {
     const statusConfig = {
       Unpaid: {
         color: 'bg-red-100 text-red-800',
@@ -89,7 +89,7 @@ export const BillsTable = ({ bills, isLoading, onStatusChange }: BillsTableProps
       },
     } as const
 
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.Unpaid
+    const config = statusConfig[statusBill as keyof typeof statusConfig] || statusConfig.Unpaid
 
     return (
       <Badge
@@ -98,7 +98,7 @@ export const BillsTable = ({ bills, isLoading, onStatusChange }: BillsTableProps
           e.stopPropagation()
         }}
       >
-        {status || 'Unpaid'}
+        {statusBill || 'Unpaid'}
       </Badge>
     )
   }
@@ -209,7 +209,7 @@ export const BillsTable = ({ bills, isLoading, onStatusChange }: BillsTableProps
       ),
     },
     {
-      accessorKey: 'status',
+      accessorKey: 'statusBill',
       header: 'Status',
       cell: ({ row }: any) => getStatusBadge(row.original.statusBill),
     },
