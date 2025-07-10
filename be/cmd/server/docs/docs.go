@@ -987,7 +987,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Description",
-                        "name": "status",
+                        "name": "statusBill",
                         "in": "formData",
                         "required": true
                     },

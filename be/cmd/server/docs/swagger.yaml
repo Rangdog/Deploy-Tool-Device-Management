@@ -818,7 +818,7 @@ paths:
         type: string
       - description: Description
         in: formData
-        name: status
+        name: statusBill
         required: true
         type: string
       - description: File to upload
