@@ -676,24 +676,16 @@ func CountDashboard(assets []*entity.Assets) dto.DashboardSummary {
 	return s
 }
 
-func (service *AssetsService) GetAssetsByCateOfDepartment(userId, categoryId, departmentId int64) ([]*entity.Assets, error) {
+func (service *AssetsService) GetAssetsByCateOfDepartment(userId, categoryId int64) ([]*entity.Assets, error) {
 	user, err := service.userRepository.FindByUserId(userId)
 	if err != nil {
 		return nil, err
 	}
-	if user.Role.Slug == "admin" {
-		assets, err := service.repo.GetAssetsByCateOfDepartment(categoryId, departmentId)
-		if err != nil {
-			return nil, err
-		}
-		return assets, nil
-	} else {
-		assets, err := service.repo.GetAssetsByCateOfDepartment(categoryId, *user.DepartmentId)
-		if err != nil {
-			return nil, err
-		}
-		return assets, nil
+	assets, err := service.repo.GetAssetsByCateOfDepartment(categoryId, *user.DepartmentId)
+	if err != nil {
+		return nil, err
 	}
+	return assets, nil
 }
 
 func (service *AssetsService) CheckPermissionForManager(userId int64, depId int64) error {

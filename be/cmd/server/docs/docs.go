@@ -450,7 +450,7 @@ const docTemplate = `{
                         "JWT": []
                     }
                 ],
-                "description": "Get asset by category of department",
+                "description": "Get asset by category of manager department",
                 "consumes": [
                     "application/json"
                 ],
@@ -460,16 +460,11 @@ const docTemplate = `{
                 "tags": [
                     "Assets"
                 ],
-                "summary": "Get asset by category of department",
+                "summary": "Get asset by category of manager department",
                 "parameters": [
                     {
                         "type": "integer",
                         "name": "categoryId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "name": "departmentId",
                         "in": "query"
                     },
                     {

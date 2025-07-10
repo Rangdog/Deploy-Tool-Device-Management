@@ -583,13 +583,10 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get asset by category of department
+      description: Get asset by category of manager department
       parameters:
       - in: query
         name: categoryId
-        type: integer
-      - in: query
-        name: departmentId
         type: integer
       - description: Authorization
         in: header
@@ -601,7 +598,7 @@ paths:
       responses: {}
       security:
       - JWT: []
-      summary: Get asset by category of department
+      summary: Get asset by category of manager department
       tags:
       - Assets
   /api/assignments/{id}:
