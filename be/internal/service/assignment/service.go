@@ -171,16 +171,14 @@ func (service *AssignmentService) Update(userId, assignmentId int64, userIdAssig
 	if err := tx.Commit().Error; err != nil {
 		return nil, err
 	}
-	var userHeadDepart *entity.Users
 	var userManagerAsset *entity.Users
 	if departmentId != nil {
-		userHeadDepart, _ = service.userRepo.GetUserHeadDepartment(*departmentId)
+
 		userManagerAsset, _ = service.userRepo.GetUserAssetManageOfDepartment(*departmentId)
 	} else {
-		userHeadDepart, _ = service.userRepo.GetUserHeadDepartment(asset.DepartmentId)
 		userManagerAsset, _ = service.userRepo.GetUserAssetManageOfDepartment(asset.DepartmentId)
 	}
-	usersToNotifications := []*entity.Users{asset.OnwerUser, userHeadDepart, userManagerAsset}
+	usersToNotifications := []*entity.Users{asset.OnwerUser, userManagerAsset}
 	message := fmt.Sprintf("The asset '%v' (ID: %v) has just been updated by %v", asset.AssetName, asset.Id, byUser.Email)
 	userNotificationUnique := utils.ConvertUsersToNotificationsToMap(userId, usersToNotifications)
 	go func() {

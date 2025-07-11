@@ -18,7 +18,6 @@ type UserRepository interface {
 	GetDB() *gorm.DB
 	GetAllUser(companyId int64) []*entity.Users
 	UpdateUser(user *entity.Users) (*entity.Users, error)
-	GetUserHeadDepartment(departmentId int64) (*entity.Users, error)
 	GetUserAssetManageOfDepartment(departmentId int64) (*entity.Users, error)
 	GetAllUserRoleEmployeeOfDepartment(departmentTd int64) ([]*entity.Users, error)
 	GetAllUserRoleManagerOfDepartment(departmentTd int64) ([]*entity.Users, error)

@@ -55,11 +55,9 @@ func (service *MaintenanceSchedulesService) Create(userId int64, assetId int64, 
 	if err != nil {
 		return nil, err
 	}
-	userHeadDepart, _ := service.userRepository.GetUserHeadDepartment(assetCheck.DepartmentId)
 	userManagerAsset, _ := service.userRepository.GetUserAssetManageOfDepartment(assetCheck.DepartmentId)
 	usersToNotifications := []*entity.Users{}
 	usersToNotifications = append(usersToNotifications, assetCheck.OnwerUser)
-	usersToNotifications = append(usersToNotifications, userHeadDepart)
 	usersToNotifications = append(usersToNotifications, userManagerAsset)
 	filteredUsers := []*entity.Users{}
 	for _, user := range usersToNotifications {
@@ -106,11 +104,9 @@ func (service *MaintenanceSchedulesService) Update(userId int64, id int64, start
 	}
 	maintenaceUpdate, _ := service.repo.GetMaintenanceSchedulesById(id)
 
-	userHeadDepart, _ := service.userRepository.GetUserHeadDepartment(maintenaceUpdate.Asset.DepartmentId)
 	userManagerAsset, _ := service.userRepository.GetUserAssetManageOfDepartment(maintenaceUpdate.Asset.DepartmentId)
 	usersToNotifications := []*entity.Users{}
 	usersToNotifications = append(usersToNotifications, maintenaceUpdate.Asset.OnwerUser)
-	usersToNotifications = append(usersToNotifications, userHeadDepart)
 	usersToNotifications = append(usersToNotifications, userManagerAsset)
 	filteredUsers := []*entity.Users{}
 	for _, user := range usersToNotifications {
@@ -146,11 +142,9 @@ func (service *MaintenanceSchedulesService) Delete(userId int64, id int64) error
 	err = service.repo.Delete(id)
 	maintenaceUpdate, _ := service.repo.GetMaintenanceSchedulesById(id)
 
-	userHeadDepart, _ := service.userRepository.GetUserHeadDepartment(maintenaceUpdate.Asset.DepartmentId)
 	userManagerAsset, _ := service.userRepository.GetUserAssetManageOfDepartment(maintenaceUpdate.Asset.DepartmentId)
 	usersToNotifications := []*entity.Users{}
 	usersToNotifications = append(usersToNotifications, maintenaceUpdate.Asset.OnwerUser)
-	usersToNotifications = append(usersToNotifications, userHeadDepart)
 	usersToNotifications = append(usersToNotifications, userManagerAsset)
 	filteredUsers := []*entity.Users{}
 	for _, user := range usersToNotifications {

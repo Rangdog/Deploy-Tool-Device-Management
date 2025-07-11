@@ -391,14 +391,10 @@ func (service *AssetsService) UpdateAsset(userId int64, assetId int64, assetName
 	if err = tx.Commit().Error; err != nil {
 		return nil, fmt.Errorf("commit failed: %w", err)
 	}
-	userHeadDepart, _ := service.userRepository.GetUserHeadDepartment(assetUpdated.DepartmentId)
 	userManagerAsset, _ := service.userRepository.GetUserAssetManageOfDepartment(assetUpdated.DepartmentId)
 	usersToNotifications := []*entity.Users{}
 	if assetUpdated.OnwerUser != nil {
 		usersToNotifications = append(usersToNotifications, assetUpdated.OnwerUser)
-	}
-	if userHeadDepart != nil {
-		usersToNotifications = append(usersToNotifications, userHeadDepart)
 	}
 	if userManagerAsset != nil {
 		usersToNotifications = append(usersToNotifications, userManagerAsset)
@@ -455,11 +451,9 @@ func (service *AssetsService) DeleteAsset(userId int64, id int64) error {
 	if err = tx.Commit().Error; err != nil {
 		return fmt.Errorf("commit failed: %w", err)
 	}
-	userHeadDepart, _ := service.userRepository.GetUserHeadDepartment(asset.DepartmentId)
 	userManagerAsset, _ := service.userRepository.GetUserAssetManageOfDepartment(asset.DepartmentId)
 	usersToNotifications := []*entity.Users{}
 	usersToNotifications = append(usersToNotifications, asset.OnwerUser)
-	usersToNotifications = append(usersToNotifications, userHeadDepart)
 	usersToNotifications = append(usersToNotifications, userManagerAsset)
 	message := fmt.Sprintf("The asset '%v' (ID: %v) has just been delete by %v", asset.AssetName, asset.Id, userUpdate.Email)
 	userNotificationUnique := utils.ConvertUsersToNotificationsToMap(userId, usersToNotifications)
@@ -534,11 +528,9 @@ func (service *AssetsService) UpdateAssetRetired(userId int64, id int64, Residua
 	if err = tx.Commit().Error; err != nil {
 		return nil, fmt.Errorf("commit failed: %w", err)
 	}
-	userHeadDepart, _ := service.userRepository.GetUserHeadDepartment(asset.DepartmentId)
 	userManagerAsset, _ := service.userRepository.GetUserAssetManageOfDepartment(asset.DepartmentId)
 	usersToNotifications := []*entity.Users{}
 	usersToNotifications = append(usersToNotifications, asset.OnwerUser)
-	usersToNotifications = append(usersToNotifications, userHeadDepart)
 	usersToNotifications = append(usersToNotifications, userManagerAsset)
 	message := fmt.Sprintf("The asset '%v' (ID: %v) has just been updated by %v", asset.AssetName, asset.Id, userUpdate.Email)
 	userNotificationUnique := utils.ConvertUsersToNotificationsToMap(userId, usersToNotifications)

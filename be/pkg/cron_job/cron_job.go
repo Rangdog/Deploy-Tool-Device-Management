@@ -25,6 +25,7 @@ func InitCronJobs(db *gorm.DB, emailService *emailS.EmailService, assetsReposito
 		log.Println("🔔 Running maintenance notification check at 8:00 AM")
 		utils.CheckAndSenMaintenanceNotification(db, emailService, assetsRepository, userRepository, notificationsService, assetsLogRepository)
 	})
+
 	if err != nil {
 		log.Fatalf("❌ Failed to schedule maintenance cron job: %v", err)
 	}

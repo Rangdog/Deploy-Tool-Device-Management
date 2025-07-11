@@ -307,36 +307,6 @@ func (_m *UserRepository) GetUserAssetManageOfDepartment(departmentId int64) (*e
 	return r0, r1
 }
 
-// GetUserHeadDepartment provides a mock function with given fields: departmentId
-func (_m *UserRepository) GetUserHeadDepartment(departmentId int64) (*entity.Users, error) {
-	ret := _m.Called(departmentId)
-
-	if len(ret) == 0 {
-		panic("no return value specified for GetUserHeadDepartment")
-	}
-
-	var r0 *entity.Users
-	var r1 error
-	if rf, ok := ret.Get(0).(func(int64) (*entity.Users, error)); ok {
-		return rf(departmentId)
-	}
-	if rf, ok := ret.Get(0).(func(int64) *entity.Users); ok {
-		r0 = rf(departmentId)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*entity.Users)
-		}
-	}
-
-	if rf, ok := ret.Get(1).(func(int64) error); ok {
-		r1 = rf(departmentId)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
 // Update provides a mock function with given fields: user
 func (_m *UserRepository) Update(user *entity.Users) error {
 	ret := _m.Called(user)
