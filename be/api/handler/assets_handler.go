@@ -581,7 +581,7 @@ func (h *AssetsHandler) FilterAssetDashboard(c *gin.Context) {
 			log.Error("Happened error when filter asset. Error", err)
 			pkg.PanicExeption(constant.UnknownError, "Happened error when filter asset")
 		}
-		if user.Role.Slug != "viewer" {
+		if user.Role.Slug != "employee" {
 			if *filter.Export == "csv" {
 				data, _ := GenerateCSV(assets)
 				c.Header("Content-Disposition", "attachment; filename=assets.csv")

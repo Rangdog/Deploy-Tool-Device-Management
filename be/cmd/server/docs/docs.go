@@ -2204,7 +2204,7 @@ const docTemplate = `{
                         "JWT": []
                     }
                 ],
-                "description": "Get all user role viewer by department_id",
+                "description": "Get all user role employee by department_id",
                 "consumes": [
                     "application/json"
                 ],
@@ -2214,7 +2214,7 @@ const docTemplate = `{
                 "tags": [
                     "Users"
                 ],
-                "summary": "Get all user role viewer by department_id",
+                "summary": "Get all user role employee by department_id",
                 "parameters": [
                     {
                         "type": "string",

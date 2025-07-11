@@ -1638,7 +1638,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get all user role viewer by department_id
+      description: Get all user role employee by department_id
       parameters:
       - description: department_id
         in: path
@@ -1655,7 +1655,7 @@ paths:
       responses: {}
       security:
       - JWT: []
-      summary: Get all user role viewer by department_id
+      summary: Get all user role employee by department_id
       tags:
       - Users
   /api/user/forget-password:

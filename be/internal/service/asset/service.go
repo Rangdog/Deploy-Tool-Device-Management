@@ -633,7 +633,7 @@ func (service *AssetsService) ApplyFilterDashBoard(userId int64, status *string,
 		return nil, nil, err
 	}
 	roleHeadDep := service.roleRepository.GetRoleBySlug("department-head")
-	roleView := service.roleRepository.GetRoleBySlug("viewer")
+	roleView := service.roleRepository.GetRoleBySlug("employee")
 	if user.RoleId == roleHeadDep.Id || user.RoleId == roleView.Id {
 		if user.DepartmentId != nil {
 			// Convert *int64 to string
