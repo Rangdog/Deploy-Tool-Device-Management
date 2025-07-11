@@ -272,12 +272,21 @@ func (service *UserService) UpdateRole(userId int64, setRoleUserId int64, slug s
 	return userUpdated, nil
 }
 
-func (service *UserService) GetAllUserOfDepartment(departmentId int64) ([]*entity.Users, error) {
-	user, err := service.repo.GetAllUserOfDepartment(departmentId)
+func (service *UserService) GetAllUserOfDepartment(userId int64, departmentId int64) ([]*entity.Users, error) {
+	user, err := service.repo.FindByUserId(userId)
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+	var users []*entity.Users
+	if user.Role.Slug == "admin" {
+		users, err = service.repo.GetAllUserRoleManagerOfDepartment(departmentId)
+	} else {
+		users, err = service.repo.GetAllUserRoleEmployeeOfDepartment(departmentId)
+	}
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
 }
 
 func (service *UserService) UpdateDepartment(userId int64, departmentId int64) error {
