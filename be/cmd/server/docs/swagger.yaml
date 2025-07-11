@@ -32,13 +32,6 @@ definitions:
       userId:
         type: integer
     type: object
-  dto.BillCreateRequest:
-    properties:
-      assetId:
-        type: integer
-      description:
-        type: string
-    type: object
   dto.CheckPasswordReset:
     properties:
       email:
@@ -590,13 +583,10 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get asset by category of department
+      description: Get asset by category of manager department
       parameters:
       - in: query
         name: categoryId
-        type: integer
-      - in: query
-        name: departmentId
         type: integer
       - description: Authorization
         in: header
@@ -608,7 +598,7 @@ paths:
       responses: {}
       security:
       - JWT: []
-      summary: Get asset by category of department
+      summary: Get asset by category of manager department
       tags:
       - Assets
   /api/assignments/{id}:
@@ -814,12 +804,28 @@ paths:
       - application/json
       description: Create bill
       parameters:
-      - description: Data
-        in: body
-        name: bill
+      - description: Asset ID
+        in: formData
+        name: assetId
         required: true
-        schema:
-          $ref: '#/definitions/dto.BillCreateRequest'
+        type: string
+      - description: Description
+        in: formData
+        name: description
+        type: string
+      - description: Description
+        in: formData
+        name: statusBill
+        required: true
+        type: string
+      - description: File to upload
+        in: formData
+        name: file
+        type: file
+      - description: Image to upload
+        in: formData
+        name: image
+        type: file
       - description: Authorization
         in: header
         name: Authorization
@@ -831,6 +837,25 @@ paths:
       security:
       - JWT: []
       summary: Create bill
+      tags:
+      - Bills
+  /api/bills-un-paid/:
+    get:
+      consumes:
+      - application/json
+      description: un paid bill
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: Get un paid bill
       tags:
       - Bills
   /api/bills/{billNumber}:
@@ -857,6 +882,29 @@ paths:
       summary: Get bill by bill number
       tags:
       - Bills
+    patch:
+      consumes:
+      - application/json
+      description: Update paid bill
+      parameters:
+      - description: billNumber
+        in: path
+        name: billNumber
+        required: true
+        type: string
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - JWT: []
+      summary: Update paid bill
+      tags:
+      - Bills
   /api/bills/filter:
     get:
       consumes:
@@ -873,7 +921,7 @@ paths:
         name: companyId
         type: integer
       - in: query
-        name: status
+        name: statusBill
         type: string
       - description: Authorization
         in: header
@@ -1590,7 +1638,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get all user by department_id
+      description: Get all user role employee by department_id
       parameters:
       - description: department_id
         in: path
@@ -1607,7 +1655,7 @@ paths:
       responses: {}
       security:
       - JWT: []
-      summary: Get all user by department_id
+      summary: Get all user role employee by department_id
       tags:
       - Users
   /api/user/forget-password:

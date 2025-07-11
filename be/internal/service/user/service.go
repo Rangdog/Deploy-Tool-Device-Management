@@ -42,7 +42,7 @@ func (service *UserService) Register(firstName, lastName, password, email, redir
 	if err != nil {
 		return nil, err
 	}
-	role := service.roleRepository.GetRoleBySlug("viewer")
+	role := service.roleRepository.GetRoleBySlug("employee")
 	token := uuid.New().String()
 	company, err := service.CompanyRepo.GetCompanyBySuffixEmail(utils.GetSuffixEmail(email))
 	if err != nil {
@@ -264,7 +264,7 @@ func (service *UserService) UpdateRole(userId int64, setRoleUserId int64, slug s
 	if slug == "assetManager" {
 		service.UpdateManagerDep(setRoleUserId)
 	}
-	if slug == "viewer" {
+	if slug == "employee" {
 		if userUpdated.IsAssetManager {
 			service.UpdateManagerDep(setRoleUserId)
 		}
@@ -272,12 +272,21 @@ func (service *UserService) UpdateRole(userId int64, setRoleUserId int64, slug s
 	return userUpdated, nil
 }
 
-func (service *UserService) GetAllUserOfDepartment(departmentId int64) ([]*entity.Users, error) {
-	user, err := service.repo.GetAllUserOfDepartment(departmentId)
+func (service *UserService) GetAllUserOfDepartment(userId int64, departmentId int64) ([]*entity.Users, error) {
+	user, err := service.repo.FindByUserId(userId)
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+	var users []*entity.Users
+	if user.Role.Slug == "admin" {
+		users, err = service.repo.GetAllUserRoleManagerOfDepartment(departmentId)
+	} else {
+		users, err = service.repo.GetAllUserRoleEmployeeOfDepartment(departmentId)
+	}
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
 }
 
 func (service *UserService) UpdateDepartment(userId int64, departmentId int64) error {
@@ -311,8 +320,8 @@ func (service *UserService) UpdateCanExport(id int64) error {
 	if err != nil {
 		return err
 	}
-	roleViewer := service.roleRepository.GetRoleBySlug("viewer")
-	if user.RoleId != roleViewer.Id {
+	roleEmployee := service.roleRepository.GetRoleBySlug("employee")
+	if user.RoleId != roleEmployee.Id {
 		return nil
 	}
 	err = service.repo.UpdateCanExport(id, !user.CanExport)

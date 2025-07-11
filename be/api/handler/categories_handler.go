@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	cacheKeyCategories = "categories:all"
+	cacheKeyCategories = "categories:all:CId"
 )
 
 type CategoriesHandler struct {

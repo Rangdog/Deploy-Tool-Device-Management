@@ -3,6 +3,7 @@ package utils
 import (
 	"BE_Manage_device/config"
 	"BE_Manage_device/internal/domain/entity"
+	"strconv"
 
 	"BE_Manage_device/pkg/interfaces"
 	"bytes"
@@ -499,4 +500,21 @@ func GetSuffixEmail(email string) string {
 		return ""
 	}
 	return parts[1]
+}
+
+func ParseInt64Ptr(s *string) (int64, error) {
+	if s == nil {
+		return 0, fmt.Errorf("nil string")
+	}
+	return strconv.ParseInt(*s, 10, 64)
+}
+
+func ParseStrToInt64(s string) (int64, error) {
+	i, err := strconv.ParseInt(s, 10, 64)
+	return i, err
+}
+
+func ParseStrToBool(s string) (bool, error) {
+	i, err := strconv.ParseBool(s)
+	return i, err
 }

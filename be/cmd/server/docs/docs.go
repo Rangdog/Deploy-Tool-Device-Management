@@ -450,7 +450,7 @@ const docTemplate = `{
                         "JWT": []
                     }
                 ],
-                "description": "Get asset by category of department",
+                "description": "Get asset by category of manager department",
                 "consumes": [
                     "application/json"
                 ],
@@ -460,16 +460,11 @@ const docTemplate = `{
                 "tags": [
                     "Assets"
                 ],
-                "summary": "Get asset by category of department",
+                "summary": "Get asset by category of manager department",
                 "parameters": [
                     {
                         "type": "integer",
                         "name": "categoryId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "name": "departmentId",
                         "in": "query"
                     },
                     {
@@ -972,14 +967,67 @@ const docTemplate = `{
                 "summary": "Create bill",
                 "parameters": [
                     {
-                        "description": "Data",
-                        "name": "bill",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.BillCreateRequest"
-                        }
+                        "type": "string",
+                        "description": "Asset ID",
+                        "name": "assetId",
+                        "in": "formData",
+                        "required": true
                     },
+                    {
+                        "type": "string",
+                        "description": "Description",
+                        "name": "description",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Description",
+                        "name": "statusBill",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "File to upload",
+                        "name": "file",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "Image to upload",
+                        "name": "image",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/bills-un-paid/": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "un paid bill",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bills"
+                ],
+                "summary": "Get un paid bill",
+                "parameters": [
                     {
                         "type": "string",
                         "description": "Authorization",
@@ -1027,7 +1075,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "name": "status",
+                        "name": "statusBill",
                         "in": "query"
                     },
                     {
@@ -1059,6 +1107,41 @@ const docTemplate = `{
                     "Bills"
                 ],
                 "summary": "Get bill by bill number",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "billNumber",
+                        "name": "billNumber",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "patch": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "Update paid bill",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bills"
+                ],
+                "summary": "Update paid bill",
                 "parameters": [
                     {
                         "type": "string",
@@ -2121,7 +2204,7 @@ const docTemplate = `{
                         "JWT": []
                     }
                 ],
-                "description": "Get all user by department_id",
+                "description": "Get all user role employee by department_id",
                 "consumes": [
                     "application/json"
                 ],
@@ -2131,7 +2214,7 @@ const docTemplate = `{
                 "tags": [
                     "Users"
                 ],
-                "summary": "Get all user by department_id",
+                "summary": "Get all user role employee by department_id",
                 "parameters": [
                     {
                         "type": "string",
@@ -2605,17 +2688,6 @@ const docTemplate = `{
                 },
                 "userId": {
                     "type": "integer"
-                }
-            }
-        },
-        "dto.BillCreateRequest": {
-            "type": "object",
-            "properties": {
-                "assetId": {
-                    "type": "integer"
-                },
-                "description": {
-                    "type": "string"
                 }
             }
         },
