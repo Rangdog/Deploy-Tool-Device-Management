@@ -225,12 +225,10 @@ func CheckAndSenMaintenanceNotification(db *gorm.DB, emailNotifier interfaces.Em
 		// Nếu chưa có thông báo thì tiến hành
 		err = db.Transaction(func(tx *gorm.DB) error {
 			// 1. Lấy user nhận email
-			var userHeadDepart *entity.Users
 			var userManagerAsset *entity.Users
-			userHeadDepart, _ = userRepo.GetUserHeadDepartment(s.Asset.DepartmentId)
 			userManagerAsset, _ = userRepo.GetUserAssetManageOfDepartment(s.Asset.DepartmentId)
 			userRoleAdmin, _ := userRepo.GetUserRoleAdmin()
-			users := []*entity.Users{s.Asset.OnwerUser, userHeadDepart, userManagerAsset}
+			users := []*entity.Users{s.Asset.OnwerUser, userManagerAsset}
 			users = append(users, userRoleAdmin...)
 			if len(users) == 0 {
 				log.Printf("⚠️ No users with notification permission for asset ID %d", s.AssetId)
@@ -357,14 +355,10 @@ func UpdateStatusWhenFinishMaintenance(db *gorm.DB, assetRepo asset.AssetsReposi
 				log.Printf("❌ Error updating asset %d to 'In Use': %v", a.Id, err)
 			} else {
 				log.Printf("✅ Asset %d moved to 'In Use'", a.Id)
-				userHeadDepart, _ := userRepo.GetUserHeadDepartment(a.DepartmentId)
 				userManagerAsset, _ := userRepo.GetUserAssetManageOfDepartment(a.DepartmentId)
 				usersToNotifications := []*entity.Users{}
 				if a.OnwerUser != nil {
 					usersToNotifications = append(usersToNotifications, a.OnwerUser)
-				}
-				if userHeadDepart != nil {
-					usersToNotifications = append(usersToNotifications, userHeadDepart)
 				}
 				if userManagerAsset != nil {
 					usersToNotifications = append(usersToNotifications, userManagerAsset)
@@ -404,7 +398,6 @@ func SendEmailsForWarrantyExpiry(db *gorm.DB, emailNotifier interfaces.EmailNoti
 		var job notificationJob
 		var userHeadDepart *entity.Users
 		var userManagerAsset *entity.Users
-		userHeadDepart, _ = userRepo.GetUserHeadDepartment(a.DepartmentId)
 		userManagerAsset, _ = userRepo.GetUserAssetManageOfDepartment(a.DepartmentId)
 		userRoleAdmin, _ := userRepo.GetUserRoleAdmin()
 		users := []*entity.Users{a.OnwerUser, userHeadDepart, userManagerAsset}

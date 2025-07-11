@@ -115,15 +115,6 @@ func (r *PostgreSQLUserRepository) UpdateUser(user *entity.Users) (*entity.Users
 	return &userUpdate, nil
 }
 
-func (r *PostgreSQLUserRepository) GetUserHeadDepartment(departmentId int64) (*entity.Users, error) {
-	user := entity.Users{}
-	result := r.db.Model(entity.Users{}).Where("department_id = ? and is_head_department = true", departmentId).First(&user)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	return &user, nil
-}
-
 func (r *PostgreSQLUserRepository) GetUserAssetManageOfDepartment(departmentId int64) (*entity.Users, error) {
 	user := entity.Users{}
 	result := r.db.Model(entity.Users{}).Where("department_id = ? and is_asset_manager = true", departmentId).First(&user)
